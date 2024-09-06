@@ -1,2 +1,2 @@
-# spark-aws
-spark-aws
+# spark-connectors
+Custom sink providers for Apache Spark
