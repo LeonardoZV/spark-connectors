@@ -1,7 +1,7 @@
 # Spark Connectors - AWS SQS Sink
 A custom sink provider for Apache Spark that sends the contents of a dataframe to AWS SQS. It supports the [SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html).
 
-It grabs the content of the first column of the dataframe and sends it to an AWS SQS queue. It needs the following parameters:
+It needs the following parameters:
 - **region** of the queue. Default us-east-2.
 - **queueName** of the queue.
 - **batchSize** so we can group N messages in one call. Default 10.
@@ -11,22 +11,22 @@ It grabs the content of the first column of the dataframe and sends it to an AWS
 - **payloadSizeThreshold** when using the sqs extended client, you need to specify the threshold size in bytes. Default 256KB.
 ```java
 df.write()
-        .format("sqs")
-        .mode(SaveMode.Append)
-        .option("region", "us-east-2")
-        .option("queueName", "my-test-queue")
-        .option("batchSize", "10")
-        .option("queueOwnerAWSAccountId", "123456789012") // optional
-        .option("useSqsExtendedClient", "true") // optional
-        .option("bucketName", "my-test-bucket") // optional
-        .option("payloadSizeThreshold", "1000") // optional
-        .save();
+    .format("sqs")
+    .mode(SaveMode.Append)
+    .option("region", "us-east-2")
+    .option("queueName", "my-test-queue")
+    .option("batchSize", "10")
+    .option("queueOwnerAWSAccountId", "123456789012") // optional
+    .option("useSqsExtendedClient", "true") // optional
+    .option("bucketName", "my-test-bucket") // optional
+    .option("payloadSizeThreshold", "1000") // optional
+    .save();
 ```
 
 The dataframe:
-- must have a column called **value** (string), because this column will be used as the body of each message.
-- may have a column called **msg_attributes** (map of [string, string]). In this case, the library will add each key/value as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
-- may have a column called **group_id** (string). In this case, the library will add the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
+- **must** have a column called **value** (string), because this column will be used as the body of each message.
+- **may** have a column called **msg_attributes** (map of [string, string]). In this case, the library will add each key/value as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
+- **may** have a column called **group_id** (string). In this case, the library will add the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 
 The folder [/spark-aws-messaging/src/test/resources](/spark-aws-messaging/src/test/resources) contains some PySpark simple examples used in the integration tests (the *endpoint* option is not required).
 
