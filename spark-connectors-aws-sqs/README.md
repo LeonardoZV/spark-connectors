@@ -4,8 +4,8 @@ A custom sink provider for Apache Spark that sends the contents of a dataframe t
 It grabs the content of the first column of the dataframe and sends it to an AWS SQS queue. It needs the following parameters:
 - **region** of the queue. Default us-east-2.
 - **name** of the queue.
-- **batch size** so we can group N messages in one call. Default 10.
-- **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs account is in a different account than the spark job. Optional argument.
+- **batchSize** so we can group N messages in one call. Default 10.
+- **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs is in a different account than the spark job. Optional argument.
 - **useSqsExtendedClient** if you want to use the SQS Extended Client to send messages larger than 256KB. Default false.
 - **bucketName** when using the sqs extended client, you need to specify the bucket name where the messages will be stored.
 - **payloadSizeThreshold** when using the sqs extended client, you need to specify the threshold size in bytes. Default 256KB.
