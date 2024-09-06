@@ -41,4 +41,5 @@ public class DynamoDbSinkTable implements SupportsWrite {
         }
         return capabilities;
     }
+
 }

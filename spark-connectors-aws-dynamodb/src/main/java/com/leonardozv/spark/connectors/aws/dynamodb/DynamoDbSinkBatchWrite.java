@@ -7,7 +7,7 @@ import org.apache.spark.sql.connector.write.WriterCommitMessage;
 
 public class DynamoDbSinkBatchWrite implements BatchWrite {
 
-    private DynamoDbSinkOptions options;
+    private final DynamoDbSinkOptions options;
 
     public DynamoDbSinkBatchWrite(DynamoDbSinkOptions options) {
         this.options = options;
@@ -27,4 +27,5 @@ public class DynamoDbSinkBatchWrite implements BatchWrite {
     public void abort(WriterCommitMessage[] messages) {
         // nothing to abort here, since this sink is not atomic
     }
+
 }

@@ -3,6 +3,7 @@ package com.leonardozv.spark.connectors.aws.dynamodb;
 import java.io.Serializable;
 
 public class DynamoDbSinkOptions implements Serializable {
+
     private final String region;
     private final String endpoint;
     private final int batchSize;
@@ -33,9 +34,12 @@ public class DynamoDbSinkOptions implements Serializable {
         return batchSize;
     }
 
-    public boolean getTreatConditionalCheckFailedAsError() { return treatConditionalCheckFailedAsError; }
+    public boolean getTreatConditionalCheckFailedAsError() {
+        return treatConditionalCheckFailedAsError;
+    }
 
     public int getStatementColumnIndex() {
         return statementColumnIndex;
     }
+
 }

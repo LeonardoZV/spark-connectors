@@ -41,4 +41,5 @@ public class SQSSinkTable implements SupportsWrite {
         }
         return capabilities;
     }
+
 }

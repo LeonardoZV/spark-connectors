@@ -1,7 +1,7 @@
 package com.leonardozv.spark.connectors.aws.sqs;
 
-import org.apache.spark.sql.connector.write.BatchWrite;
 import org.apache.spark.sql.connector.write.LogicalWriteInfo;
+import org.apache.spark.sql.connector.write.Write;
 import org.apache.spark.sql.connector.write.WriteBuilder;
 import org.apache.spark.sql.types.StructType;
 
@@ -17,7 +17,7 @@ public class SQSSinkWriteBuilder implements WriteBuilder {
     }
 
     @Override
-    public BatchWrite buildForBatch() {
+    public Write build() {
         int batchSize = Integer.parseInt(info.options().getOrDefault("batchSize", "10"));
         final StructType schema = info.schema();
         SQSSinkOptions options = new SQSSinkOptions(
@@ -30,6 +30,7 @@ public class SQSSinkWriteBuilder implements WriteBuilder {
                 schema.fieldIndex(VALUE_COLUMN_NAME),
                 schema.getFieldIndex(MESSAGE_ATTRIBUTES_COLUMN_NAME).isEmpty() ? -1 : schema.fieldIndex(MESSAGE_ATTRIBUTES_COLUMN_NAME),
                 schema.getFieldIndex(GROUP_ID_COLUMN_NAME).isEmpty() ? -1 : schema.fieldIndex(GROUP_ID_COLUMN_NAME));
-        return new SQSSinkBatchWrite(options);
+        return new SQSSinkWrite(options);
     }
+
 }

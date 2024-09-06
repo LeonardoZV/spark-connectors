@@ -26,4 +26,5 @@ public class DynamoDbSinkBatchResultException extends RuntimeException {
             return new DynamoDbSinkBatchResultException("Some messages failed to be sent to the SQS queue with the following errors: [" + String.join("; ", failedMessages) + "]");
         }
     }
+
 }

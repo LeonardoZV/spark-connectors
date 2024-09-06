@@ -13,6 +13,7 @@ import org.apache.spark.sql.util.CaseInsensitiveStringMap;
 import java.util.Map;
 
 public class DynamoDbSinkProvider implements TableProvider, DataSourceRegister {
+
     @Override
     public StructType inferSchema(CaseInsensitiveStringMap options) {
         return new StructType(new StructField[]{ new StructField("statement", DataTypes.StringType, true, Metadata.empty()) });
@@ -31,4 +32,5 @@ public class DynamoDbSinkProvider implements TableProvider, DataSourceRegister {
     public String shortName() {
         return "dynamodb";
     }
+
 }

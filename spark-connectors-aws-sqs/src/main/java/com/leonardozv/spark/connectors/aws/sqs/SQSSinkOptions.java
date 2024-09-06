@@ -3,6 +3,7 @@ package com.leonardozv.spark.connectors.aws.sqs;
 import java.io.Serializable;
 
 public class SQSSinkOptions implements Serializable {
+
     private final String region;
     private final String endpoint;
     private final String queueName;
@@ -68,4 +69,5 @@ public class SQSSinkOptions implements Serializable {
     public String getQueueOwnerAWSAccountId() {
         return queueOwnerAWSAccountId;
     }
+
 }

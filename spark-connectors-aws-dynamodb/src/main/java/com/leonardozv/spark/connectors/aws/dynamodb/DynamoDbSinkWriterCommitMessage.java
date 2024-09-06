@@ -26,4 +26,5 @@ public class DynamoDbSinkWriterCommitMessage implements WriterCommitMessage {
     public int hashCode() {
         return Objects.hash(partitionId + taskId);
     }
+
 }

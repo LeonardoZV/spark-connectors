@@ -96,4 +96,5 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
         }
         messages.clear();
     }
+
 }

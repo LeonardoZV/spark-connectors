@@ -82,4 +82,5 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
         }
         statements.clear();
     }
+
 }

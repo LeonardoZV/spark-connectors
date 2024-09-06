@@ -13,6 +13,7 @@ import org.apache.spark.sql.util.CaseInsensitiveStringMap;
 import java.util.Map;
 
 public class SQSSinkProvider implements TableProvider, DataSourceRegister {
+
     @Override
     public StructType inferSchema(CaseInsensitiveStringMap options) {
         return new StructType(new StructField[]{ new StructField("value", DataTypes.StringType, true, Metadata.empty()) });
@@ -31,4 +32,5 @@ public class SQSSinkProvider implements TableProvider, DataSourceRegister {
     public String shortName() {
         return "sqs";
     }
+
 }

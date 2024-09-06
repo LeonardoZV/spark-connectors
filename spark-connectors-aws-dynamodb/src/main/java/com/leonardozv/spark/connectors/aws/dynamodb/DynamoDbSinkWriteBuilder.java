@@ -1,7 +1,7 @@
 package com.leonardozv.spark.connectors.aws.dynamodb;
 
-import org.apache.spark.sql.connector.write.BatchWrite;
 import org.apache.spark.sql.connector.write.LogicalWriteInfo;
+import org.apache.spark.sql.connector.write.Write;
 import org.apache.spark.sql.connector.write.WriteBuilder;
 import org.apache.spark.sql.types.StructType;
 
@@ -15,7 +15,7 @@ public class DynamoDbSinkWriteBuilder implements WriteBuilder {
     }
 
     @Override
-    public BatchWrite buildForBatch() {
+    public Write build() {
         int batchSize = Integer.parseInt(info.options().getOrDefault("batchSize", "25"));
         boolean treatConditionalCheckFailedAsError = Boolean.parseBoolean(info.options().getOrDefault("treatConditionalCheckFailedAsError", "true"));
         final StructType schema = info.schema();
@@ -25,7 +25,7 @@ public class DynamoDbSinkWriteBuilder implements WriteBuilder {
                 batchSize,
                 treatConditionalCheckFailedAsError,
                 schema.fieldIndex(STATEMENT_COLUMN_NAME));
-        return new DynamoDbSinkBatchWrite(options);
+        return new DynamoDbSinkWrite(options);
     }
 
 }
