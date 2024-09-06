@@ -22,23 +22,23 @@ public class DynamoDbSinkOptions implements Serializable {
         this.statementColumnIndex = statementColumnIndex;
     }
 
-    public String getRegion() {
+    public String region() {
         return region;
     }
 
-    public String getEndpoint() {
+    public String endpoint() {
         return endpoint;
     }
 
-    public int getBatchSize() {
+    public int batchSize() {
         return batchSize;
     }
 
-    public boolean getTreatConditionalCheckFailedAsError() {
+    public boolean treatConditionalCheckFailedAsError() {
         return treatConditionalCheckFailedAsError;
     }
 
-    public int getStatementColumnIndex() {
+    public int statementColumnIndex() {
         return statementColumnIndex;
     }
 

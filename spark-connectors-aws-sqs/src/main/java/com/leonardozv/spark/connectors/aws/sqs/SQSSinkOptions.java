@@ -9,7 +9,9 @@ public class SQSSinkOptions implements Serializable {
     private final String queueName;
     private final String queueOwnerAWSAccountId;
     private final int batchSize;
+    private final boolean useSqsExtendedClient;
     private final String bucketName;
+    private final int payloadSizeThreshold;
     private final int valueColumnIndex;
     private final int msgAttributesColumnIndex;
     private final int groupIdColumnIndex;
@@ -19,7 +21,9 @@ public class SQSSinkOptions implements Serializable {
                           String queueName,
                           String queueOwnerAWSAccountId,
                           int batchSize,
+                          boolean useSqsExtendedClient,
                           String bucketName,
+                          int payloadSizeThreshold,
                           int valueColumnIndex,
                           int msgAttributesColumnIndex,
                           int groupIdColumnIndex) {
@@ -28,46 +32,57 @@ public class SQSSinkOptions implements Serializable {
         this.queueName = queueName != null ? queueName : "";
         this.queueOwnerAWSAccountId = queueOwnerAWSAccountId != null ? queueOwnerAWSAccountId : "";
         this.batchSize = batchSize;
+        this.useSqsExtendedClient = useSqsExtendedClient;
         this.bucketName = bucketName;
+        this.payloadSizeThreshold = payloadSizeThreshold;
         this.valueColumnIndex = valueColumnIndex;
         this.msgAttributesColumnIndex = msgAttributesColumnIndex;
         this.groupIdColumnIndex = groupIdColumnIndex;
     }
 
-    public String getRegion() {
+
+    public String region() {
         return region;
     }
 
-    public String getEndpoint() {
+    public String endpoint() {
         return endpoint;
     }
 
-    public String getQueueName() {
+    public String queueName() {
         return queueName;
     }
 
-    public int getBatchSize() {
+    public String queueOwnerAWSAccountId() {
+        return queueOwnerAWSAccountId;
+    }
+
+    public int batchSize() {
         return batchSize;
     }
 
-    public String getBucketName() {
+    public boolean useSqsExtendedClient() {
+        return useSqsExtendedClient;
+    }
+
+    public String bucketName() {
         return bucketName;
     }
 
-    public int getValueColumnIndex() {
+    public int payloadSizeThreshold() {
+        return payloadSizeThreshold;
+    }
+
+    public int valueColumnIndex() {
         return valueColumnIndex;
     }
 
-    public int getMsgAttributesColumnIndex() {
+    public int msgAttributesColumnIndex() {
         return msgAttributesColumnIndex;
     }
 
-    public int getGroupIdColumnIndex() {
+    public int groupIdColumnIndex() {
         return groupIdColumnIndex;
-    }
-
-    public String getQueueOwnerAWSAccountId() {
-        return queueOwnerAWSAccountId;
     }
 
 }

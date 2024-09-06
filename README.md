@@ -1,2 +1,2 @@
-# spark-connectors
-Custom sink providers for Apache Spark.
+# Spark Connectors
+Custom source and sink providers for Apache Spark.

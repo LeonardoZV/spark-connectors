@@ -24,43 +24,66 @@ public class SQSSinkDataWriterFactory implements DataWriterFactory {
 
     @Override
     public DataWriter<InternalRow> createWriter(int partitionId, long taskId) {
-        final S3Client s3 = getAmazonS3();
-        final ExtendedClientConfiguration extendedClientConfig = new ExtendedClientConfiguration().withPayloadSupportEnabled(s3, options.getBucketName());
-        final SqsClient sqs = new AmazonSQSExtendedClient(getAmazonSQS(), extendedClientConfig);
-        final GetQueueUrlRequest queueUrlRequest = getGetQueueUrlRequest();
-        final String queueUrl = sqs.getQueueUrl(queueUrlRequest).queueUrl();
+
+        SqsClient sqs;
+
+        if(this.options.useSqsExtendedClient()) {
+
+            ExtendedClientConfiguration extendedClientConfig = new ExtendedClientConfiguration();
+
+            if(!this.options.bucketName().isEmpty()){
+                S3Client s3 = getAmazonS3();
+                extendedClientConfig.setPayloadSupportEnabled(s3, this.options.bucketName());
+            }
+
+            if (this.options.payloadSizeThreshold() > 0) {
+                extendedClientConfig.setPayloadSizeThreshold(this.options.payloadSizeThreshold());
+            }
+
+            sqs = new AmazonSQSExtendedClient(getAmazonSQS(), extendedClientConfig);
+
+        } else {
+
+            sqs = getAmazonSQS();
+
+        }
+
+        GetQueueUrlRequest queueUrlRequest = getGetQueueUrlRequest();
+
+        String queueUrl = sqs.getQueueUrl(queueUrlRequest).queueUrl();
+
         return new SQSSinkDataWriter(partitionId,
                 taskId,
                 sqs,
-                options.getBatchSize(),
+                options.batchSize(),
                 queueUrl,
-                options.getValueColumnIndex(),
-                options.getMsgAttributesColumnIndex(),
-                options.getGroupIdColumnIndex());
+                options.valueColumnIndex(),
+                options.msgAttributesColumnIndex(),
+                options.groupIdColumnIndex());
     }
 
     private S3Client getAmazonS3() {
         S3ClientBuilder clientBuilder = S3Client.builder();
-        if (!options.getEndpoint().isEmpty())
-            clientBuilder.region(Region.of(options.getRegion())).endpointOverride(URI.create(options.getEndpoint()));
+        if (!options.endpoint().isEmpty())
+            clientBuilder.region(Region.of(options.region())).endpointOverride(URI.create(options.endpoint()));
         else
-            clientBuilder.region(Region.of(options.getRegion()));
+            clientBuilder.region(Region.of(options.region()));
         return clientBuilder.build();
     }
 
     private SqsClient getAmazonSQS() {
         SqsClientBuilder clientBuilder = SqsClient.builder();
-        if (!options.getEndpoint().isEmpty())
-            clientBuilder.region(Region.of(options.getRegion())).endpointOverride(URI.create(options.getEndpoint()));
+        if (!options.endpoint().isEmpty())
+            clientBuilder.region(Region.of(options.region())).endpointOverride(URI.create(options.endpoint()));
         else
-            clientBuilder.region(Region.of(options.getRegion()));
+            clientBuilder.region(Region.of(options.region()));
         return clientBuilder.build();
     }
 
     private GetQueueUrlRequest getGetQueueUrlRequest() {
-        GetQueueUrlRequest.Builder getQueueUrlRequestBuilder = GetQueueUrlRequest.builder().queueName(options.getQueueName());
-        if (!options.getQueueOwnerAWSAccountId().isEmpty()) {
-            getQueueUrlRequestBuilder.queueOwnerAWSAccountId(options.getQueueOwnerAWSAccountId());
+        GetQueueUrlRequest.Builder getQueueUrlRequestBuilder = GetQueueUrlRequest.builder().queueName(options.queueName());
+        if (!options.queueOwnerAWSAccountId().isEmpty()) {
+            getQueueUrlRequestBuilder.queueOwnerAWSAccountId(options.queueOwnerAWSAccountId());
         }
         return getQueueUrlRequestBuilder.build();
     }
