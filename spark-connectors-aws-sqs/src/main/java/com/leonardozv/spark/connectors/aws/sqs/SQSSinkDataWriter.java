@@ -61,7 +61,7 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
     }
 
     private Map<String, MessageAttributeValue> convertMapData(Optional<MapData> arrayData) {
-        final Map<String, MessageAttributeValue> attributes = new HashMap<>();
+        Map<String, MessageAttributeValue> attributes = new HashMap<>();
         arrayData.ifPresent(mapData -> mapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
             attributes.put(key.toString(), MessageAttributeValue.builder().dataType("String").stringValue(value.toString()).build());
             return null;

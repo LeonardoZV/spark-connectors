@@ -15,18 +15,22 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spark.version>3.3.0</spark.version>
         <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
+        <maven-plugin.version>3.8.1</maven-plugin.version>
+        <jacoco.version>0.8.8</jacoco.version>
+        <sonar.version>3.9.1.2184</sonar.version>
     </properties>
 
     <dependencies>
         <!-- Spark dependencies -->
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.12</artifactId>
+            <artifactId>spark-sql_2.12</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_2.12</artifactId>
+            <artifactId>spark-catalyst_2.12</artifactId>
             <version>${spark.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -36,93 +40,87 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>sqs</artifactId>
             <version>${aws-java-sdk.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <version>${aws-java-sdk.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>amazon-sqs-java-extended-client-lib</artifactId>
             <version>2.1.1</version>
+            <optional>true</optional>
         </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>org-apache-commons-lang3</artifactId>
-            <version>RELEASE130</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>1.19.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>1.19.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>localstack</artifactId>
-            <version>1.19.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-catalyst_2.13</artifactId>
-            <version>${spark.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.24.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>5.2.0</version>
-            <scope>test</scope>
-        </dependency>
+<!--        &lt;!&ndash; Test dependencies &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.junit.jupiter</groupId>-->
+<!--            <artifactId>junit-jupiter-api</artifactId>-->
+<!--            <version>5.7.2</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.junit.jupiter</groupId>-->
+<!--            <artifactId>junit-jupiter-engine</artifactId>-->
+<!--            <version>5.7.2</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.netbeans.external</groupId>-->
+<!--            <artifactId>org-apache-commons-lang3</artifactId>-->
+<!--            <version>RELEASE130</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.testcontainers</groupId>-->
+<!--            <artifactId>testcontainers</artifactId>-->
+<!--            <version>1.19.3</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.testcontainers</groupId>-->
+<!--            <artifactId>junit-jupiter</artifactId>-->
+<!--            <version>1.19.3</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.testcontainers</groupId>-->
+<!--            <artifactId>localstack</artifactId>-->
+<!--            <version>1.19.3</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.assertj</groupId>-->
+<!--            <artifactId>assertj-core</artifactId>-->
+<!--            <version>3.24.2</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.mockito</groupId>-->
+<!--            <artifactId>mockito-inline</artifactId>-->
+<!--            <version>5.2.0</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-
-            <!-- Jacoco Plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -137,6 +135,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar.version}</version>
             </plugin>
         </plugins>
     </build>

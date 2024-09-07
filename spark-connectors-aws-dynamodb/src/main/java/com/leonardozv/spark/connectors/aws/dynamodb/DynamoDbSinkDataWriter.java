@@ -17,19 +17,19 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
     private final DynamoDbClient dynamodb;
     private final List<BatchStatementRequest> statements = new ArrayList<>();
     private final int batchMaxSize;
-    private final boolean treatConditionalCheckFailedAsError;
+    private final boolean ignoreConditionalCheckFailedError;
     private final int statementColumnIndex;
 
     public DynamoDbSinkDataWriter(int partitionId,
                                   long taskId,
                                   DynamoDbClient dynamodb,
                                   int batchMaxSize,
-                                  boolean treatConditionalCheckFailedAsError,
+                                  boolean ignoreConditionalCheckFailedError,
                                   int statementColumnIndex) {
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.batchMaxSize = batchMaxSize;
-        this.treatConditionalCheckFailedAsError = treatConditionalCheckFailedAsError;
+        this.ignoreConditionalCheckFailedError = ignoreConditionalCheckFailedError;
         this.dynamodb = dynamodb;
         this.statementColumnIndex = statementColumnIndex;
     }
@@ -67,12 +67,13 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
         List<BatchStatementError> errors = new ArrayList<>();
         for (int i = 0; i < response.responses().size(); i++) {
             BatchStatementResponse r = response.responses().get(i);
-            if (treatConditionalCheckFailedAsError) {
-                if (r.error() != null) {
+            if (ignoreConditionalCheckFailedError) {
+                if (r.error() != null && !r.error().code().equals(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED)) {
                     errors.add(r.error());
                 }
+
             } else {
-                if (r.error() != null && !r.error().code().equals(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED)) {
+                if (r.error() != null) {
                     errors.add(r.error());
                 }
             }

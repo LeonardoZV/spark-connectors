@@ -7,18 +7,18 @@ public class DynamoDbSinkOptions implements Serializable {
     private final String region;
     private final String endpoint;
     private final int batchSize;
-    private final boolean treatConditionalCheckFailedAsError;
+    private final boolean ignoreConditionalCheckFailedError;
     private final int statementColumnIndex;
 
     public DynamoDbSinkOptions(String region,
                                String endpoint,
                                int batchSize,
-                               boolean treatConditionalCheckFailedAsError,
+                               boolean ignoreConditionalCheckFailedError,
                                int statementColumnIndex) {
         this.region = region != null ? region : "us-east-1";
         this.endpoint = endpoint != null ? endpoint : "";
         this.batchSize = batchSize;
-        this.treatConditionalCheckFailedAsError = treatConditionalCheckFailedAsError;
+        this.ignoreConditionalCheckFailedError = ignoreConditionalCheckFailedError;
         this.statementColumnIndex = statementColumnIndex;
     }
 
@@ -34,8 +34,8 @@ public class DynamoDbSinkOptions implements Serializable {
         return batchSize;
     }
 
-    public boolean treatConditionalCheckFailedAsError() {
-        return treatConditionalCheckFailedAsError;
+    public boolean ignoreConditionalCheckFailedError() {
+        return ignoreConditionalCheckFailedError;
     }
 
     public int statementColumnIndex() {

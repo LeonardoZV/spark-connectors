@@ -17,13 +17,13 @@ public class DynamoDbSinkWriteBuilder implements WriteBuilder {
     @Override
     public Write build() {
         int batchSize = Integer.parseInt(info.options().getOrDefault("batchSize", "25"));
-        boolean treatConditionalCheckFailedAsError = Boolean.parseBoolean(info.options().getOrDefault("treatConditionalCheckFailedAsError", "true"));
+        boolean treatConditionalCheckFailedErrorAsSuccess = Boolean.parseBoolean(info.options().getOrDefault("treatConditionalCheckFailedErrorAsSuccess", "false"));
         final StructType schema = info.schema();
         DynamoDbSinkOptions options = new DynamoDbSinkOptions(
                 info.options().get("region"),
                 info.options().get("endpoint"),
                 batchSize,
-                treatConditionalCheckFailedAsError,
+                treatConditionalCheckFailedErrorAsSuccess,
                 schema.fieldIndex(STATEMENT_COLUMN_NAME));
         return new DynamoDbSinkWrite(options);
     }
