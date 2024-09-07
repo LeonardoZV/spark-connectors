@@ -1,4 +1,7 @@
 # Spark Connectors - AWS SQS Sink
+[![Coverage](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/api/project_badges/measure?project=com.leonardozv%3Aspark-connectors-aws-sqs&metric=coverage&token=sqb_4fe1fbef3a1eaf3986612df465565793e96e0602)](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/dashboard?id=com.leonardozv%3Aspark-connectors-aws-sqs)
+[![Quality Gate Status](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/api/project_badges/measure?project=com.leonardozv%3Aspark-connectors-aws-sqs&metric=alert_status&token=sqb_4fe1fbef3a1eaf3986612df465565793e96e0602)](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/dashboard?id=com.leonardozv%3Aspark-connectors-aws-sqs)
+
 A custom sink provider for Apache Spark that sends the contents of a dataframe to AWS SQS.
 
 It supports the [SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html) to manage large message payloads, from 256 KB and up to 2 GB.
