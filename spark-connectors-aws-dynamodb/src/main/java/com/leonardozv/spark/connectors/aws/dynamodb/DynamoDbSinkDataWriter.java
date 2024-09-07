@@ -35,8 +35,8 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
     }
 
     @Override
-    public void write(InternalRow record) throws IOException {
-        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder().statement(record.getString(statementColumnIndex)).build();
+    public void write(InternalRow row) throws IOException {
+        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder().statement(row.getString(statementColumnIndex)).build();
         statements.add(batchStatementRequest);
         if (statements.size() >= batchMaxSize) {
             executeStatements();

@@ -42,17 +42,17 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
     }
 
     @Override
-    public void write(InternalRow record) throws IOException {
+    public void write(InternalRow row) throws IOException {
         Optional<MapData> msgAttributesData = Optional.empty();
         if(msgAttributesColumnIndex >= 0) {
-            msgAttributesData = Optional.of(record.getMap(msgAttributesColumnIndex));
+            msgAttributesData = Optional.of(row.getMap(msgAttributesColumnIndex));
         }
         SendMessageBatchRequestEntry.Builder sendMessageBatchRequestEntryBuilder = SendMessageBatchRequestEntry.builder()
-                .messageBody(record.getString(valueColumnIndex))
+                .messageBody(row.getString(valueColumnIndex))
                 .messageAttributes(convertMapData(msgAttributesData))
                 .id(UUID.randomUUID().toString());
         if(groupIdColumnIndex >= 0) {
-            sendMessageBatchRequestEntryBuilder.messageGroupId(record.getString(groupIdColumnIndex));
+            sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(groupIdColumnIndex));
         }
         messages.add(sendMessageBatchRequestEntryBuilder.build());
         if(messages.size() >= batchMaxSize) {

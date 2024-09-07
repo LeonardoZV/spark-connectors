@@ -19,5 +19,5 @@ jobs:
         with:
           java-version: 17
           distribution: 'corretto'
-      - name: Execute Tests, Code Coverage, Mutation Testing and Publish Results to Sonar
-        run: mvn test jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=${{ github.repository_owner }}_spark-connectors-aws-sqs -Dsonar.qualitygate.wait --batch-mode --file spark-connectors-aws-sqs/pom.xml
+      - name: Execute Tests, Code Coverage and Publish Results to Sonar
+        run: mvn test jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors-aws-sqs -Dsonar.qualitygate.wait --batch-mode --file spark-connectors-aws-sqs/pom.xml
