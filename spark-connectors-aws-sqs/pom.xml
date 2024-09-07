@@ -51,7 +51,6 @@
             <version>2.1.1</version>
             <optional>true</optional>
         </dependency>
-
 <!--        &lt;!&ndash; Test dependencies &ndash;&gt;-->
 <!--        <dependency>-->
 <!--            <groupId>org.junit.jupiter</groupId>-->
