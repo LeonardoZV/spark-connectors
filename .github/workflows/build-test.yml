@@ -24,6 +24,20 @@ jobs:
           java-version: 17
           distribution: 'corretto'
 
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       - name: Execute Tests, Code Coverage and Publish Results to Sonar
         run: mvn -B verify jacoco:report sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=leonardozv -Dsonar.projectName=spark-connectors-parent -Dsonar.projectKey=com.leonardozv:spark-connectors-parent -Dsonar.qualitygate.wait
         env:
