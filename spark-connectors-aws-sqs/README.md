@@ -43,10 +43,14 @@ Don't forget you'll need to configure the default credentials in your machine be
 
 It also needs the *software.amazon.awssdk:sqs* package to run, so you can provide it through the *packages* parameter of spark-submit.
 
-The following command can be used to run the sample of how to use this library.
+The following commands can be used to run the sample of how to use this library.
 
 ``` bash
+# Without the extended client
 spark-submit --packages com.leonardozv:spark-connectors-aws-sqs:1.0.0,software.amazon.awssdk:sqs:2.27.17 test.py sample.txt
+
+# With the extended client
+spark-submit --packages com.leonardozv:spark-connectors-aws-sqs:1.0.0,software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1 test.py sample.txt
 ```
 
 And this is the test.py file content.

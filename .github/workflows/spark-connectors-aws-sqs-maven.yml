@@ -20,4 +20,4 @@ jobs:
           java-version: 17
           distribution: 'corretto'
       - name: Execute Tests, Code Coverage and Publish Results to Sonar
-        run: mvn test jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors-aws-sqs -Dsonar.qualitygate.wait --batch-mode --file spark-connectors-aws-sqs/pom.xml
+        run: mvn test jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors-aws-sqs -Dsonar.qualitygate.wait --batch-mode --file spark-connectors-aws-sqs/pom.xml
