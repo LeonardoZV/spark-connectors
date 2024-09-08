@@ -1,11 +1,33 @@
 # Spark Connectors - AWS SQS Sink
 
-[![Coverage](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/api/project_badges/measure?project=com.leonardozv%3Aspark-connectors-aws-sqs&metric=coverage&token=sqb_4fe1fbef3a1eaf3986612df465565793e96e0602)](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/dashboard?id=com.leonardozv%3Aspark-connectors-aws-sqs)
-[![Quality Gate Status](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/api/project_badges/measure?project=com.leonardozv%3Aspark-connectors-aws-sqs&metric=alert_status&token=sqb_4fe1fbef3a1eaf3986612df465565793e96e0602)](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/dashboard?id=com.leonardozv%3Aspark-connectors-aws-sqs)
-
 A custom sink provider for Apache Spark that sends the contents of a dataframe to AWS SQS.
 
 It supports the [SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html) to manage large message payloads, from 256 KB and up to 2 GB.
+
+## Getting Started
+
+#### Importing the Connector ####
+
+This library is available at Maven Central repository, so you can reference it in your project with the following snippet.
+
+``` xml
+<dependency>
+    <groupId>com.leonardozv</groupId>
+    <artifactId>spark-connectors-aws-sqs</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+#### Permissioning ####
+
+The IAM permissions needed for this library to write on a SQS queue are *sqs:GetQueueUrl* and *sqs:SendMessage*.
+
+The IAM permission needed for this library to write on a S3 when using the SQS Extended Client *s3:PutObject* and *s3:ListBucket*.
+
+Don't forget you'll need to configure the default credentials in your machine. See
+[Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
+
+#### Configuration ####
 
 The following options can be configured:
 - **region** of the queue. Default us-east-2.
@@ -37,14 +59,11 @@ The dataframe:
 - **may** have a column called **msg_attributes** (map of [string, string]). Each key/value wil be add as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
 - **may** have a column called **group_id** (string) containing the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 
-The folder [/spark-connectors-aws-sqs/src/test/resources](/spark-aws-messaging/src/test/resources) contains some PySpark simple examples used in the integration tests (the *endpoint* option is not required).
+#### Running ####
 
-Don't forget you'll need to configure the default credentials in your machine before running the example. See
-[Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
+It also needs the software.amazon.awssdk:sqs package to run, so you can provide it through the packages parameter of spark-submit.
 
-It also needs the *software.amazon.awssdk:sqs* package to run, so you can provide it through the *packages* parameter of spark-submit.
-
-The following commands can be used to run the sample of how to use this library.
+The following commands can be used to run the example of how to use this library:
 
 ``` bash
 # Without the extended client
@@ -57,9 +76,7 @@ spark-submit --packages com.leonardozv:spark-connectors-aws-sqs:1.0.0,software.a
 And this is the test.py file content.
 
 ``` python
-import sys 
-from operator import add
-
+import sys
 from pyspark.sql import SparkSession
 
 if __name__ == "__main__":
@@ -71,38 +88,22 @@ if __name__ == "__main__":
         .getOrCreate()
 
     df = spark.read.text(sys.argv[1])
+    
     df.show()
     df.printSchema()
 
     df.write.format("sqs").mode("append")\
-        .option("queueName", "test")\
-        .option("batchSize", "10") \
         .option("region", "us-east-2") \
+        .option("queueName", "test")\
+        .option("batchSize", "10")\        
         .save()
 
     spark.stop()
 ```
-This library is available at Maven Central repository, so you can reference it in your project with the following snippet.
-
-``` xml
-<dependency>
-    <groupId>com.leonardozv</groupId>
-    <artifactId>spark-connectors-aws-sqs</artifactId>
-    <version>1.1.0</version>
-</dependency>
-```
-
-The IAM permissions needed for this library to write on a SQS queue are *sqs:GetQueueUrl* and *sqs:SendMessage*.
 
 ## Messaging delivery semantics and error handling
 
-The sink is at least once  so some messages might be duplicated. If something wrong happens when the data is being written by a worker node, Spark will retry the task in another node. Messages that have already been sent could be sent again.
-
-## Architecture
-
-It's easy to get lost while understanding all the classes are needed, so we can create a custom sink for Spark. Here's a class diagram to make it a little easy to find yourself. Start at SQSSinkProvider, it's the class that we configure in Spark code as a *format* method's value.
-
-![Class diagram showing all the classes needed to implement a custom sink](/doc/assets/Class%20Diagram-Page-1.png "Class diagram showing all the classes needed to implement a custom sink")
+The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark will retry the task in another node until it reaches *spark.task.maxFailures*. Messages that have already been sent could be sent again, generating duplicates.
 
 ## How to
 
