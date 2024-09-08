@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - workflows/spark-connectors-aws-sqs-dynamodb.yml
       - spark-connectors-aws-dynamodb/**
 
 jobs:
