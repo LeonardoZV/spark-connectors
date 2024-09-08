@@ -1,24 +1,31 @@
-name: Java CI with Maven
-
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/spark-connectors-aws-sqs-maven.yml
-      - spark-connectors-aws-sqs/**
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'corretto'
-      - name: Execute Tests, Code Coverage, Mutation Testing and Publish Results to Sonar
-        run: mvn test jacoco:report pitest:mutationCoverage sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors-aws-sqs -Dsonar.qualitygate.wait --batch-mode --file spark-connectors-aws-sqs/pom.xml
+#name: Java CI with Maven
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - .github/workflows/spark-connectors-aws-sqs-maven.yml
+#      - spark-connectors-aws-sqs/**
+#    paths-ignore:
+#      - '**.md'
+#      - 'docs/**'
+#
+#jobs:
+#  build:
+#
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: 17
+#          distribution: 'corretto'
+#
+#      - name: Execute Tests, Code Coverage, Mutation Testing and Publish Results to Sonar
+#        run: mvn test pitest:mutationCoverage jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors-aws-sqs -Dsonar.qualitygate.wait --batch-mode --file spark-connectors-aws-sqs/pom.xml

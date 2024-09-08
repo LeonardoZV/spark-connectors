@@ -11,7 +11,7 @@ The following options can be configured:
 - **region** of the queue. Default us-east-2.
 - **queueName** of the queue.
 - **batchSize** so we can group N messages in one call. Default 10.
-- **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs is in a different account than the spark job. Optional argument.
+- **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs is in a different account than the spark job. Optional.
 
 SQS Extended Client options:
 - **useSqsExtendedClient** if you want to use the SQS Extended Client to send messages larger than 256KB. Default false.
