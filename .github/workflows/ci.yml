@@ -10,7 +10,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    permissions: write-all
 
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +25,8 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@2219818c444cda76824a24f13305b7871bb9a8bf
+      - name: Update dependency graph for Dependabot
+        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
 
-#      - name: Execute Tests, Code Coverage, Mutation Testing and Publish Results to Sonar
-#        run: mvn -B test pitest:mutationCoverage jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors-aws-dynamodb -Dsonar.qualitygate.wait --batch-mode --file pom.xml
+      - name: Execute Tests, Code Coverage, Mutation Testing and Publish Results to Sonar
+        run: mvn -B test pitest:mutationCoverage jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors-parent -Dsonar.qualitygate.wait --batch-mode --file pom.xml
