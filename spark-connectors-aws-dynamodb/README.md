@@ -22,4 +22,4 @@ df.write()
 ```
 
 The dataframe:
-- **must** have a column called **statement** (string), because this column will contain the PartiQL Statement.
+- **must** have a column called **statement** (string) containing the PartiQL Statement.

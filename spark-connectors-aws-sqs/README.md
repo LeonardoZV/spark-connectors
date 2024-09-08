@@ -32,9 +32,9 @@ df.write()
 ```
 
 The dataframe:
-- **must** have a column called **value** (string), because this column will be used as the body of each message.
-- **may** have a column called **msg_attributes** (map of [string, string]). In this case, the library will add each key/value as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
-- **may** have a column called **group_id** (string). In this case, the library will add the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
+- **must** have a column called **value** (string) containing the body of each message.
+- **may** have a column called **msg_attributes** (map of [string, string]). Each key/value wil be add as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
+- **may** have a column called **group_id** (string) containing the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 
 The folder [/spark-connectors-aws-sqs/src/test/resources](/spark-aws-messaging/src/test/resources) contains some PySpark simple examples used in the integration tests (the *endpoint* option is not required).
 
