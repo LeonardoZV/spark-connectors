@@ -1,4 +1,5 @@
 # Spark Connectors - AWS SQS Sink
+
 [![Coverage](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/api/project_badges/measure?project=com.leonardozv%3Aspark-connectors-aws-sqs&metric=coverage&token=sqb_4fe1fbef3a1eaf3986612df465565793e96e0602)](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/dashboard?id=com.leonardozv%3Aspark-connectors-aws-sqs)
 [![Quality Gate Status](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/api/project_badges/measure?project=com.leonardozv%3Aspark-connectors-aws-sqs&metric=alert_status&token=sqb_4fe1fbef3a1eaf3986612df465565793e96e0602)](http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/dashboard?id=com.leonardozv%3Aspark-connectors-aws-sqs)
 
