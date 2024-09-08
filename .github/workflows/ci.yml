@@ -6,6 +6,7 @@ on:
       - main
     paths-ignore:
       - '**.md'
+
 jobs:
   build:
 
@@ -21,17 +22,12 @@ jobs:
         with:
           java-version: 17
           distribution: 'corretto'
-#          server-id: github
-#          settings-path: ${{ github.workspace }}
 
       - name: Execute Tests, Code Coverage, Mutation Testing and Publish Results to Sonar
         run: mvn test pitest:mutationCoverage jacoco:report sonar:sonar --file pom.xml --batch-mode -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors -Dsonar.qualitygate.wait
 
-      - name: Build with Maven
-        run: mvn package --file pom.xml --batch-mode
-
       - name: Publish to GitHub Packages
-        run: mvn deploy
+        run: mvn deploy --file pom.xml --batch-mode
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
