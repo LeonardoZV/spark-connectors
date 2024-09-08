@@ -43,6 +43,14 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub LeonardoZV Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/LeonardoZV/spark-connectors</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
