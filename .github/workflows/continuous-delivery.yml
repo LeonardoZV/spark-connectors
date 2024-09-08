@@ -21,7 +21,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy --file pom.xml --batch-mode pitest:mutationCoverage jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors  -Dsonar.branch.name=${{ github.ref_name }} -Dsonar.qualitygate.wait
+        run: mvn deploy --file pom.xml --batch-mode pitest:mutationCoverage jacoco:report sonar:sonar -Dsonar.host.url=http://leozvasconcellos-sonarqube.eastus.azurecontainer.io:9000/ -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=com.leonardozv:spark-connectors -Dsonar.qualitygate.wait
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
