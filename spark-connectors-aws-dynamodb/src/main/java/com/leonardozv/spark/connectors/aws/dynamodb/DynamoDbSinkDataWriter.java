@@ -6,9 +6,9 @@ import org.apache.spark.sql.connector.write.WriterCommitMessage;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
 
@@ -17,25 +17,25 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
     private final DynamoDbClient dynamodb;
     private final List<BatchStatementRequest> statements = new ArrayList<>();
     private final int batchMaxSize;
-    private final boolean ignoreConditionalCheckFailedError;
+    private final Map<String, String> errorsToIgnore;
     private final int statementColumnIndex;
 
     public DynamoDbSinkDataWriter(int partitionId,
                                   long taskId,
                                   DynamoDbClient dynamodb,
                                   int batchMaxSize,
-                                  boolean ignoreConditionalCheckFailedError,
+                                  Map<String, String> errorsToIgnore,
                                   int statementColumnIndex) {
         this.partitionId = partitionId;
         this.taskId = taskId;
-        this.batchMaxSize = batchMaxSize;
-        this.ignoreConditionalCheckFailedError = ignoreConditionalCheckFailedError;
         this.dynamodb = dynamodb;
+        this.batchMaxSize = batchMaxSize;
+        this.errorsToIgnore = errorsToIgnore;
         this.statementColumnIndex = statementColumnIndex;
     }
 
     @Override
-    public void write(InternalRow row) throws IOException {
+    public void write(InternalRow row) {
         BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder().statement(row.getString(statementColumnIndex)).build();
         statements.add(batchStatementRequest);
         if (statements.size() >= batchMaxSize) {
@@ -67,15 +67,8 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
         List<BatchStatementError> errors = new ArrayList<>();
         for (int i = 0; i < response.responses().size(); i++) {
             BatchStatementResponse r = response.responses().get(i);
-            if (ignoreConditionalCheckFailedError) {
-                if (r.error() != null && !r.error().code().equals(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED)) {
-                    errors.add(r.error());
-                }
-
-            } else {
-                if (r.error() != null) {
-                    errors.add(r.error());
-                }
+            if (r.error() != null && errorsToIgnore.get(r.error().code().toString()) == null) {
+                errors.add(r.error());
             }
         }
         if (!errors.isEmpty()) {

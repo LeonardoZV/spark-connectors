@@ -24,7 +24,7 @@ public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
                 taskId,
                 dynamodb,
                 options.batchSize(),
-                options.ignoreConditionalCheckFailedError(),
+                options.errorsToIgnore(),
                 options.statementColumnIndex());
     }
 

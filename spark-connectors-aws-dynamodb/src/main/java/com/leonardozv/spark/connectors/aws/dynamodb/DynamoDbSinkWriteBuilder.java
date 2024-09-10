@@ -5,6 +5,10 @@ import org.apache.spark.sql.connector.write.Write;
 import org.apache.spark.sql.connector.write.WriteBuilder;
 import org.apache.spark.sql.types.StructType;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class DynamoDbSinkWriteBuilder implements WriteBuilder {
 
     private final LogicalWriteInfo info;
@@ -17,13 +21,13 @@ public class DynamoDbSinkWriteBuilder implements WriteBuilder {
     @Override
     public Write build() {
         int batchSize = Integer.parseInt(info.options().getOrDefault("batchSize", "25"));
-        boolean treatConditionalCheckFailedErrorAsSuccess = Boolean.parseBoolean(info.options().getOrDefault("treatConditionalCheckFailedErrorAsSuccess", "false"));
-        final StructType schema = info.schema();
+        Map<String, String> errorsToIgnore = Arrays.stream(info.options().getOrDefault("errorsToIgnore", "").split(",")).collect(Collectors.toMap(e -> e, e -> e));
+        StructType schema = info.schema();
         DynamoDbSinkOptions options = new DynamoDbSinkOptions(
                 info.options().get("region"),
                 info.options().get("endpoint"),
                 batchSize,
-                treatConditionalCheckFailedErrorAsSuccess,
+                errorsToIgnore,
                 schema.fieldIndex(STATEMENT_COLUMN_NAME));
         return new DynamoDbSinkWrite(options);
     }

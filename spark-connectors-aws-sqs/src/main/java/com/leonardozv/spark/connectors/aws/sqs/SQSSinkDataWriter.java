@@ -8,7 +8,6 @@ import org.apache.spark.sql.types.DataTypes;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
-import java.io.IOException;
 import java.util.*;
 
 public class SQSSinkDataWriter implements DataWriter<InternalRow> {
@@ -33,8 +32,8 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
                              int groupIdColumnIndex) {
         this.partitionId = partitionId;
         this.taskId = taskId;
-        this.batchMaxSize = batchMaxSize;
         this.sqs = sqs;
+        this.batchMaxSize = batchMaxSize;
         this.queueUrl = queueUrl;
         this.valueColumnIndex = valueColumnIndex;
         this.msgAttributesColumnIndex = msgAttributesColumnIndex;
@@ -42,7 +41,7 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
     }
 
     @Override
-    public void write(InternalRow row) throws IOException {
+    public void write(InternalRow row) {
         Optional<MapData> msgAttributesData = Optional.empty();
         if(msgAttributesColumnIndex >= 0) {
             msgAttributesData = Optional.of(row.getMap(msgAttributesColumnIndex));

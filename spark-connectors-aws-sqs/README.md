@@ -50,7 +50,7 @@ df.write()
     .option("queueOwnerAWSAccountId", "123456789012")
     .option("useSqsExtendedClient", "true")
     .option("bucketName", "my-test-bucket")
-    .option("payloadSizeThreshold", "1000")
+    .option("payloadSizeThreshold", "262144")
     .save();
 ```
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
 ## Messaging delivery semantics and error handling
 
-The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark will retry the task in another node until it reaches *spark.task.maxFailures*. Messages that have already been sent could be sent again, generating duplicates.
+The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark will retry the task in another node until it reaches *spark.task.maxFailures*. Messages that have already been sent could be sent again, generating duplicates. That's because the spark behavior is to retry the entire batch when there are errors.
 
 ## How to
 
