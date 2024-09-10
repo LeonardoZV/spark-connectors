@@ -1,4 +1,4 @@
-package com.leonardozv.spark.connectors.aws.sqs;
+package com.leonardozv.spark.connectors.aws.sqs.write;
 
 import org.apache.spark.sql.connector.write.BatchWrite;
 import org.apache.spark.sql.connector.write.DataWriterFactory;
@@ -15,7 +15,7 @@ public class SQSSinkBatchWrite implements BatchWrite {
 
     @Override
     public DataWriterFactory createBatchWriterFactory(PhysicalWriteInfo info) {
-        return new SQSSinkDataWriterFactory(options);
+        return new SQSSinkDataWriterFactory(this.options);
     }
 
     @Override

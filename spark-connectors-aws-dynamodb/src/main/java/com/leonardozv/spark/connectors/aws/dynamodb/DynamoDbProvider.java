@@ -12,7 +12,7 @@ import org.apache.spark.sql.util.CaseInsensitiveStringMap;
 
 import java.util.Map;
 
-public class DynamoDbSinkProvider implements TableProvider, DataSourceRegister {
+public class DynamoDbProvider implements TableProvider, DataSourceRegister {
 
     @Override
     public StructType inferSchema(CaseInsensitiveStringMap options) {
@@ -21,7 +21,7 @@ public class DynamoDbSinkProvider implements TableProvider, DataSourceRegister {
 
     @Override
     public Table getTable(StructType schema, Transform[] partitioning, Map<String, String> properties) {
-        return new DynamoDbSinkTable(schema);
+        return new DynamoDbTable(schema);
     }
 
     /* This allows the dataframe to have more columns than expected (or optional columns) */

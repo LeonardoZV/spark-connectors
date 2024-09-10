@@ -1,6 +1,6 @@
-# Spark Connectors - AWS DynamoDB Sink
+# Spark Connectors - AWS DynamoDB
 
-A custom sink provider for Apache Spark that sends the contents of a dataframe to AWS DynamoDB.
+A custom connector for Apache Spark that sends the contents of a dataframe to AWS DynamoDB.
 
 It supports the following DynamoDB APIs:
 - [ExecuteBatchStatement](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchExecuteStatement.html)

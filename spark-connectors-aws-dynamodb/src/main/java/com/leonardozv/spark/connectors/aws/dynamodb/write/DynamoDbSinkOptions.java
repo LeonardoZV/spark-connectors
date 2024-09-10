@@ -1,4 +1,4 @@
-package com.leonardozv.spark.connectors.aws.dynamodb;
+package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import java.io.Serializable;
 import java.util.Map;

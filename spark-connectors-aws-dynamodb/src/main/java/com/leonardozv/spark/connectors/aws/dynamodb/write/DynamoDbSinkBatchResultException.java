@@ -1,4 +1,4 @@
-package com.leonardozv.spark.connectors.aws.dynamodb;
+package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import software.amazon.awssdk.services.dynamodb.model.BatchStatementError;
 

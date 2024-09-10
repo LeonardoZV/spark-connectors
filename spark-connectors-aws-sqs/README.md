@@ -1,6 +1,6 @@
-# Spark Connectors - AWS SQS Sink
+# Spark Connectors - AWS SQS
 
-A custom sink provider for Apache Spark that sends the contents of a dataframe to AWS SQS.
+A custom connector for Apache Spark that sends messages to AWS SQS.
 
 It supports the [SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html) to manage large message payloads, from 256 KB and up to 2 GB.
 

@@ -1,4 +1,4 @@
-package com.leonardozv.spark.connectors.aws.dynamodb;
+package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;

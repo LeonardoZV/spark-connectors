@@ -1,4 +1,4 @@
-package com.leonardozv.spark.connectors.aws.sqs;
+package com.leonardozv.spark.connectors.aws.sqs.write;
 
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.catalyst.util.MapData;
@@ -15,65 +15,66 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
     private final int partitionId;
     private final long taskId;
     private final SqsClient sqs;
-    private final List<SendMessageBatchRequestEntry> messages = new ArrayList<>();
-    private final int batchMaxSize;
     private final String queueUrl;
-    private final int valueColumnIndex;
-    private final int msgAttributesColumnIndex;
-    private final int groupIdColumnIndex;
+    private final SQSSinkOptions options;
+    private final List<SendMessageBatchRequestEntry> messages = new ArrayList<>();
 
-    public SQSSinkDataWriter(int partitionId,
-                             long taskId,
-                             SqsClient sqs,
-                             int batchMaxSize,
-                             String queueUrl,
-                             int valueColumnIndex,
-                             int msgAttributesColumnIndex,
-                             int groupIdColumnIndex) {
+    public SQSSinkDataWriter(int partitionId, long taskId, SqsClient sqs, String queueUrl, SQSSinkOptions options) {
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.sqs = sqs;
-        this.batchMaxSize = batchMaxSize;
         this.queueUrl = queueUrl;
-        this.valueColumnIndex = valueColumnIndex;
-        this.msgAttributesColumnIndex = msgAttributesColumnIndex;
-        this.groupIdColumnIndex = groupIdColumnIndex;
+        this.options = options;
     }
 
     @Override
     public void write(InternalRow row) {
+
         Optional<MapData> msgAttributesData = Optional.empty();
-        if(msgAttributesColumnIndex >= 0) {
-            msgAttributesData = Optional.of(row.getMap(msgAttributesColumnIndex));
+
+        if(this.options.msgAttributesColumnIndex() >= 0) {
+            msgAttributesData = Optional.of(row.getMap(this.options.msgAttributesColumnIndex()));
         }
+
         SendMessageBatchRequestEntry.Builder sendMessageBatchRequestEntryBuilder = SendMessageBatchRequestEntry.builder()
-                .messageBody(row.getString(valueColumnIndex))
+                .messageBody(row.getString(this.options.valueColumnIndex()))
                 .messageAttributes(convertMapData(msgAttributesData))
                 .id(UUID.randomUUID().toString());
-        if(groupIdColumnIndex >= 0) {
-            sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(groupIdColumnIndex));
+
+        if(this.options.groupIdColumnIndex() >= 0) {
+            sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(this.options.groupIdColumnIndex()));
         }
-        messages.add(sendMessageBatchRequestEntryBuilder.build());
-        if(messages.size() >= batchMaxSize) {
+
+        this.messages.add(sendMessageBatchRequestEntryBuilder.build());
+
+        if(this.messages.size() >= this.options.batchSize()) {
             sendMessages();
         }
+
     }
 
     private Map<String, MessageAttributeValue> convertMapData(Optional<MapData> arrayData) {
+
         Map<String, MessageAttributeValue> attributes = new HashMap<>();
+
         arrayData.ifPresent(mapData -> mapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
             attributes.put(key.toString(), MessageAttributeValue.builder().dataType("String").stringValue(value.toString()).build());
             return null;
         }));
+
         return attributes;
+
     }
 
     @Override
     public WriterCommitMessage commit() {
-        if(!messages.isEmpty()) {
+
+        if(!this.messages.isEmpty()) {
             sendMessages();
         }
+
         return new SQSSinkWriterCommitMessage(partitionId, taskId);
+
     }
 
     @Override
@@ -87,13 +88,19 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
     }
 
     private void sendMessages() {
-        SendMessageBatchRequest request = SendMessageBatchRequest.builder().queueUrl(queueUrl).entries(messages).build();
-        SendMessageBatchResponse response = sqs.sendMessageBatch(request);
+
+        SendMessageBatchRequest request = SendMessageBatchRequest.builder().queueUrl(this.queueUrl).entries(this.messages).build();
+
+        SendMessageBatchResponse response = this.sqs.sendMessageBatch(request);
+
         List<BatchResultErrorEntry> errors = response.failed();
+
         if(!errors.isEmpty()) {
             throw new SQSSinkBatchResultException.Builder().withErrors(errors).build();
         }
-        messages.clear();
+
+        this.messages.clear();
+
     }
 
 }

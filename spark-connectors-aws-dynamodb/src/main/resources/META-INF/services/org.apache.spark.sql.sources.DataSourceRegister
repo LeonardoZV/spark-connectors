@@ -1,1 +1,1 @@
-com.leonardozv.spark.connectors.aws.dynamodb.DynamoDbSinkProvider
+com.leonardozv.spark.connectors.aws.dynamodb.DynamoDbProvider

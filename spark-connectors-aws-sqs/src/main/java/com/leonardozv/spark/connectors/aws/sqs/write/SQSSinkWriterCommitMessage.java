@@ -1,15 +1,15 @@
-package com.leonardozv.spark.connectors.aws.dynamodb;
+package com.leonardozv.spark.connectors.aws.sqs.write;
 
 import org.apache.spark.sql.connector.write.WriterCommitMessage;
 
 import java.util.Objects;
 
-public class DynamoDbSinkWriterCommitMessage implements WriterCommitMessage {
+public class SQSSinkWriterCommitMessage implements WriterCommitMessage {
 
     private final int partitionId;
     private final long taskId;
 
-    public DynamoDbSinkWriterCommitMessage(int partitionId, long taskId) {
+    public SQSSinkWriterCommitMessage(int partitionId, long taskId) {
         this.partitionId = partitionId;
         this.taskId = taskId;
     }
@@ -17,8 +17,8 @@ public class DynamoDbSinkWriterCommitMessage implements WriterCommitMessage {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DynamoDbSinkWriterCommitMessage)) return false;
-        DynamoDbSinkWriterCommitMessage that = (DynamoDbSinkWriterCommitMessage) o;
+        if (!(o instanceof SQSSinkWriterCommitMessage)) return false;
+        SQSSinkWriterCommitMessage that = (SQSSinkWriterCommitMessage) o;
         return partitionId == that.partitionId;
     }
 

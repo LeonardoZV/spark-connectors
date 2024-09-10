@@ -1,4 +1,4 @@
-package com.leonardozv.spark.connectors.aws.sqs;
+package com.leonardozv.spark.connectors.aws.sqs.write;
 
 
 import software.amazon.awssdk.services.sqs.model.BatchResultErrorEntry;
