@@ -39,7 +39,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Execute Tests, Code Coverage and Publish Results to Sonar
-        run: mvn -B verify jacoco:report sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=leonardozv -Dsonar.projectName=spark-connectors-parent -Dsonar.projectKey=com.leonardozv:spark-connectors-parent -Dsonar.qualitygate.wait
+        run: mvn -B verify jacoco:report sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=leonardozv -Dsonar.projectName=spark-connectors-parent -Dsonar.projectKey=com.leonardozv:spark-connectors-parent -Dsonar.java.jdkHome=/opt/hostedtoolcache/Java_Corretto_jdk/8.422.05-1/x64/ -Dsonar.qualitygate.wait
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
