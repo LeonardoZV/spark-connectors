@@ -22,6 +22,7 @@
         <spark.version>3.3.0</spark.version>
         <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
         <maven-plugin.version>3.8.1</maven-plugin.version>
+        <surefire.version>3.2.5</surefire.version>
         <junit.version>5.11.0</junit.version>
         <mockito.version>4.11.0</mockito.version>
         <assertj.version>3.26.3</assertj.version>
@@ -74,6 +75,11 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.pitest</groupId>

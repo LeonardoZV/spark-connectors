@@ -38,7 +38,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Execute Tests, Code Coverage and Publish Results to Sonar
+      - name: Execute Tests, Code Coverage, Publish Results to Sonar and Quality Gate
         run: mvn -B verify jacoco:report sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=leonardozv -Dsonar.projectName=spark-connectors-parent -Dsonar.projectKey=com.leonardozv:spark-connectors-parent -Dsonar.qualitygate.wait
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
