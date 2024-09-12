@@ -73,7 +73,7 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
             sendMessages();
         }
 
-        return new SqsSinkWriterCommitMessage(partitionId, taskId);
+        return new SqsSinkWriterCommitMessage(this.partitionId, this.taskId);
 
     }
 
@@ -94,7 +94,7 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
         SendMessageBatchResponse response = this.sqs.sendMessageBatch(request);
 
         List<BatchResultErrorEntry> errors = response.failed();
-        
+
         if(!errors.isEmpty()) {
             throw new SqsSinkBatchResultException.Builder().withErrors(response.failed()).build();
         }

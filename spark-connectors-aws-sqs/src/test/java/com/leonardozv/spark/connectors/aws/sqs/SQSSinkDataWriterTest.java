@@ -1,25 +1,11 @@
 package com.leonardozv.spark.connectors.aws.sqs;
 
 import org.apache.spark.sql.catalyst.InternalRow;
-import org.apache.spark.sql.catalyst.util.ArrayBasedMapData;
-import org.apache.spark.sql.catalyst.util.GenericArrayData;
-import org.apache.spark.unsafe.types.UTF8String;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
-import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageBatchResponse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 class SQSSinkDataWriterTest {
 

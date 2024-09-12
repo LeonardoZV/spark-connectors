@@ -19,12 +19,12 @@ public class DynamoDbSinkWriterCommitMessage implements WriterCommitMessage {
         if (this == o) return true;
         if (!(o instanceof DynamoDbSinkWriterCommitMessage)) return false;
         DynamoDbSinkWriterCommitMessage that = (DynamoDbSinkWriterCommitMessage) o;
-        return partitionId == that.partitionId;
+        return this.partitionId == that.partitionId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(partitionId + taskId);
+        return Objects.hash(this.partitionId + this.taskId);
     }
 
 }

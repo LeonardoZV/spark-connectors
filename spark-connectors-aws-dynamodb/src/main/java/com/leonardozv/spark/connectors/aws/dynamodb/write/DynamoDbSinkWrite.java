@@ -13,7 +13,7 @@ public class DynamoDbSinkWrite implements Write {
 
     @Override
     public BatchWrite toBatch() {
-        return new DynamoDbSinkBatchWrite(options);
+        return new DynamoDbSinkBatchWrite(this.options);
     }
 
 }

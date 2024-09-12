@@ -3,10 +3,8 @@ package com.leonardozv.spark.connectors.aws.dynamodb.write;
 import org.apache.spark.sql.connector.write.LogicalWriteInfo;
 import org.apache.spark.sql.connector.write.Write;
 import org.apache.spark.sql.connector.write.WriteBuilder;
-import org.apache.spark.sql.types.StructType;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DynamoDbSinkWriteBuilder implements WriteBuilder {
@@ -20,16 +18,17 @@ public class DynamoDbSinkWriteBuilder implements WriteBuilder {
 
     @Override
     public Write build() {
-        int batchSize = Integer.parseInt(info.options().getOrDefault("batchSize", "25"));
-        Map<String, String> errorsToIgnore = Arrays.stream(info.options().getOrDefault("errorsToIgnore", "").split(",")).collect(Collectors.toMap(e -> e, e -> e));
-        StructType schema = info.schema();
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions(
-                info.options().get("region"),
-                info.options().get("endpoint"),
-                batchSize,
-                errorsToIgnore,
-                schema.fieldIndex(STATEMENT_COLUMN_NAME));
+
+        DynamoDbSinkOptions options = DynamoDbSinkOptions.builder()
+                .region(this.info.options().get("region"))
+                .endpoint(this.info.options().get("endpoint"))
+                .batchSize(Integer.parseInt(this.info.options().getOrDefault("batchSize", "25")))
+                .errorsToIgnore(Arrays.stream(this.info.options().getOrDefault("errorsToIgnore", "").split(",")).collect(Collectors.toMap(e -> e, e -> e)))
+                .statementColumnIndex(this.info.schema().fieldIndex(STATEMENT_COLUMN_NAME))
+                .build();
+
         return new DynamoDbSinkWrite(options);
+
     }
 
 }

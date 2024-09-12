@@ -11,36 +11,71 @@ public class DynamoDbSinkOptions implements Serializable {
     private final Map<String, String> errorsToIgnore;
     private final int statementColumnIndex;
 
-    public DynamoDbSinkOptions(String region,
-                               String endpoint,
-                               int batchSize,
-                               Map<String, String> errorsToIgnore,
-                               int statementColumnIndex) {
-        this.region = region != null ? region : "us-east-1";
-        this.endpoint = endpoint != null ? endpoint : "";
-        this.batchSize = batchSize;
-        this.errorsToIgnore = errorsToIgnore;
-        this.statementColumnIndex = statementColumnIndex;
+    public DynamoDbSinkOptions(Builder builder) {
+        this.region = builder.region;
+        this.endpoint = builder.endpoint;
+        this.batchSize = builder.batchSize;
+        this.errorsToIgnore = builder.errorsToIgnore;
+        this.statementColumnIndex = builder.statementColumnIndex;
     }
 
     public String region() {
         return region;
     }
-
     public String endpoint() {
         return endpoint;
     }
-
     public int batchSize() {
         return batchSize;
     }
-
     public Map<String, String> errorsToIgnore() {
         return errorsToIgnore;
     }
-
     public int statementColumnIndex() {
         return statementColumnIndex;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder implements Serializable {
+
+        private String region;
+        private String endpoint;
+        private int batchSize;
+        private Map<String, String> errorsToIgnore;
+        private int statementColumnIndex;
+
+        public Builder region(String region) {
+            this.region = region;
+            return this;
+        }
+
+        public Builder endpoint(String endpoint) {
+            this.endpoint = endpoint;
+            return this;
+        }
+
+        public Builder batchSize(int batchSize) {
+            this.batchSize = batchSize;
+            return this;
+        }
+
+        public Builder errorsToIgnore(Map<String, String> errorsToIgnore) {
+            this.errorsToIgnore = errorsToIgnore;
+            return this;
+        }
+
+        public Builder statementColumnIndex(int statementColumnIndex) {
+            this.statementColumnIndex = statementColumnIndex;
+            return this;
+        }
+
+        public DynamoDbSinkOptions build() {
+            return new DynamoDbSinkOptions(this);
+        }
+
     }
 
 }

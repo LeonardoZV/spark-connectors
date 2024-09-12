@@ -15,7 +15,7 @@ public class DynamoDbSinkBatchWrite implements BatchWrite {
 
     @Override
     public DataWriterFactory createBatchWriterFactory(PhysicalWriteInfo info) {
-        return new DynamoDbSinkDataWriterFactory(options);
+        return new DynamoDbSinkDataWriterFactory(this.options);
     }
 
     @Override

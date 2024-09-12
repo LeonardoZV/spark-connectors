@@ -13,7 +13,7 @@ public class SqsSinkWrite implements Write {
 
     @Override
     public BatchWrite toBatch() {
-        return new SqsSinkBatchWrite(options);
+        return new SqsSinkBatchWrite(this.options);
     }
 
 }

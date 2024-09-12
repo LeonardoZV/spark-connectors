@@ -19,12 +19,12 @@ public class SqsSinkWriterCommitMessage implements WriterCommitMessage {
         if (this == o) return true;
         if (!(o instanceof SqsSinkWriterCommitMessage)) return false;
         SqsSinkWriterCommitMessage that = (SqsSinkWriterCommitMessage) o;
-        return partitionId == that.partitionId;
+        return this.partitionId == that.partitionId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(partitionId + taskId);
+        return Objects.hash(this.partitionId + this.taskId);
     }
 
 }

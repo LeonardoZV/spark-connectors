@@ -19,22 +19,24 @@ public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
     @Override
     public DataWriter<InternalRow> createWriter(int partitionId, long taskId) {
-        final DynamoDbClient dynamodb = getAmazonDynamoDB();
-        return new DynamoDbSinkDataWriter(partitionId,
-                taskId,
-                dynamodb,
-                options.batchSize(),
-                options.errorsToIgnore(),
-                options.statementColumnIndex());
+
+        DynamoDbClient dynamodb = getAmazonDynamoDB();
+
+        return new DynamoDbSinkDataWriter(partitionId, taskId, dynamodb, this.options);
+
     }
 
     private DynamoDbClient getAmazonDynamoDB() {
+
         DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder();
-        if (!options.endpoint().isEmpty())
-            clientBuilder.region(Region.of(options.region())).endpointOverride(URI.create(options.endpoint()));
+
+        if (!this.options.endpoint().isEmpty())
+            clientBuilder.region(Region.of(this.options.region())).endpointOverride(URI.create(this.options.endpoint()));
         else
-            clientBuilder.region(Region.of(options.region()));
+            clientBuilder.region(Region.of(this.options.region()));
+
         return clientBuilder.build();
+
     }
 
 }
