@@ -4,7 +4,7 @@ import org.apache.spark.sql.connector.write.LogicalWriteInfo;
 import org.apache.spark.sql.connector.write.Write;
 import org.apache.spark.sql.connector.write.WriteBuilder;
 
-public class SQSSinkWriteBuilder implements WriteBuilder {
+public class SqsSinkWriteBuilder implements WriteBuilder {
 
     private final LogicalWriteInfo info;
 
@@ -12,14 +12,14 @@ public class SQSSinkWriteBuilder implements WriteBuilder {
     private static final String GROUP_ID_COLUMN_NAME = "group_id";
     private static final String VALUE_COLUMN_NAME = "value";
 
-    public SQSSinkWriteBuilder(LogicalWriteInfo info) {
+    public SqsSinkWriteBuilder(LogicalWriteInfo info) {
         this.info = info;
     }
 
     @Override
     public Write build() {
 
-        SQSSinkOptions options = SQSSinkOptions.builder()
+        SqsSinkOptions options = SqsSinkOptions.builder()
                 .region(info.options().getOrDefault("region", "us-east-1"))
                 .endpoint(info.options().getOrDefault("endpoint", ""))
                 .queueName(info.options().getOrDefault("queueName", ""))
@@ -33,7 +33,7 @@ public class SQSSinkWriteBuilder implements WriteBuilder {
                 .groupIdColumnIndex(info.schema().getFieldIndex(GROUP_ID_COLUMN_NAME).isEmpty() ? -1 : info.schema().fieldIndex(GROUP_ID_COLUMN_NAME))
                 .build();
 
-        return new SQSSinkWrite(options);
+        return new SqsSinkWrite(options);
 
     }
 

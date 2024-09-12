@@ -2,7 +2,7 @@ package com.leonardozv.spark.connectors.aws.sqs.write;
 
 import java.io.Serializable;
 
-public class SQSSinkOptions implements Serializable {
+public class SqsSinkOptions implements Serializable {
 
     private final String region;
     private final String endpoint;
@@ -16,7 +16,7 @@ public class SQSSinkOptions implements Serializable {
     private final int msgAttributesColumnIndex;
     private final int groupIdColumnIndex;
 
-    public SQSSinkOptions(Builder builder) {
+    public SqsSinkOptions(Builder builder) {
         this.region = builder.region;
         this.endpoint = builder.endpoint;
         this.queueName = builder.queueName;
@@ -115,8 +115,8 @@ public class SQSSinkOptions implements Serializable {
             return this;
         }
 
-        public SQSSinkOptions build() {
-            return new SQSSinkOptions(this);
+        public SqsSinkOptions build() {
+            return new SqsSinkOptions(this);
         }
 
     }

@@ -14,11 +14,11 @@ import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 
 import java.net.URI;
 
-public class SQSSinkDataWriterFactory implements DataWriterFactory {
+public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
-    private final SQSSinkOptions options;
+    private final SqsSinkOptions options;
 
-    public SQSSinkDataWriterFactory(SQSSinkOptions options) {
+    public SqsSinkDataWriterFactory(SqsSinkOptions options) {
         this.options = options;
     }
 
@@ -45,7 +45,7 @@ public class SQSSinkDataWriterFactory implements DataWriterFactory {
 
         String queueUrl = sqs.getQueueUrl(queueUrlRequest).queueUrl();
 
-        return new SQSSinkDataWriter(partitionId, taskId, sqs, queueUrl, this.options);
+        return new SqsSinkDataWriter(partitionId, taskId, sqs, queueUrl, this.options);
     }
 
     private S3Client getAmazonS3() {

@@ -30,7 +30,7 @@ Don't forget you'll need to configure the default credentials in your machine. S
 #### Configuration ####
 
 The following options can be configured:
-- **region** of the queue. Default us-east-2.
+- **region** of the queue. Default us-east-1.
 - **queueName** of the queue.
 - **batchSize** so we can group N messages in one call. Default 10.
 - **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs is in a different account than the spark job. Optional.
@@ -44,7 +44,7 @@ SQS Extended Client options:
 df.write()
     .format("sqs")
     .mode(SaveMode.Append)
-    .option("region", "us-east-2")
+    .option("region", "us-east-1")
     .option("queueName", "my-test-queue")
     .option("batchSize", "10")
     .option("queueOwnerAWSAccountId", "123456789012")

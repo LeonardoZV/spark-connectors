@@ -24,7 +24,7 @@ public class DynamoDbSinkBatchResultException extends RuntimeException {
         }
 
         public DynamoDbSinkBatchResultException build() {
-            String[] failedMessages = errors.stream().map(BatchStatementError::message).distinct().toArray(String[]::new);
+            String[] failedMessages = errors.stream().map(error -> error.code() + ": " + error.message()).distinct().toArray(String[]::new);
             return new DynamoDbSinkBatchResultException("Some statements failed to be executed in DynamoDB with the following errors: [" + String.join("; ", failedMessages) + "]");
         }
 

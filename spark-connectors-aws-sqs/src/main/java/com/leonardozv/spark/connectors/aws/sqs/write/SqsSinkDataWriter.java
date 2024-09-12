@@ -10,16 +10,16 @@ import software.amazon.awssdk.services.sqs.model.*;
 
 import java.util.*;
 
-public class SQSSinkDataWriter implements DataWriter<InternalRow> {
+public class SqsSinkDataWriter implements DataWriter<InternalRow> {
 
     private final int partitionId;
     private final long taskId;
     private final SqsClient sqs;
     private final String queueUrl;
-    private final SQSSinkOptions options;
+    private final SqsSinkOptions options;
     private final List<SendMessageBatchRequestEntry> messages = new ArrayList<>();
 
-    public SQSSinkDataWriter(int partitionId, long taskId, SqsClient sqs, String queueUrl, SQSSinkOptions options) {
+    public SqsSinkDataWriter(int partitionId, long taskId, SqsClient sqs, String queueUrl, SqsSinkOptions options) {
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.sqs = sqs;
@@ -73,7 +73,7 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
             sendMessages();
         }
 
-        return new SQSSinkWriterCommitMessage(partitionId, taskId);
+        return new SqsSinkWriterCommitMessage(partitionId, taskId);
 
     }
 
@@ -94,9 +94,9 @@ public class SQSSinkDataWriter implements DataWriter<InternalRow> {
         SendMessageBatchResponse response = this.sqs.sendMessageBatch(request);
 
         List<BatchResultErrorEntry> errors = response.failed();
-
+        
         if(!errors.isEmpty()) {
-            throw new SQSSinkBatchResultException.Builder().withErrors(errors).build();
+            throw new SqsSinkBatchResultException.Builder().withErrors(response.failed()).build();
         }
 
         this.messages.clear();

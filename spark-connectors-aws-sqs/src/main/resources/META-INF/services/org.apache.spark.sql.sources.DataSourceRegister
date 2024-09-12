@@ -1,1 +1,1 @@
-com.leonardozv.spark.connectors.aws.sqs.SQSProvider
+com.leonardozv.spark.connectors.aws.sqs.SqsProvider

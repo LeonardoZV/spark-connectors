@@ -5,17 +5,17 @@ import org.apache.spark.sql.connector.write.DataWriterFactory;
 import org.apache.spark.sql.connector.write.PhysicalWriteInfo;
 import org.apache.spark.sql.connector.write.WriterCommitMessage;
 
-public class SQSSinkBatchWrite implements BatchWrite {
+public class SqsSinkBatchWrite implements BatchWrite {
 
-    private final SQSSinkOptions options;
+    private final SqsSinkOptions options;
 
-    public SQSSinkBatchWrite(SQSSinkOptions options) {
+    public SqsSinkBatchWrite(SqsSinkOptions options) {
         this.options = options;
     }
 
     @Override
     public DataWriterFactory createBatchWriterFactory(PhysicalWriteInfo info) {
-        return new SQSSinkDataWriterFactory(this.options);
+        return new SqsSinkDataWriterFactory(this.options);
     }
 
     @Override
