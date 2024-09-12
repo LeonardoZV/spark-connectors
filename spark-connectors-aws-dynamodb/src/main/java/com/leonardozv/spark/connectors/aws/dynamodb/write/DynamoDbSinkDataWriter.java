@@ -8,7 +8,6 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
 

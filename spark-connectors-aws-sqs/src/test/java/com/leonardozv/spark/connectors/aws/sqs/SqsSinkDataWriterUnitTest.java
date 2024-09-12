@@ -7,7 +7,7 @@ import scala.collection.Seq;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-class SQSSinkDataWriterTest {
+class SqsSinkDataWriterUnitTest {
 
     private InternalRow createInternalRow(Object... values) {
         Seq<Object> x = JavaConverters.asScalaBuffer(new ArrayList<>(Arrays.asList(values))).toSeq();
