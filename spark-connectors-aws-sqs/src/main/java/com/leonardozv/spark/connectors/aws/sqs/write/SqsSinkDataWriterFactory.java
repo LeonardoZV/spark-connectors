@@ -82,10 +82,10 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         SqsClientBuilder clientBuilder = SqsClient.builder();
 
+        clientBuilder.region(Region.of(this.options.region()));
+
         if (!this.options.sqsEndpoint().isEmpty())
-            clientBuilder.region(Region.of(this.options.region())).endpointOverride(URI.create(this.options.sqsEndpoint()));
-        else
-            clientBuilder.region(Region.of(this.options.region()));
+            clientBuilder.endpointOverride(URI.create(this.options.sqsEndpoint()));
 
         return clientBuilder.build();
 

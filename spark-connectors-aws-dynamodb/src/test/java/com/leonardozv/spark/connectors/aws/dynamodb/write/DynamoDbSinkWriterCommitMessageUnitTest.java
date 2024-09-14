@@ -1,18 +1,17 @@
-package com.leonardozv.spark.connectors.aws.sqs;
+package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkWriterCommitMessage;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-class SqsSinkWriterCommitMessageUnitTest {
+class DynamoDbSinkWriterCommitMessageUnitTest {
 
     @Test
     void testEquals() {
-        SqsSinkWriterCommitMessage message1 = new SqsSinkWriterCommitMessage(1, 100L);
-        SqsSinkWriterCommitMessage message2 = new SqsSinkWriterCommitMessage(1, 100L);
-        SqsSinkWriterCommitMessage message3 = new SqsSinkWriterCommitMessage(2, 200L);
+        DynamoDbSinkWriterCommitMessage message1 = new DynamoDbSinkWriterCommitMessage(1, 100L);
+        DynamoDbSinkWriterCommitMessage message2 = new DynamoDbSinkWriterCommitMessage(1, 100L);
+        DynamoDbSinkWriterCommitMessage message3 = new DynamoDbSinkWriterCommitMessage(2, 200L);
 
         assertEquals(message1, message2, "Messages with the same partitionId and taskId should be equal");
         assertNotEquals(message1, message3, "Messages with different partitionId should not be equal");
@@ -20,9 +19,9 @@ class SqsSinkWriterCommitMessageUnitTest {
 
     @Test
     void testHashCode() {
-        SqsSinkWriterCommitMessage message1 = new SqsSinkWriterCommitMessage(1, 100L);
-        SqsSinkWriterCommitMessage message2 = new SqsSinkWriterCommitMessage(1, 100L);
-        SqsSinkWriterCommitMessage message3 = new SqsSinkWriterCommitMessage(2, 200L);
+        DynamoDbSinkWriterCommitMessage message1 = new DynamoDbSinkWriterCommitMessage(1, 100L);
+        DynamoDbSinkWriterCommitMessage message2 = new DynamoDbSinkWriterCommitMessage(1, 100L);
+        DynamoDbSinkWriterCommitMessage message3 = new DynamoDbSinkWriterCommitMessage(2, 200L);
 
         assertEquals(message1.hashCode(), message2.hashCode(), "Hash codes should be equal for messages with the same partitionId and taskId");
         assertNotEquals(message1.hashCode(), message3.hashCode(), "Hash codes should be different for messages with different partitionId");

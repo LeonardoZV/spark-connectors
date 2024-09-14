@@ -30,10 +30,10 @@ public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
         DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder();
 
+        clientBuilder.region(Region.of(this.options.region()));
+
         if (!this.options.endpoint().isEmpty())
-            clientBuilder.region(Region.of(this.options.region())).endpointOverride(URI.create(this.options.endpoint()));
-        else
-            clientBuilder.region(Region.of(this.options.region()));
+            clientBuilder.endpointOverride(URI.create(this.options.endpoint()));
 
         return clientBuilder.build();
 

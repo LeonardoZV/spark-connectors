@@ -1,14 +1,14 @@
 package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.Set;
 
 public class DynamoDbSinkOptions implements Serializable {
 
     private final String region;
     private final String endpoint;
     private final int batchSize;
-    private final Map<String, String> errorsToIgnore;
+    private final Set<String> errorsToIgnore;
     private final int statementColumnIndex;
 
     public DynamoDbSinkOptions(Builder builder) {
@@ -22,13 +22,11 @@ public class DynamoDbSinkOptions implements Serializable {
     public String region() {
         return region;
     }
-    public String endpoint() {
-        return endpoint;
-    }
+    public String endpoint() { return endpoint; }
     public int batchSize() {
         return batchSize;
     }
-    public Map<String, String> errorsToIgnore() {
+    public Set<String> errorsToIgnore() {
         return errorsToIgnore;
     }
     public int statementColumnIndex() {
@@ -44,7 +42,7 @@ public class DynamoDbSinkOptions implements Serializable {
         private String region;
         private String endpoint;
         private int batchSize;
-        private Map<String, String> errorsToIgnore;
+        private Set<String> errorsToIgnore;
         private int statementColumnIndex;
 
         public Builder region(String region) {
@@ -62,7 +60,7 @@ public class DynamoDbSinkOptions implements Serializable {
             return this;
         }
 
-        public Builder errorsToIgnore(Map<String, String> errorsToIgnore) {
+        public Builder errorsToIgnore(Set<String> errorsToIgnore) {
             this.errorsToIgnore = errorsToIgnore;
             return this;
         }

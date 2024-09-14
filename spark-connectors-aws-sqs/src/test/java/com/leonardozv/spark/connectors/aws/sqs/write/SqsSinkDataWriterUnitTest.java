@@ -1,12 +1,10 @@
-package com.leonardozv.spark.connectors.aws.sqs;
+package com.leonardozv.spark.connectors.aws.sqs.write;
 
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkBatchResultException;
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkDataWriter;
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkOptions;
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.catalyst.util.ArrayBasedMapData;
 import org.apache.spark.sql.catalyst.util.GenericArrayData;
 import org.apache.spark.sql.catalyst.util.MapData;
+import org.apache.spark.sql.connector.write.WriterCommitMessage;
 import org.apache.spark.unsafe.types.UTF8String;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,8 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class SqsSinkDataWriterUnitTest {
@@ -260,7 +257,10 @@ class SqsSinkDataWriterUnitTest {
         SendMessageBatchResponse mockResponse = mock(SendMessageBatchResponse.class);
         when(sqsClient.sendMessageBatch(any(SendMessageBatchRequest.class))).thenReturn(mockResponse);
 
-        writer.commit();
+        WriterCommitMessage commitMessage = writer.commit();
+
+        assertNotNull(commitMessage);
+        assertInstanceOf(SqsSinkWriterCommitMessage.class, commitMessage);
 
     }
 
@@ -282,7 +282,7 @@ class SqsSinkDataWriterUnitTest {
 
         SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, sqsClient, "http://localhost:4566/123456789012/test-queue", options);
 
-        writer.abort();
+        assertDoesNotThrow(writer::abort);
 
     }
 
@@ -304,7 +304,7 @@ class SqsSinkDataWriterUnitTest {
 
         SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, sqsClient, "http://localhost:4566/123456789012/test-queue", options);
 
-        writer.close();
+        assertDoesNotThrow(writer::close);
 
     }
 

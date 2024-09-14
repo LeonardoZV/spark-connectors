@@ -1,8 +1,5 @@
-package com.leonardozv.spark.connectors.aws.sqs;
+package com.leonardozv.spark.connectors.aws.sqs.write;
 
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkDataWriter;
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkDataWriterFactory;
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkOptions;
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;
 import org.junit.jupiter.api.Test;

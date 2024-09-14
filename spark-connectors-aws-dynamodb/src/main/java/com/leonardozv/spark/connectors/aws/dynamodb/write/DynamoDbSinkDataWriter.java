@@ -68,7 +68,7 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
 
         for (int i = 0; i < response.responses().size(); i++) {
             BatchStatementResponse r = response.responses().get(i);
-            if (r.error() != null && this.options.errorsToIgnore().get(r.error().code().toString()) == null) {
+            if (r.error() != null && !this.options.errorsToIgnore().contains(r.error().code().toString())) {
                 errors.add(r.error());
             }
         }

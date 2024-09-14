@@ -1,8 +1,5 @@
-package com.leonardozv.spark.connectors.aws.sqs;
+package com.leonardozv.spark.connectors.aws.sqs.write;
 
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkOptions;
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkWrite;
-import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkWriteBuilder;
 import org.apache.spark.sql.connector.write.LogicalWriteInfo;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.sql.util.CaseInsensitiveStringMap;

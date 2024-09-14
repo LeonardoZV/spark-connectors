@@ -16,4 +16,6 @@ public class DynamoDbSinkWrite implements Write {
         return new DynamoDbSinkBatchWrite(this.options);
     }
 
+    public DynamoDbSinkOptions options() { return this.options; }
+
 }
