@@ -7,7 +7,11 @@ It supports the following DynamoDB APIs:
 - ~~TransactWriteItems~~ (TO-DO)
 - ~~BatchWriteItem~~ (TO-DO)
 
-It currently supports only the spark write operation.
+It currently supports the following spark operations:
+- batch write operation.
+- ~~batch read operation~~ (TO-DO)
+- ~~streaming write operation~~ (TO-DO)
+- ~~streaming read operation~~ (TO-DO)
 
 # Getting Started
 
