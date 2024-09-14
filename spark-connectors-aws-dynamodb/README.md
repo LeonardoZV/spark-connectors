@@ -23,9 +23,11 @@ This library is available at Maven Central repository, so you can reference it i
 
 #### Permissioning ####
 
-The IAM permissions needed for this library to write on DynamoDB are ?.
+The IAM permissions needed for this library to write on DynamoDB are:
 
-Don't forget you'll need to configure the default credentials in your machine. See
+ExecuteBatchStatement: PartiQLDelete, PartiQLInsert and PartiQLUpdate.
+
+Don't forget to configure the default credentials in your machine. See
 [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
 
 #### Configuration ####

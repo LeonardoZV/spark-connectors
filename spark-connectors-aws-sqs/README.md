@@ -24,7 +24,7 @@ The IAM permissions needed for this library to write on a SQS queue are *sqs:Get
 
 The IAM permission needed for this library to write on a S3 when using the SQS Extended Client *s3:PutObject* and *s3:ListBucket*.
 
-Don't forget you'll need to configure the default credentials in your machine. See
+Don't forget to configure the default credentials in your machine. See
 [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
 
 #### Configuration ####
