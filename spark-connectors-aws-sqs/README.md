@@ -30,6 +30,7 @@ Don't forget you'll need to configure the default credentials in your machine. S
 #### Configuration ####
 
 The following options can be configured:
+- **sqsEndpoint** to be used by the sqs client. Optional.
 - **region** of the queue. Default us-east-1.
 - **queueName** of the queue.
 - **batchSize** so we can group N messages in one call. Default 10.
@@ -37,6 +38,8 @@ The following options can be configured:
 
 SQS Extended Client options:
 - **useSqsExtendedClient** if you want to use the SQS Extended Client to send messages larger than 256KB. Default false.
+- **s3Endpoint** to be used by the s3 client. Optional.
+- **forcePathStyle** force a path-style endpoint to be used where the bucket name is part of the path. Default false.
 - **bucketName** when using the sqs extended client, you need to specify the bucket name where the messages will be stored. 
 - **payloadSizeThreshold** when using the sqs extended client, you need to specify the threshold size in bytes. Default 256KB.
 
@@ -44,11 +47,14 @@ SQS Extended Client options:
 df.write()
     .format("sqs")
     .mode(SaveMode.Append)
+    .option("sqsEndpoint", "http://localstack:4566")
     .option("region", "us-east-1")
     .option("queueName", "my-test-queue")
     .option("batchSize", "10")
     .option("queueOwnerAWSAccountId", "123456789012")
     .option("useSqsExtendedClient", "true")
+    .option("s3Endpoint", "http://localstack:4566")
+    .option("forcePathStyle", "false")
     .option("bucketName", "my-test-bucket")
     .option("payloadSizeThreshold", "262144")
     .save();
@@ -82,9 +88,9 @@ from pyspark.sql import SparkSession
 if __name__ == "__main__":
     print("File: " + sys.argv[1])
 
-    spark = SparkSession\
-        .builder\
-        .appName("SQS Write")\
+    spark = SparkSession \
+        .builder \
+        .appName("SQS Write") \
         .getOrCreate()
 
     df = spark.read.text(sys.argv[1])
@@ -92,10 +98,10 @@ if __name__ == "__main__":
     df.show()
     df.printSchema()
 
-    df.write.format("sqs").mode("append")\
-        .option("region", "us-east-2") \
-        .option("queueName", "test")\
-        .option("batchSize", "10")\        
+    df.write.format("sqs").mode("append") \
+        .option("region", "sa-east-1") \
+        .option("queueName", "test") \
+        .option("batchSize", "10") \        
         .save()
 
     spark.stop()

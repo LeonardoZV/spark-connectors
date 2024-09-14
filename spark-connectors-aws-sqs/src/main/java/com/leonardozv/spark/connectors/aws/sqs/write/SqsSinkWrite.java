@@ -16,4 +16,6 @@ public class SqsSinkWrite implements Write {
         return new SqsSinkBatchWrite(this.options);
     }
 
+    public SqsSinkOptions options() { return this.options; }
+
 }

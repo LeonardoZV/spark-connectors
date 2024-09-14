@@ -45,7 +45,9 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
             sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(this.options.groupIdColumnIndex()));
         }
 
-        this.messages.add(sendMessageBatchRequestEntryBuilder.build());
+        SendMessageBatchRequestEntry sendMessageBatchRequestEntry = sendMessageBatchRequestEntryBuilder.build();
+
+        this.messages.add(sendMessageBatchRequestEntry);
 
         if(this.messages.size() >= this.options.batchSize()) {
             sendMessages();

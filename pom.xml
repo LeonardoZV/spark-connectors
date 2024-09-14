@@ -21,13 +21,14 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spark.version>3.3.0</spark.version>
         <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
-        <maven-plugin.version>3.8.1</maven-plugin.version>
-        <surefire.version>3.2.5</surefire.version>
-        <failsafe.version>3.2.5</failsafe.version>
         <junit.version>5.11.0</junit.version>
         <mockito.version>4.11.0</mockito.version>
         <assertj.version>3.26.3</assertj.version>
         <testcontainers.version>1.20.1</testcontainers.version>
+        <jackson.version>2.17.2</jackson.version>
+        <maven-plugin.version>3.8.1</maven-plugin.version>
+        <surefire.version>3.2.5</surefire.version>
+        <failsafe.version>3.2.5</failsafe.version>
         <jacoco.version>0.8.12</jacoco.version>
         <pitest.version>1.16.3</pitest.version>
         <pitest-junit5.version>1.2.1</pitest-junit5.version>
@@ -55,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <artifactId>mockito-inline</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
@@ -83,6 +84,12 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -95,6 +102,24 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                            <includeScope>compile</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -166,6 +191,7 @@
                 <version>${sonar.version}</version>
             </plugin>
         </plugins>
+
     </build>
 
     <distributionManagement>

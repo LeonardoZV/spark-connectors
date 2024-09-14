@@ -31,17 +31,19 @@ Don't forget you'll need to configure the default credentials in your machine. S
 #### Configuration ####
 
 The following options can be configured:
+- **endpoint** to be used by the DynamoDB client. Optional.
 - **region** of the queue. Default us-east-2.
 - **batchSize** so we can group N statements in one call. Default 25.
-- **errorsToIgnore** errors that you want to be ignored and treated as a success. Default empty.
+- **errorsToIgnore** errors that you want to be ignored and treated as a success separated by comma. Default empty.
 
 ```java
 df.write()
     .format("dynamodb")
     .mode(SaveMode.Append)
-    .option("region", "us-east-2")
+    .option("endpoint", "http://localstack:4566")
+    .option("region", "us-east-1")
     .option("batchSize", "25")
-    .option("errorsToIgnore", "ConditionalCheckFailed, DuplicateItem")
+    .option("errorsToIgnore", "ConditionalCheckFailed,DuplicateItem")
     .save();
 ```
 
@@ -67,9 +69,9 @@ from pyspark.sql import SparkSession
 if __name__ == "__main__":
     print("File: " + sys.argv[1])
 
-    spark = SparkSession\
-        .builder\
-        .appName("DynamoDB Write")\
+    spark = SparkSession \
+        .builder \
+        .appName("DynamoDB Write") \
         .getOrCreate()
 
     df = spark.read.text(sys.argv[1])
@@ -77,9 +79,9 @@ if __name__ == "__main__":
     df.show()
     df.printSchema()
 
-    df.write.format("dynamodb").mode("append")\
-        .option("region", "us-east-2")\
-        .option("batchSize", "25")\        
+    df.write.format("dynamodb").mode("append") \
+        .option("region", "sa-east-1") \
+        .option("batchSize", "25") \
         .save()
 
     spark.stop()

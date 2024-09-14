@@ -20,7 +20,7 @@ public class DynamoDbSinkWriteBuilder implements WriteBuilder {
     public Write build() {
 
         DynamoDbSinkOptions options = DynamoDbSinkOptions.builder()
-                .region(this.info.options().get("region"))
+                .region(this.info.options().getOrDefault("region", "us-east-1"))
                 .endpoint(this.info.options().get("endpoint"))
                 .batchSize(Integer.parseInt(this.info.options().getOrDefault("batchSize", "25")))
                 .errorsToIgnore(Arrays.stream(this.info.options().getOrDefault("errorsToIgnore", "").split(",")).collect(Collectors.toMap(e -> e, e -> e)))
