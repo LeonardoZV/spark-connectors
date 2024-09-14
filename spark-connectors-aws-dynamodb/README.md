@@ -7,6 +7,8 @@ It supports the following DynamoDB APIs:
 - ~~TransactWriteItems~~ (TO-DO)
 - ~~BatchWriteItem~~ (TO-DO)
 
+It currently supports only the spark write operation.
+
 # Getting Started
 
 #### Importing the Connector ####
