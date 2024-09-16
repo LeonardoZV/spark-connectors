@@ -12,11 +12,11 @@ It currently supports the following spark operations:
 
 ## Getting Started
 
-#### Minimum requirements ####
+### Minimum requirements
 
 To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
 
-#### Importing the Connector ####
+### Importing the connector
 
 This library is available at Maven Central repository, so you can reference it in your project with the following snippet.
 
@@ -28,7 +28,7 @@ This library is available at Maven Central repository, so you can reference it i
 </dependency>
 ```
 
-#### Permissioning ####
+### Permissioning
 
 The IAM permissions needed for this library to write on a SQS queue are *sqs:GetQueueUrl* and *sqs:SendMessage*.
 
@@ -36,7 +36,7 @@ The IAM permission needed for this library to write on a S3 when using the SQS E
 
 Don't forget to configure the default credentials in your machine. See [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
 
-#### Configuration ####
+### Configuration
 
 The following options can be configured:
 - **sqsEndpoint** to be used by the sqs client. Optional.
@@ -76,7 +76,7 @@ The dataframe:
 - **may** have a column called **msg_attributes** (map of [string, string]). Each key/value wil be add as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
 - **may** have a column called **group_id** (string) containing the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 
-#### Running ####
+### Running
 
 It also needs the software.amazon.awssdk:sqs package to run, so you can provide it through the packages parameter of spark-submit.
 

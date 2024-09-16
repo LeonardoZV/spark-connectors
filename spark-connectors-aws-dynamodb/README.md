@@ -2,24 +2,22 @@
 
 A custom connector for Apache Spark that executes statements in AWS DynamoDB.
 
-It supports the following DynamoDB APIs:
+It supports the following DynamoDB APIs and Spark operations:
 - [ExecuteBatchStatement](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchExecuteStatement.html)
+- - batch write operation.
+- - ~~batch read operation~~ (TO-DO)
+- - ~~streaming write operation~~ (TO-DO)
+- - ~~streaming read operation~~ (TO-DO)
 - ~~TransactWriteItems~~ (TO-DO)
 - ~~BatchWriteItem~~ (TO-DO)
 
-It currently supports the following spark operations:
-- batch write operation.
-- ~~batch read operation~~ (TO-DO)
-- ~~streaming write operation~~ (TO-DO)
-- ~~streaming read operation~~ (TO-DO)
+## Getting Started
 
-# Getting Started
-
-#### Minimum requirements ####
+### Minimum requirements
 
 To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
 
-#### Importing the Connector ####
+### Importing the connector
 
 This library is available at Maven Central repository, so you can reference it in your project with the following snippet.
 
@@ -31,7 +29,7 @@ This library is available at Maven Central repository, so you can reference it i
 </dependency>
 ```
 
-#### Permissioning ####
+### Permissioning 
 
 The IAM permissions needed for this library to write on DynamoDB are:
 
@@ -39,7 +37,7 @@ The IAM permissions needed for this library to write on DynamoDB are:
 
 Don't forget to configure the default credentials in your machine. See [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
 
-#### Configuration ####
+### Configuration
 
 The following options can be configured:
 - **endpoint** to be used by the DynamoDB client. Optional.
@@ -61,7 +59,7 @@ df.write()
 The dataframe:
 - **must** have a column called **statement** (string) containing the PartiQL Statement.
 
-#### Running ####
+### Running
 
 It also needs the software.amazon.awssdk:dynamodb package to run, so you can provide it through the packages parameter of spark-submit.
 
