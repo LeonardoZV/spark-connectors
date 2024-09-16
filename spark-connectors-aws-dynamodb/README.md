@@ -104,4 +104,4 @@ The errorsToIgnore option can be used to ignore errors and treat the execution a
 
 ## How to
 
-- [Use this library with AWS Glue](doc/aws-glue.md)
+- [Use this library with AWS Glue](../docs/aws-glue.md)

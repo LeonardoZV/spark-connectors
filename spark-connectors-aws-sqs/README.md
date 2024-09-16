@@ -124,4 +124,4 @@ The sink is at least once. If something wrong happens when the data is being wri
 
 ## How to
 
-- [Use this library with AWS Glue](doc/aws-glue.md)
+- [Use this library with AWS Glue](../docs/aws-glue.md)
