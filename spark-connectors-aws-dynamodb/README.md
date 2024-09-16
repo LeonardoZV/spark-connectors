@@ -1,6 +1,6 @@
 # Spark Connectors - AWS DynamoDB
 
-A custom connector for Apache Spark that sends the contents of a dataframe to AWS DynamoDB.
+A custom connector for Apache Spark that executes statements in AWS DynamoDB.
 
 It supports the following DynamoDB APIs:
 - [ExecuteBatchStatement](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchExecuteStatement.html)
@@ -14,6 +14,10 @@ It currently supports the following spark operations:
 - ~~streaming read operation~~ (TO-DO)
 
 # Getting Started
+
+#### Minimum requirements ####
+
+To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
 
 #### Importing the Connector ####
 
@@ -31,10 +35,9 @@ This library is available at Maven Central repository, so you can reference it i
 
 The IAM permissions needed for this library to write on DynamoDB are:
 
-ExecuteBatchStatement: PartiQLDelete, PartiQLInsert and PartiQLUpdate.
+- ExecuteBatchStatement: PartiQLDelete, PartiQLInsert and PartiQLUpdate.
 
-Don't forget to configure the default credentials in your machine. See
-[Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
+Don't forget to configure the default credentials in your machine. See [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
 
 #### Configuration ####
 

@@ -9,7 +9,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>spark-connectors</module>
         <module>spark-connectors-aws-dynamodb</module>
         <module>spark-connectors-aws-sqs</module>
     </modules>

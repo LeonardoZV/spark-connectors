@@ -24,26 +24,32 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.DYNAMODB;
 
-@Testcontainers
-class SparkIntegrationTest {
+abstract class AbstractSparkIntegrationTest {
 
-    private static final Network network = Network.newNetwork();
-    private static final String LIB_SPARK_CONNECTORS_AWS_DYNAMODB = "spark-connectors-aws-dynamodb-1.0.0.jar";
+    protected static final String LIB_SPARK_CONNECTORS_AWS_DYNAMODB = "spark-connectors-aws-dynamodb-1.0.0.jar";
 
-    @Container
-    private static final GenericContainer<?> spark = new GenericContainer<>(DockerImageName.parse("bitnami/spark:3.3.0"))
-            .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/test-classes/"), 0777), "/home")
-            .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/" + LIB_SPARK_CONNECTORS_AWS_DYNAMODB), 0445), "/home/" + LIB_SPARK_CONNECTORS_AWS_DYNAMODB)
-            .withNetwork(network)
-            .withEnv("AWS_ACCESS_KEY_ID", "test")
-            .withEnv("AWS_SECRET_ACCESS_KEY", "test")
-            .withEnv("SPARK_MODE", "master");
+    protected static final Network network = Network.newNetwork();
+
+    protected static GenericContainer<?> spark;
 
     @Container
     private final LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
             .withNetwork(network)
             .withNetworkAliases("localstack")
             .withServices(DYNAMODB);
+
+    private ExecResult executeSparkJob(String script, String... args) throws IOException, InterruptedException {
+
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/" + LIB_SPARK_CONNECTORS_AWS_DYNAMODB, "--packages", "software.amazon.awssdk:dynamodb:2.27.17", "--master", "local", script}, args);
+
+        ExecResult result = spark.execInContainer(command);
+
+        System.out.println(result.getStdout());
+        System.out.println(result.getStderr());
+
+        return result;
+
+    }
 
     private DynamoDbClient configureTable() {
 
@@ -70,19 +76,6 @@ class SparkIntegrationTest {
 
     }
 
-    private ExecResult execSparkJob(String script, String... args) throws IOException, InterruptedException {
-
-        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/" + LIB_SPARK_CONNECTORS_AWS_DYNAMODB, "--packages", "software.amazon.awssdk:dynamodb:2.27.17", "--master", "local", script}, args);
-
-        ExecResult result = spark.execInContainer(command);
-
-        System.out.println(result.getStdout());
-        System.out.println(result.getStderr());
-
-        return result;
-
-    }
-
     private GetItemResponse getItem(DynamoDbClient dynamodb, String key) {
 
         Map<String, AttributeValue> keyMap = new HashMap<>();
@@ -102,14 +95,12 @@ class SparkIntegrationTest {
         DynamoDbClient dynamodb = configureTable();
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/dynamodb_write.py", "http://localstack:4566");
+        ExecResult result = executeSparkJob("/home/scripts/dynamodb_write.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
 
         GetItemResponse response = getItem(dynamodb, "123");
-
-        System.out.println(response.toString());
 
         assertThat(response.hasItem()).isTrue();
         assertThat(response.item().get("id").s()).isEqualTo("123");
@@ -125,7 +116,7 @@ class SparkIntegrationTest {
         configureTable();
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "http://localstack:4566");
+        ExecResult result = executeSparkJob("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();

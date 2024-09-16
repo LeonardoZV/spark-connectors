@@ -9,9 +9,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.MountableFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -25,7 +23,6 @@ import software.amazon.awssdk.services.sqs.model.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,20 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
 
-@Testcontainers
-class SparkIntegrationTest {
+abstract class AbstractSparkIntegrationTest {
 
-    private static final Network network = Network.newNetwork();
-    private static final String LIB_SPARK_CONNECTORS_AWS_SQS = "spark-connectors-aws-sqs-1.0.0.jar";
+    protected static final String LIB_SPARK_CONNECTORS_AWS_SQS = "spark-connectors-aws-sqs-1.0.0.jar";
 
-    @Container
-    private static final GenericContainer<?> spark = new GenericContainer<>(DockerImageName.parse("bitnami/spark:3.3.0"))
-            .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/test-classes/"), 0777), "/home")
-            .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/" + LIB_SPARK_CONNECTORS_AWS_SQS), 0445), "/home/" + LIB_SPARK_CONNECTORS_AWS_SQS)
-            .withNetwork(network)
-            .withEnv("AWS_ACCESS_KEY_ID", "test")
-            .withEnv("AWS_SECRET_ACCESS_KEY", "test")
-            .withEnv("SPARK_MODE", "master");
+    protected static final Network network = Network.newNetwork();
+
+    protected static GenericContainer<?> spark;
 
     @Container
     private final LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
@@ -55,6 +45,19 @@ class SparkIntegrationTest {
             .withNetworkAliases("localstack")
             .withEnv("SQS_ENDPOINT_STRATEGY", "off")
             .withServices(SQS, S3);
+
+    public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
+
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/" + LIB_SPARK_CONNECTORS_AWS_SQS, "--packages", "software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1", "--master", "local", script}, args);
+
+        ExecResult result = spark.execInContainer(command);
+
+        System.out.println(result.getStdout());
+        System.out.println(result.getStderr());
+
+        return result;
+
+    }
 
     private SqsClient configureQueue(boolean isFIFO) {
 
@@ -85,42 +88,30 @@ class SparkIntegrationTest {
 
     }
 
-    private SqsClient configureQueue() {
-        return configureQueue(false);
-    }
-
     private S3Client configureBucket() {
 
-            S3Client s3 = S3Client.builder()
-                    .endpointOverride(localstack.getEndpointOverride(S3))
-                    .region(Region.of(localstack.getRegion()))
-                    .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
-                    .build();
+        S3Client s3 = S3Client.builder()
+                .endpointOverride(localstack.getEndpointOverride(S3))
+                .region(Region.of(localstack.getRegion()))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
+                .build();
 
-            s3.createBucket(CreateBucketRequest.builder().bucket("my-bucket").build());
+        s3.createBucket(CreateBucketRequest.builder().bucket("my-bucket").build());
 
-            return s3;
-
-    }
-
-    private ExecResult execSparkJob(String script, String... args) throws IOException, InterruptedException {
-
-        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/" + LIB_SPARK_CONNECTORS_AWS_SQS, "--packages", "software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1", "--master", "local", script}, args);
-
-        ExecResult result = spark.execInContainer(command);
-
-        System.out.println(result.getStdout());
-        System.out.println(result.getStderr());
-
-        return result;
+        return s3;
 
     }
 
     private String getHostAccessibleQueueUrl(SqsClient sqs, String queueName) {
 
-        GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder().queueName(queueName).build();
+        GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder()
+                .queueName(queueName)
+                .build();
 
-        return sqs.getQueueUrl(getQueueUrlRequest).queueUrl().replace("localstack", localstack.getHost()).replace("4566", localstack.getMappedPort(4566).toString());
+        return sqs.getQueueUrl(getQueueUrlRequest)
+                .queueUrl()
+                .replace("localstack", localstack.getHost())
+                .replace("4566", localstack.getMappedPort(4566).toString());
 
     }
 
@@ -141,10 +132,6 @@ class SparkIntegrationTest {
 
         return receiveMessageResponse.messages();
 
-    }
-
-    private List<Message> getMessages(SqsClient sqs){
-        return getMessages(sqs, false);
     }
 
     private List<String> getLines(S3Client s3, String key) throws IOException {
@@ -171,16 +158,14 @@ class SparkIntegrationTest {
     void when_DataframeContainsValueColumn_should_PutAnSQSMessageUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue();
+        SqsClient sqs = configureQueue(false);
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/sqs_write.py", "/home/data/sample.txt", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write.py", "/home/data/sample.txt", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-
-        Message message = getMessages(sqs).get(0);
-
+        Message message = getMessages(sqs, false).get(0);
         assertThat(message.body()).isEqualTo("my message body");
 
     }
@@ -189,16 +174,14 @@ class SparkIntegrationTest {
     void when_DataframeContainsValueColumnAndMultipleLines_should_PutAsManySQSMessagesInQueue() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue();
+        SqsClient sqs = configureQueue(false);
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/sqs_write.py", "/home/data/multiline_sample.txt", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write.py", "/home/data/multiline_sample.txt", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-
-        List<Message> messages = getMessages(sqs);
-
+        List<Message> messages = getMessages(sqs, false);
         assertThat(messages).size().isEqualTo(10);
 
     }
@@ -207,17 +190,15 @@ class SparkIntegrationTest {
     void when_DataframeContainsDataExceedsSQSSizeLimit_should_FailWholeBatch() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue();
+        SqsClient sqs = configureQueue(false);
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/sqs_write.py", "/home/data/large_sample.txt", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write.py", "/home/data/large_sample.txt", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute fail").isNotZero();
         assertThat(result.getStdout()).as("Spark job should fail due to exceeding size limit").contains("Batch requests cannot be longer than 262144 bytes");
-
-        List<Message> messages = getMessages(sqs);
-
+        List<Message> messages = getMessages(sqs, false);
         assertThat(messages).size().as("No messages should be written when the batch fails").isZero();
 
     }
@@ -226,19 +207,19 @@ class SparkIntegrationTest {
     void when_DataframeContainsLinesThatExceedsSQSMessageSizeLimit_should_ThrowAnException() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue();
+        SqsClient sqs = configureQueue(false);
         HashMap<QueueAttributeName, String> attributes = new HashMap<>();
         attributes.put(QueueAttributeName.MAXIMUM_MESSAGE_SIZE, Integer.toString(1024));
         SetQueueAttributesRequest setQueueAttributesRequest = SetQueueAttributesRequest.builder().queueUrl(getHostAccessibleQueueUrl(sqs, "my-test")).attributes(attributes).build();
         sqs.setQueueAttributes(setQueueAttributesRequest);
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/sqs_write.py", "/home/data/multiline_large_sample.txt", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write.py", "/home/data/multiline_large_sample.txt", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute fail").isNotZero();
         assertThat(result.getStdout()).as("Spark job should fail due to exceeding size limit").contains("Some messages failed to be sent to the SQS queue");
-        List<Message> messages = getMessages(sqs);
+        List<Message> messages = getMessages(sqs, false);
         assertThat(messages).size().as("Only messages up to 1024 should be written").isEqualTo(2);
 
     }
@@ -250,7 +231,7 @@ class SparkIntegrationTest {
         SqsClient sqs = configureQueue(true);
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/sqs_write_with_group_id.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_group_id.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
@@ -263,14 +244,14 @@ class SparkIntegrationTest {
     void when_DataframeContainsMsgAttributesColumn_should_PutAnSQSMessageWithMessageAttributesUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue();
+        SqsClient sqs = configureQueue(false);
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/sqs_write_with_msg_attributes.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_msg_attributes.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-        Message message = getMessages(sqs).get(0);
+        Message message = getMessages(sqs, false).get(0);
         assertThat(message.messageAttributes().get("attribute-a").stringValue()).isEqualTo("1000");
         assertThat(message.messageAttributes().get("attribute-b").stringValue()).isEqualTo("2000");
 
@@ -280,26 +261,23 @@ class SparkIntegrationTest {
     void when_WriterContainsUseSqsExtendedClientOption_should_PutAnSQSMessageAndS3ObjectWithSqsExtendedClientUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue();
+        SqsClient sqs = configureQueue(false);
         S3Client s3 = configureBucket();
 
         // act
-        ExecResult result = execSparkJob("/home/scripts/sqs_write_with_sqs_extended_client.py", "http://localstack:4566", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_sqs_extended_client.py", "http://localstack:4566", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
 
-        Message message = getMessages(sqs).get(0);
+        Message message = getMessages(sqs, false).get(0);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(message.body());
         JsonNode payloadNode = rootNode.get(1);
         String s3key = payloadNode.get("s3Key").asText();
         String line = getLines(s3, s3key).get(0);
-
         assertThat(line).isEqualTo("foo");
 
     }
-
-
 
 }

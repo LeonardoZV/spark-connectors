@@ -2,7 +2,7 @@
 
 A custom connector for Apache Spark that sends messages to AWS SQS.
 
-It supports the [SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html) to manage large message payloads, from 256 KB and up to 2 GB.
+It supports the [AWS SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html) to manage large message payloads, from 256 KB and up to 2 GB.
 
 It currently supports the following spark operations:
 - batch write operation.
@@ -14,7 +14,7 @@ It currently supports the following spark operations:
 
 #### Minimum requirements ####
 
-To run the connectors you will need **Java 1.8+**.
+To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
 
 #### Importing the Connector ####
 
@@ -34,8 +34,7 @@ The IAM permissions needed for this library to write on a SQS queue are *sqs:Get
 
 The IAM permission needed for this library to write on a S3 when using the SQS Extended Client *s3:PutObject* and *s3:ListBucket*.
 
-Don't forget to configure the default credentials in your machine. See
-[Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
+Don't forget to configure the default credentials in your machine. See [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
 
 #### Configuration ####
 
@@ -45,13 +44,15 @@ The following options can be configured:
 - **queueName** of the queue.
 - **batchSize** so we can group N messages in one call. Default 10.
 - **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs is in a different account than the spark job. Optional.
-
-SQS Extended Client options:
 - **useSqsExtendedClient** if you want to use the SQS Extended Client to send messages larger than 256KB. Default false.
+- 
+AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
 - **s3Endpoint** to be used by the s3 client. Optional.
 - **forcePathStyle** force a path-style endpoint to be used where the bucket name is part of the path. Default false.
 - **bucketName** when using the sqs extended client, you need to specify the bucket name where the messages will be stored. 
 - **payloadSizeThreshold** when using the sqs extended client, you need to specify the threshold size in bytes. Default 256KB.
+
+PS: AWS SQS Extended Client does not support AWS S3 key prefixes.
 
 ```java
 df.write()
@@ -86,7 +87,7 @@ The following commands can be used to run the example of how to use this library
 spark-submit --packages com.leonardozv:spark-connectors-aws-sqs:1.0.0,software.amazon.awssdk:sqs:2.27.17 test.py sample.txt
 
 # With the extended client
-spark-submit --packages com.leonardozv:spark-connectors-aws-sqs:1.0.0,software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1 test.py sample.txt
+spark-submit --packages com.leonardozv:spark-connectors-aws-sqs:1.0.0,software.amazon.awssdk:sqs:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1,software.amazon.awssdk:s3:2.27.17 test.py sample.txt
 ```
 
 And this is the test.py file content.
@@ -111,7 +112,7 @@ if __name__ == "__main__":
     df.write.format("sqs").mode("append") \
         .option("region", "sa-east-1") \
         .option("queueName", "test") \
-        .option("batchSize", "10") \        
+        .option("batchSize", "10") \
         .save()
 
     spark.stop()

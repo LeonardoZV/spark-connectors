@@ -8,9 +8,6 @@ if __name__ == "__main__":
         print("Missing parameters")
         sys.exit(-1)
 
-    print("Endpoint SQS: " + sys.argv[1])
-    print("Endpoint S3: " + sys.argv[2])
-
     spark = SparkSession \
         .builder \
         .appName("SQS Write") \
