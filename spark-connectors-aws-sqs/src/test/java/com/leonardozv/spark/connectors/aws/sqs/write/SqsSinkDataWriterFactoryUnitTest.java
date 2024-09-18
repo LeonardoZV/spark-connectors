@@ -25,8 +25,8 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithSQSEndpoint() {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("")
                 .batchSize(10)
@@ -60,8 +60,8 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithoutSQSEndpoint() {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("")
                 .region("us-east-1")
-                .sqsEndpoint("")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("")
                 .batchSize(10)
@@ -95,8 +95,8 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithQueueOwnerAWSAccountId() {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -130,13 +130,14 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithExtendedClient() throws Exception {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
                 .useSqsExtendedClient(true)
                 .s3Endpoint("")
+                .s3Region("us-east-1")
                 .bucketName("")
                 .payloadSizeThreshold(-1)
                 .build();
@@ -168,13 +169,14 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithS3Endpoint() throws Exception {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
                 .useSqsExtendedClient(true)
                 .s3Endpoint("http://localhost:4566")
+                .s3Region("us-east-1")
                 .bucketName("test-bucket")
                 .build();
 
@@ -205,13 +207,14 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithBucketName() throws Exception {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
                 .useSqsExtendedClient(true)
                 .s3Endpoint("")
+                .s3Region("us-east-1")
                 .bucketName("test-bucket")
                 .build();
 
@@ -242,13 +245,14 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithPayloadSizeThreshold() throws Exception {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
                 .useSqsExtendedClient(true)
                 .s3Endpoint("")
+                .s3Region("us-east-1")
                 .bucketName("test-bucket")
                 .payloadSizeThreshold(256)
                 .build();

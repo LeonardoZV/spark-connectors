@@ -20,13 +20,14 @@ public class SqsSinkWriteBuilder implements WriteBuilder {
     public Write build() {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint(this.info.options().getOrDefault("endpoint", ""))
                 .region(this.info.options().getOrDefault("region", "us-east-1"))
-                .sqsEndpoint(this.info.options().getOrDefault("sqsEndpoint", ""))
                 .queueName(this.info.options().getOrDefault("queueName", ""))
                 .queueOwnerAWSAccountId(this.info.options().getOrDefault("queueOwnerAWSAccountId", ""))
                 .batchSize(Integer.parseInt(this.info.options().getOrDefault("batchSize", "10")))
                 .useSqsExtendedClient(Boolean.parseBoolean(this.info.options().getOrDefault("useSqsExtendedClient", "false")))
                 .s3Endpoint(this.info.options().getOrDefault("s3Endpoint", ""))
+                .s3Region(this.info.options().getOrDefault("s3Region", "us-east-1"))
                 .forcePathStyle(Boolean.parseBoolean(this.info.options().getOrDefault("forcePathStyle", "false")))
                 .bucketName(this.info.options().getOrDefault("bucketName", ""))
                 .payloadSizeThreshold(Integer.parseInt(this.info.options().getOrDefault("payloadSizeThreshold", "-1")))

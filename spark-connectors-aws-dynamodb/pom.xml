@@ -12,10 +12,6 @@
     <artifactId>spark-connectors-aws-dynamodb</artifactId>
     <version>1.0.0</version>
 
-    <properties>
-        <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>

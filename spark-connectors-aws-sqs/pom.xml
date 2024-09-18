@@ -13,7 +13,6 @@
     <version>1.0.0</version>
 
     <properties>
-        <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
         <sqs-extended-lib.version>2.1.1</sqs-extended-lib.version>
     </properties>
 

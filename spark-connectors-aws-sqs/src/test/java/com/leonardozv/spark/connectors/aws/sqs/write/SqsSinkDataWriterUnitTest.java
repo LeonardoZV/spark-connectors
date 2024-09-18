@@ -34,8 +34,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -64,8 +64,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -92,8 +92,8 @@ class SqsSinkDataWriterUnitTest {
     void testWriteWithMessageAttributes() {
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(1)
@@ -125,8 +125,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -162,8 +162,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -199,8 +199,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -237,8 +237,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -270,8 +270,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)
@@ -292,8 +292,8 @@ class SqsSinkDataWriterUnitTest {
         SqsClient sqsClient = mock(SqsClient.class);
 
         SqsSinkOptions options = SqsSinkOptions.builder()
+                .endpoint("http://localhost:4566")
                 .region("us-east-1")
-                .sqsEndpoint("http://localhost:4566")
                 .queueName("test-queue")
                 .queueOwnerAWSAccountId("123456789012")
                 .batchSize(10)

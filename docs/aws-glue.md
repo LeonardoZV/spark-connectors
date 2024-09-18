@@ -4,9 +4,7 @@ AWS Glue is one of the "flavours" we can use Spark in AWS.
 
 ## Requirements
 
-To run this simple example, you'll need an AWS account. You'll create an S3 bucket, an SQS queue and the Glue job.
-
-You'll spend no more than US$ 0.50.
+To run this simple example, you'll need an AWS account with the resources needed by the connector you're planning to use.
 
 ## Configuring access
 

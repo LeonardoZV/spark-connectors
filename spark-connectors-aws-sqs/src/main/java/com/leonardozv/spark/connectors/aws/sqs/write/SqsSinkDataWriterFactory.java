@@ -65,12 +65,10 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
         Class<?> s3ClientBuilderClass = Class.forName("software.amazon.awssdk.services.s3.S3ClientBuilder");
         Object clientBuilder = s3ClientClass.getMethod("builder").invoke(null);
 
-        if (!this.options.s3Endpoint().isEmpty()) {
-            s3ClientBuilderClass.getMethod("region", Region.class).invoke(clientBuilder, Region.of(this.options.region()));
+        s3ClientBuilderClass.getMethod("region", Region.class).invoke(clientBuilder, Region.of(this.options.s3Region()));
+
+        if (!this.options.s3Endpoint().isEmpty())
             s3ClientBuilderClass.getMethod("endpointOverride", URI.class).invoke(clientBuilder, URI.create(this.options.s3Endpoint()));
-        } else {
-            s3ClientBuilderClass.getMethod("region", Region.class).invoke(clientBuilder, Region.of(this.options.region()));
-        }
 
         s3ClientBuilderClass.getMethod("forcePathStyle", Boolean.class).invoke(clientBuilder, this.options.forcePathStyle());
 
@@ -84,8 +82,8 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         clientBuilder.region(Region.of(this.options.region()));
 
-        if (!this.options.sqsEndpoint().isEmpty())
-            clientBuilder.endpointOverride(URI.create(this.options.sqsEndpoint()));
+        if (!this.options.endpoint().isEmpty())
+            clientBuilder.endpointOverride(URI.create(this.options.endpoint()));
 
         return clientBuilder.build();
 

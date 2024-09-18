@@ -22,13 +22,14 @@ class SqsSinkWriteBuilderUnitTest {
 
         Map<String, String> options = new HashMap<>();
 
+        options.put("endpoint", "http://localhost:4566");
         options.put("region", "us-west-2");
-        options.put("sqsEndpoint", "http://localhost:4566");
         options.put("queueName", "test-queue");
         options.put("queueOwnerAWSAccountId", "123456789012");
         options.put("batchSize", "5");
         options.put("useSqsExtendedClient", "true");
         options.put("s3Endpoint", "http://localhost:4572");
+        options.put("s3Region", "us-west-2");
         options.put("forcePathStyle", "true");
         options.put("bucketName", "test-bucket");
         options.put("payloadSizeThreshold", "1024");
@@ -50,13 +51,14 @@ class SqsSinkWriteBuilderUnitTest {
 
         // Verify SqsSinkOptions
         SqsSinkOptions sinkOptions = write.options();
+        assertEquals("http://localhost:4566", sinkOptions.endpoint());
         assertEquals("us-west-2", sinkOptions.region());
-        assertEquals("http://localhost:4566", sinkOptions.sqsEndpoint());
         assertEquals("test-queue", sinkOptions.queueName());
         assertEquals("123456789012", sinkOptions.queueOwnerAWSAccountId());
         assertEquals(5, sinkOptions.batchSize());
         assertTrue(sinkOptions.useSqsExtendedClient());
         assertEquals("http://localhost:4572", sinkOptions.s3Endpoint());
+        assertEquals("us-west-2", sinkOptions.s3Region());
         assertTrue(sinkOptions.forcePathStyle());
         assertEquals("test-bucket", sinkOptions.bucketName());
         assertEquals(1024, sinkOptions.payloadSizeThreshold());
@@ -73,13 +75,14 @@ class SqsSinkWriteBuilderUnitTest {
 
         Map<String, String> options = new HashMap<>();
 
+        options.put("endpoint", "http://localhost:4566");
         options.put("region", "us-west-2");
-        options.put("sqsEndpoint", "http://localhost:4566");
         options.put("queueName", "test-queue");
         options.put("queueOwnerAWSAccountId", "123456789012");
         options.put("batchSize", "5");
         options.put("useSqsExtendedClient", "true");
         options.put("s3Endpoint", "http://localhost:4572");
+        options.put("s3Region", "us-west-2");
         options.put("forcePathStyle", "true");
         options.put("bucketName", "test-bucket");
         options.put("payloadSizeThreshold", "1024");
@@ -99,13 +102,14 @@ class SqsSinkWriteBuilderUnitTest {
 
         // Verify SqsSinkOptions
         SqsSinkOptions sinkOptions = write.options();
+        assertEquals("http://localhost:4566", sinkOptions.endpoint());
         assertEquals("us-west-2", sinkOptions.region());
-        assertEquals("http://localhost:4566", sinkOptions.sqsEndpoint());
         assertEquals("test-queue", sinkOptions.queueName());
         assertEquals("123456789012", sinkOptions.queueOwnerAWSAccountId());
         assertEquals(5, sinkOptions.batchSize());
         assertTrue(sinkOptions.useSqsExtendedClient());
         assertEquals("http://localhost:4572", sinkOptions.s3Endpoint());
+        assertEquals("us-west-2", sinkOptions.s3Region());
         assertTrue(sinkOptions.forcePathStyle());
         assertEquals("test-bucket", sinkOptions.bucketName());
         assertEquals(1024, sinkOptions.payloadSizeThreshold());

@@ -7,6 +7,27 @@
     <artifactId>spark-connectors-parent</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
+    <name>>spark-connectors-parent</name>
+    <description>Custom connectors for Apache Spark</description>
+    <url>http://github.com/LeonardoZV/spark-connectors</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>LeonardoZV</id>
+            <name>Leonardo Zandomenico Vasconcellos</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>http://github.com/LeonardoZV/spark-connectors.git</url>
+    </scm>
 
     <modules>
         <module>spark-connectors-aws-dynamodb</module>
@@ -21,17 +42,19 @@
         <spark.version>3.3.0</spark.version>
         <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
         <junit.version>5.11.0</junit.version>
-        <mockito.version>4.11.0</mockito.version>
+        <mockito.version>5.13.0</mockito.version>
         <assertj.version>3.26.3</assertj.version>
         <testcontainers.version>1.20.1</testcontainers.version>
         <jackson.version>2.17.2</jackson.version>
-        <maven-plugin.version>3.8.1</maven-plugin.version>
+        <maven-compiler.version>3.8.1</maven-compiler.version>
+        <maven-dependency.version>3.1.2</maven-dependency.version>
         <surefire.version>3.2.5</surefire.version>
         <failsafe.version>3.2.5</failsafe.version>
         <jacoco.version>0.8.12</jacoco.version>
         <pitest.version>1.16.3</pitest.version>
         <pitest-junit5.version>1.2.1</pitest-junit5.version>
         <sonar.version>3.9.1.2184</sonar.version>
+        <gpg.version>3.2.6</gpg.version>
     </properties>
 
     <dependencies>
@@ -55,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
+            <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
@@ -96,7 +119,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-plugin.version}</version>
+                <version>${maven-compiler.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -105,7 +128,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>${maven-dependency.version}</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -189,15 +212,34 @@
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${sonar.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${gpg.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+<!--                        <configuration>-->
+<!--                            <signer>bc</signer>-->
+<!--                        </configuration>-->
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-
     </build>
 
     <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
-            <id>github</id>
-            <name>GitHub LeonardoZV Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/LeonardoZV/spark-connectors</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 

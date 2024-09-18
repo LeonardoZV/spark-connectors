@@ -29,7 +29,7 @@ if __name__ == "__main__":
     df.printSchema()
 
     df.write.format("sqs").mode("append") \
-        .option("sqsEndpoint", sys.argv[1]) \
+        .option("endpoint", sys.argv[1]) \
         .option("queueName", "my-test.fifo") \
         .option("batchSize", "10") \
         .save()

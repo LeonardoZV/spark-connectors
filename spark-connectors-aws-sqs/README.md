@@ -39,7 +39,7 @@ Don't forget to configure the default credentials in your machine. See [Configur
 ### Configuration
 
 The following options can be configured:
-- **sqsEndpoint** to be used by the sqs client. Optional.
+- **endpoint** to be used by the sqs client. Optional.
 - **region** of the queue. Default us-east-1.
 - **queueName** of the queue.
 - **batchSize** so we can group N messages in one call. Default 10.
@@ -48,6 +48,7 @@ The following options can be configured:
 - 
 AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
 - **s3Endpoint** to be used by the s3 client. Optional.
+- **s3Region** of the bucket. Default us-east-1.
 - **forcePathStyle** force a path-style endpoint to be used where the bucket name is part of the path. Default false.
 - **bucketName** when using the sqs extended client, you need to specify the bucket name where the messages will be stored. 
 - **payloadSizeThreshold** when using the sqs extended client, you need to specify the threshold size in bytes. Default 256KB.
@@ -58,13 +59,14 @@ PS: AWS SQS Extended Client does not support AWS S3 key prefixes.
 df.write()
     .format("sqs")
     .mode(SaveMode.Append)
-    .option("sqsEndpoint", "http://localstack:4566")
+    .option("endpoint", "http://localstack:4566")
     .option("region", "us-east-1")
     .option("queueName", "my-test-queue")
     .option("batchSize", "10")
     .option("queueOwnerAWSAccountId", "123456789012")
     .option("useSqsExtendedClient", "true")
     .option("s3Endpoint", "http://localstack:4566")
+    .option("s3Region", "us-east-1")
     .option("forcePathStyle", "false")
     .option("bucketName", "my-test-bucket")
     .option("payloadSizeThreshold", "262144")
