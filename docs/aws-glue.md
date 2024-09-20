@@ -70,10 +70,15 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 df = spark.read.text("s3://aws-glue-assets-831962505547-us-east-1/input/Poema-de-Sete-Faces.txt")
+
+df.show()
 df.printSchema()
-df.write.format("sqs").mode("append")\
-    .option("region", "us-east-1")\
-    .option("queueName", "SparkSQS")\
+
+df.write \
+    .format("sqs") \
+    .mode("append") \
+    .option("region", "us-east-1") \
+    .option("queueName", "SparkSQS") \
     .option("batchSize", "10") \
     .save()
 

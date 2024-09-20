@@ -23,9 +23,8 @@ import software.amazon.awssdk.services.sqs.model.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
@@ -33,7 +32,44 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 
 abstract class AbstractSparkIntegrationTest {
 
-    protected static final String LIB_SPARK_CONNECTORS_AWS_SQS = "spark-connectors-aws-sqs-1.0.0.jar";
+    protected static final String LIB_SPARK_CONNECTORS = "spark-connectors-aws-sqs-1.0.0.jar";
+
+    protected static final List<String> dependencies = new ArrayList<>(Arrays.asList(
+            "sqs-2.27.17.jar",
+            "annotations-2.27.17.jar",
+            "apache-client-2.27.17.jar",
+            "auth-2.27.17.jar",
+            "aws-core-2.27.17.jar",
+            "aws-json-protocol-2.27.17.jar",
+            "checksums-2.27.17.jar",
+            "checksums-spi-2.27.17.jar",
+            "endpoints-spi-2.27.17.jar",
+            "eventstream-1.0.1.jar",
+            "http-auth-2.27.17.jar",
+            "http-auth-aws-2.27.17.jar",
+            "http-auth-aws-eventstream-2.27.17.jar",
+            "http-auth-spi-2.27.17.jar",
+            "http-client-spi-2.27.17.jar",
+            "identity-spi-2.27.17.jar",
+            "json-utils-2.27.17.jar",
+            "metrics-spi-2.27.17.jar",
+            "profiles-2.27.17.jar",
+            "protocol-core-2.27.17.jar",
+            "reactive-streams-1.0.4.jar",
+            "regions-2.27.17.jar",
+            "retries-2.27.17.jar",
+            "retries-spi-2.27.17.jar",
+            "sdk-core-2.27.17.jar",
+//            "slf4j-api-1.7.36.jar",
+            "third-party-jackson-core-2.27.17.jar",
+            "utils-2.27.17.jar",
+            "amazon-sqs-java-extended-client-lib-2.1.1.jar",
+            "payloadoffloading-common-2.2.0.jar",
+            "s3-2.27.17.jar",
+            "aws-json-protocol-2.27.17.jar",
+            "aws-query-protocol-2.27.17.jar",
+            "aws-xml-protocol-2.27.17.jar"
+    ));
 
     protected static final Network network = Network.newNetwork();
 
@@ -48,7 +84,10 @@ abstract class AbstractSparkIntegrationTest {
 
     public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
 
-        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/" + LIB_SPARK_CONNECTORS_AWS_SQS, "--packages", "software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1", "--master", "local", script}, args);
+//        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1", "--master", "local", script}, args);
+
+        String dependenciesContainerPath =  "/home/libs/" + LIB_SPARK_CONNECTORS + "," + dependencies.stream().map(element -> "/home/libs/" + element).collect(Collectors.joining(","));
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", dependenciesContainerPath, "--master", "local", script}, args);
 
         ExecResult result = spark.execInContainer(command);
 

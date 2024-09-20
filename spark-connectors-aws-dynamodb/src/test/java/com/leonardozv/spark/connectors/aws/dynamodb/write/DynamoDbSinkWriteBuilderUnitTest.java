@@ -45,7 +45,7 @@ class DynamoDbSinkWriteBuilderUnitTest {
         DynamoDbSinkOptions options = ((DynamoDbSinkWrite) write).options();
 
         assertEquals("us-east-1", options.region());
-        assertNull(options.endpoint());
+        assertTrue(options.endpoint().isEmpty());
         assertEquals(25, options.batchSize());
         assertTrue(options.errorsToIgnore().isEmpty());
         assertEquals(0, options.statementColumnIndex());

@@ -16,18 +16,6 @@ It currently supports the following spark operations:
 
 To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
 
-### Importing the connector
-
-This library is available at Maven Central repository, so you can reference it in your project with the following snippet.
-
-``` xml
-<dependency>
-    <groupId>com.leonardozv</groupId>
-    <artifactId>spark-connectors-aws-sqs</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
 ### Permissioning
 
 The IAM permissions needed for this library to write on a SQS queue are *sqs:GetQueueUrl* and *sqs:SendMessage*.
@@ -55,22 +43,22 @@ AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
 
 PS: AWS SQS Extended Client does not support AWS S3 key prefixes.
 
-```java
-df.write()
-    .format("sqs")
-    .mode(SaveMode.Append)
-    .option("endpoint", "http://localstack:4566")
-    .option("region", "us-east-1")
-    .option("queueName", "my-test-queue")
-    .option("batchSize", "10")
-    .option("queueOwnerAWSAccountId", "123456789012")
-    .option("useSqsExtendedClient", "true")
-    .option("s3Endpoint", "http://localstack:4566")
-    .option("s3Region", "us-east-1")
-    .option("forcePathStyle", "false")
-    .option("bucketName", "my-test-bucket")
-    .option("payloadSizeThreshold", "262144")
-    .save();
+```python
+df.write
+    .format("sqs") \
+    .mode("append") \
+    .option("endpoint", "http://localstack:4566") \
+    .option("region", "us-east-1") \
+    .option("queueName", "my-test-queue") \
+    .option("batchSize", "10") \
+    .option("queueOwnerAWSAccountId", "123456789012") \
+    .option("useSqsExtendedClient", "true") \
+    .option("s3Endpoint", "http://localstack:4566") \
+    .option("s3Region", "us-east-1") \
+    .option("forcePathStyle", "false") \
+    .option("bucketName", "my-test-bucket") \
+    .option("payloadSizeThreshold", "262144") \
+    .save()
 ```
 
 The dataframe:
@@ -80,7 +68,12 @@ The dataframe:
 
 ### Running
 
-It also needs the software.amazon.awssdk:sqs package to run, so you can provide it through the packages parameter of spark-submit.
+This library is available at Maven Central repository as **com.leonardozv:spark-connectors-aws-sqs:1.0.0** and can be installed in your spark cluster through the packages parameter of spark-submit.
+
+Dependencies needed to run this library are:
+
+- **Without the extended client:** software.amazon.awssdk:sqs
+- **With the extended client:** software.amazon.awssdk:sqs, com.amazonaws:amazon-sqs-java-extended-client-lib, software.amazon.awssdk:s3
 
 The following commands can be used to run the example of how to use this library:
 
@@ -111,7 +104,9 @@ if __name__ == "__main__":
     df.show()
     df.printSchema()
 
-    df.write.format("sqs").mode("append") \
+    df.write \
+        .format("sqs") \
+        .mode("append") \
         .option("region", "sa-east-1") \
         .option("queueName", "test") \
         .option("batchSize", "10") \

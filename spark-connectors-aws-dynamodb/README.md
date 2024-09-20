@@ -2,7 +2,7 @@
 
 A custom connector for Apache Spark that executes statements in AWS DynamoDB.
 
-It supports the following DynamoDB APIs and Spark operations:
+It supports the following DynamoDB APIs and spark operations:
 - [ExecuteBatchStatement](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchExecuteStatement.html)
 - - batch write operation.
 - - ~~batch read operation~~ (TO-DO)
@@ -16,18 +16,6 @@ It supports the following DynamoDB APIs and Spark operations:
 ### Minimum requirements
 
 To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
-
-### Importing the connector
-
-This library is available at Maven Central repository, so you can reference it in your project with the following snippet.
-
-``` xml
-<dependency>
-    <groupId>com.leonardozv</groupId>
-    <artifactId>spark-connectors-aws-dynamodb</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
 
 ### Permissioning 
 
@@ -45,15 +33,15 @@ The following options can be configured:
 - **batchSize** so we can group N statements in one call. Default 25.
 - **errorsToIgnore** errors that you want to be ignored and treated as a success separated by comma. Default empty.
 
-```java
-df.write()
-    .format("dynamodb")
-    .mode(SaveMode.Append)
-    .option("endpoint", "http://localstack:4566")
-    .option("region", "us-east-1")
-    .option("batchSize", "25")
-    .option("errorsToIgnore", "ConditionalCheckFailed,DuplicateItem")
-    .save();
+```python
+df.write
+    .format("dynamodb") \
+    .mode("append") \
+    .option("endpoint", "http://localstack:4566") \
+    .option("region", "us-east-1") \
+    .option("batchSize", "25") \
+    .option("errorsToIgnore", "ConditionalCheckFailed,DuplicateItem") \
+    .save()
 ```
 
 The dataframe:
@@ -61,7 +49,11 @@ The dataframe:
 
 ### Running
 
-It also needs the software.amazon.awssdk:dynamodb package to run, so you can provide it through the packages parameter of spark-submit.
+This library is available at Maven Central repository as **com.leonardozv:spark-connectors-aws-sqs:1.0.0** and can be installed in your spark cluster through the packages parameter of spark-submit.
+
+Dependencies needed to run this library are:
+
+- software.amazon.awssdk:dynamodb
 
 The following command can be used to run the example of how to use this library:
 
@@ -88,7 +80,9 @@ if __name__ == "__main__":
     df.show()
     df.printSchema()
 
-    df.write.format("dynamodb").mode("append") \
+    df.write \
+        .format("dynamodb") \
+        .mode("append") \
         .option("region", "sa-east-1") \
         .option("batchSize", "25") \
         .save()

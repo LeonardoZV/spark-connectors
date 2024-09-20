@@ -17,7 +17,8 @@ class SparkLatestIntegrationTest extends AbstractSparkIntegrationTest {
     static void startContainer() {
         spark = new GenericContainer<>(DockerImageName.parse("bitnami/spark:latest"))
                 .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/test-classes/"), 0777), "/home")
-                .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/" + LIB_SPARK_CONNECTORS_AWS_DYNAMODB), 0445), "/home/" + LIB_SPARK_CONNECTORS_AWS_DYNAMODB)
+                .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/" + LIB_SPARK_CONNECTORS), 0445), "/home/libs/" + LIB_SPARK_CONNECTORS)
+                .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/libs/"), 0777), "/home/libs")
                 .withNetwork(network)
                 .withEnv("AWS_ACCESS_KEY_ID", "test")
                 .withEnv("AWS_SECRET_ACCESS_KEY", "test")
