@@ -44,7 +44,7 @@ abstract class AbstractSparkIntegrationTest {
             "checksums-2.27.17.jar",
             "checksums-spi-2.27.17.jar",
             "endpoints-spi-2.27.17.jar",
-            "eventstream-1.0.1.jar",
+//            "eventstream-1.0.1.jar",
             "http-auth-2.27.17.jar",
             "http-auth-aws-2.27.17.jar",
             "http-auth-aws-eventstream-2.27.17.jar",

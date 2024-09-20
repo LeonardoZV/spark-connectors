@@ -14,7 +14,7 @@ It currently supports the following spark operations:
 
 ### Minimum requirements
 
-To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
+To run the connector you will need **Java 8+** and **Spark 3.2.1+**
 
 ### Permissioning
 

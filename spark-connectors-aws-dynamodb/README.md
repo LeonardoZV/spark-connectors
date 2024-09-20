@@ -15,7 +15,7 @@ It supports the following DynamoDB APIs and spark operations:
 
 ### Minimum requirements
 
-To run the connectors you will need **Java 8+** and **Spark 3.2.1+**
+To run the connector you will need **Java 8+** and **Spark 3.2.1+**
 
 ### Permissioning 
 
@@ -28,7 +28,7 @@ Don't forget to configure the default credentials in your machine. See [Configur
 ### Configuration
 
 The following options can be configured:
-- **endpoint** to be used by the DynamoDB client. Optional.
+- **endpoint** to be used by the dynamodb client. Optional.
 - **region** of the queue. Default us-east-2.
 - **batchSize** so we can group N statements in one call. Default 25.
 - **errorsToIgnore** errors that you want to be ignored and treated as a success separated by comma. Default empty.
