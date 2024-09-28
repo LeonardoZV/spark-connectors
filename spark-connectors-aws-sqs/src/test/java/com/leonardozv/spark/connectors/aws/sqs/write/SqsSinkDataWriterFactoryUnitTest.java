@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,19 +27,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsSystemPropertyCredentialsProvider_should_CreateWriterWithSystemPropertyCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("SystemPropertyCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "SystemPropertyCredentialsProvider");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -54,7 +48,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 SystemPropertyCredentialsProvider mockCredentialsProvider = mock(SystemPropertyCredentialsProvider.class);
                 staticCredentialsProvider.when(SystemPropertyCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -73,19 +67,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsEnvironmentVariableCredentialsProvider_should_CreateWriterWithEnvironmentVariableCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("EnvironmentVariableCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "EnvironmentVariableCredentialsProvider");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -102,7 +88,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 EnvironmentVariableCredentialsProvider mockCredentialsProvider = mock(EnvironmentVariableCredentialsProvider.class);
                 staticCredentialsProvider.when(EnvironmentVariableCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -121,19 +107,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsWebIdentityTokenFileCredentialsProvider_should_CreateWriterWithWebIdentityTokenFileCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("WebIdentityTokenFileCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "WebIdentityTokenFileCredentialsProvider");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -150,7 +128,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 WebIdentityTokenFileCredentialsProvider mockCredentialsProvider = mock(WebIdentityTokenFileCredentialsProvider.class);
                 staticCredentialsProvider.when(WebIdentityTokenFileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -169,19 +147,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("ProfileCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "ProfileCredentialsProvider");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -198,7 +168,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(ProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -217,19 +187,12 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsNotEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("ProfileCredentialsProvider")
-                .profile("localstack")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "ProfileCredentialsProvider");
+            put("profile", "localstack");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -246,7 +209,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(() -> ProfileCredentialsProvider.create("localstack")).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -265,19 +228,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsContainerCredentialsProvider_should_CreateWriterWithContainerCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("ContainerCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "ContainerCredentialsProvider");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -294,7 +249,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 ContainerCredentialsProvider mockCredentialsProvider = mock(ContainerCredentialsProvider.class);
                 staticCredentialsProvider.when(ContainerCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -313,19 +268,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsInstanceProfileCredentialsProvider_should_CreateWriterWithInstanceProfileCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("InstanceProfileCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "InstanceProfileCredentialsProvider");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -342,7 +289,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 InstanceProfileCredentialsProvider mockCredentialsProvider = mock(InstanceProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(InstanceProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -361,19 +308,13 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("StaticCredentialsProvider")
-                .profile("")
-                .accessKeyId("test")
-                .secretAccessKey("test")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "StaticCredentialsProvider");
+            put("accessKeyId", "test");
+            put("secretAccessKey", "test");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -395,7 +336,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -416,19 +357,14 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsNotEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("StaticCredentialsProvider")
-                .profile("")
-                .accessKeyId("test")
-                .secretAccessKey("test")
-                .sessionToken("test")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "StaticCredentialsProvider");
+            put("accessKeyId", "test");
+            put("secretAccessKey", "test");
+            put("sessionToken", "test");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -450,7 +386,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -471,19 +407,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsAnonymousCredentialsProvider_should_CreateWriterWithAnonymousCredentialsProvider() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("AnonymousCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "AnonymousCredentialsProvider");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -500,7 +428,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 AnonymousCredentialsProvider mockCredentialsProvider = mock(AnonymousCredentialsProvider.class);
                 staticCredentialsProvider.when(AnonymousCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -518,19 +446,12 @@ class SqsSinkDataWriterFactoryUnitTest {
     @Test
     void when_SqsEndpointIsNotEmpty_should_CreateWriterWithSqsEndpoint() {
 
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("DefaultCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:4566")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:4566");
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -542,7 +463,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
             staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
 
-            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -558,19 +479,11 @@ class SqsSinkDataWriterFactoryUnitTest {
     @Test
     void when_SqsEndpointIsEmpty_should_CreateWriterWithoutSqsEndpoint() {
 
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("DefaultCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(false)
-                .build();
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -582,7 +495,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
             staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
 
-            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -701,29 +614,15 @@ class SqsSinkDataWriterFactoryUnitTest {
     @Test
     void when_S3EndpointIsNotEmpty_should_CreateWriterWithS3Endpoint() {
 
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider("DefaultCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:4566")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("")
-                .batchSize(10)
-                .useSqsExtendedClient(true)
-                .s3CredentialsProvider("DefaultCredentialsProvider")
-                .s3Profile("")
-                .s3AccessKeyId("")
-                .s3SecretAccessKey("")
-                .s3SessionToken("")
-                .s3Endpoint("")
-                .s3Endpoint("http://localhost:4566")
-                .s3Region("us-east-1")
-                .bucketName("test-bucket")
-                .s3KeyPrefix("")
-                .build();
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+            put("useSqsExtendedClient", "true");
+            put("s3Endpoint", "http://localhost:4566");
+            put("s3Region", "us-east-1");
+            put("bucketName", "test-bucket");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -744,7 +643,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
                 staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);

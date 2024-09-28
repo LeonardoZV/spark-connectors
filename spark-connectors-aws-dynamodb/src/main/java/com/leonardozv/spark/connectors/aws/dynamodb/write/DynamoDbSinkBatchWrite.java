@@ -8,14 +8,16 @@ import org.apache.spark.sql.connector.write.WriterCommitMessage;
 public class DynamoDbSinkBatchWrite implements BatchWrite {
 
     private final DynamoDbSinkOptions options;
+    private final int statementColumnIndex;
 
-    public DynamoDbSinkBatchWrite(DynamoDbSinkOptions options) {
+    public DynamoDbSinkBatchWrite(DynamoDbSinkOptions options, int statementColumnIndex) {
         this.options = options;
+        this.statementColumnIndex = statementColumnIndex;
     }
 
     @Override
     public DataWriterFactory createBatchWriterFactory(PhysicalWriteInfo info) {
-        return new DynamoDbSinkDataWriterFactory(this.options);
+        return new DynamoDbSinkDataWriterFactory(this.options, this.statementColumnIndex);
     }
 
     @Override

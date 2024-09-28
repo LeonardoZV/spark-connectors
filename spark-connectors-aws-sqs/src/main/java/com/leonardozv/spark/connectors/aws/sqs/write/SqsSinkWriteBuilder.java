@@ -18,36 +18,11 @@ public class SqsSinkWriteBuilder implements WriteBuilder {
 
     @Override
     public Write build() {
-
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .credentialsProvider(this.info.options().getOrDefault("credentialProvider", "DefaultCredentialsProvider"))
-                .profile(this.info.options().getOrDefault("profile", ""))
-                .accessKeyId(this.info.options().getOrDefault("accessKeyId", ""))
-                .secretAccessKey(this.info.options().getOrDefault("secretAccessKey", ""))
-                .sessionToken(this.info.options().getOrDefault("sessionToken", ""))
-                .endpoint(this.info.options().getOrDefault("endpoint", ""))
-                .region(this.info.options().getOrDefault("region", "us-east-1"))
-                .queueName(this.info.options().getOrDefault("queueName", ""))
-                .queueOwnerAWSAccountId(this.info.options().getOrDefault("queueOwnerAWSAccountId", ""))
-                .batchSize(Integer.parseInt(this.info.options().getOrDefault("batchSize", "10")))
-                .useSqsExtendedClient(Boolean.parseBoolean(this.info.options().getOrDefault("useSqsExtendedClient", "false")))
-                .s3CredentialsProvider(this.info.options().getOrDefault("s3CredentialProvider", "DefaultCredentialsProvider"))
-                .s3Profile(this.info.options().getOrDefault("s3Profile", ""))
-                .s3AccessKeyId(this.info.options().getOrDefault("s3AccessKeyId", ""))
-                .s3SecretAccessKey(this.info.options().getOrDefault("s3SecretAccessKey", ""))
-                .s3SessionToken(this.info.options().getOrDefault("s3SessionToken", ""))
-                .s3Endpoint(this.info.options().getOrDefault("s3Endpoint", ""))
-                .s3Region(this.info.options().getOrDefault("s3Region", "us-east-1"))
-                .forcePathStyle(Boolean.parseBoolean(this.info.options().getOrDefault("forcePathStyle", "false")))
-                .bucketName(this.info.options().getOrDefault("bucketName", ""))
-                .payloadSizeThreshold(Integer.parseInt(this.info.options().getOrDefault("payloadSizeThreshold", "-1")))
-                .s3KeyPrefix(this.info.options().getOrDefault("s3KeyPrefix", ""))
-                .valueColumnIndex(this.info.schema().fieldIndex(VALUE_COLUMN_NAME))
-                .msgAttributesColumnIndex(this.info.schema().getFieldIndex(MESSAGE_ATTRIBUTES_COLUMN_NAME).isEmpty() ? -1 : info.schema().fieldIndex(MESSAGE_ATTRIBUTES_COLUMN_NAME))
-                .groupIdColumnIndex(this.info.schema().getFieldIndex(GROUP_ID_COLUMN_NAME).isEmpty() ? -1 : info.schema().fieldIndex(GROUP_ID_COLUMN_NAME))
-                .build();
-
-        return new SqsSinkWrite(options);
+        SqsSinkOptions options = new SqsSinkOptions(this.info.options().asCaseSensitiveMap());
+        int valueColumnIndex = this.info.schema().fieldIndex(VALUE_COLUMN_NAME);
+        int msgAttributesColumnIndex = this.info.schema().getFieldIndex(MESSAGE_ATTRIBUTES_COLUMN_NAME).isEmpty() ? -1 : info.schema().fieldIndex(MESSAGE_ATTRIBUTES_COLUMN_NAME);
+        int groupIdColumnIndex = this.info.schema().getFieldIndex(GROUP_ID_COLUMN_NAME).isEmpty() ? -1 : info.schema().fieldIndex(GROUP_ID_COLUMN_NAME);
+        return new SqsSinkWrite(options, valueColumnIndex, msgAttributesColumnIndex, groupIdColumnIndex);
 
     }
 

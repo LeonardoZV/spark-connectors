@@ -1,124 +1,56 @@
 package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
+import software.amazon.awssdk.regions.Region;
+
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DynamoDbSinkOptions implements Serializable {
 
-    private final String credentialsProvider;
-    private final String profile;
-    private final String accessKeyId;
-    private final String secretAccessKey;
-    private final String sessionToken;
-    private final String endpoint;
-    private final String region;
-    private final int batchSize;
-    private final Set<String> errorsToIgnore;
-    private final int statementColumnIndex;
+    private final Map<String, String> options;
 
-    public DynamoDbSinkOptions(Builder builder) {
-        this.credentialsProvider = builder.credentialsProvider;
-        this.profile = builder.profile;
-        this.accessKeyId = builder.accessKeyId;
-        this.secretAccessKey = builder.secretAccessKey;
-        this.sessionToken = builder.sessionToken;
-        this.endpoint = builder.endpoint;
-        this.region = builder.region;
-        this.batchSize = builder.batchSize;
-        this.errorsToIgnore = builder.errorsToIgnore;
-        this.statementColumnIndex = builder.statementColumnIndex;
+    public DynamoDbSinkOptions(Map<String, String> options) {
+        this.options = new HashMap<>(options);
     }
 
-    public String credentialsProvider() { return credentialsProvider; }
-    public String profile() { return profile; }
-    public String accessKeyId() { return accessKeyId; }
-    public String secretAccessKey() { return secretAccessKey; }
-    public String sessionToken() { return sessionToken; }
-    public String endpoint() { return endpoint; }
-    public String region() {
-        return region;
+    public String credentialsProvider() {
+        return this.options.computeIfAbsent("credentialsProvider", k -> "DefaultCredentialsProvider");
     }
+
+    public String profile() {
+        return this.options.computeIfAbsent("profile", k -> "");
+    }
+
+    public String accessKeyId() {
+        return this.options.computeIfAbsent("accessKeyId", k -> "");
+    }
+
+    public String secretAccessKey() {
+        return this.options.computeIfAbsent("secretAccessKey", k -> "");
+    }
+
+    public String sessionToken() {
+        return this.options.computeIfAbsent("sessionToken", k -> "");
+    }
+
+    public String endpoint() {
+        return this.options.computeIfAbsent("endpoint", k -> "");
+    }
+
+    public Region region() {
+        return Region.of(this.options.computeIfAbsent("region", k -> "us-east-1"));
+    }
+
     public int batchSize() {
-        return batchSize;
+        return Integer.parseInt(this.options.computeIfAbsent("batchSize", k -> "25"));
     }
+
     public Set<String> errorsToIgnore() {
-        return errorsToIgnore;
-    }
-    public int statementColumnIndex() {
-        return statementColumnIndex;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder implements Serializable {
-
-        private String credentialsProvider;
-        private String profile;
-        private String accessKeyId;
-        private String secretAccessKey;
-        private String sessionToken;
-        private String endpoint;
-        private String region;
-        private int batchSize;
-        private Set<String> errorsToIgnore;
-        private int statementColumnIndex;
-
-        public Builder credentialsProvider(String credentialsProvider) {
-            this.credentialsProvider = credentialsProvider;
-            return this;
-        }
-
-        public Builder profile(String profile) {
-            this.profile = profile;
-            return this;
-        }
-
-        public Builder accessKeyId(String accessKeyId) {
-            this.accessKeyId = accessKeyId;
-            return this;
-        }
-
-        public Builder secretAccessKey(String secretAccessKey) {
-            this.secretAccessKey = secretAccessKey;
-            return this;
-        }
-
-        public Builder sessionToken(String sessionToken) {
-            this.sessionToken = sessionToken;
-            return this;
-        }
-
-        public Builder endpoint(String endpoint) {
-            this.endpoint = endpoint;
-            return this;
-        }
-
-        public Builder region(String region) {
-            this.region = region;
-            return this;
-        }
-
-        public Builder batchSize(int batchSize) {
-            this.batchSize = batchSize;
-            return this;
-        }
-
-        public Builder errorsToIgnore(Set<String> errorsToIgnore) {
-            this.errorsToIgnore = errorsToIgnore;
-            return this;
-        }
-
-        public Builder statementColumnIndex(int statementColumnIndex) {
-            this.statementColumnIndex = statementColumnIndex;
-            return this;
-        }
-
-        public DynamoDbSinkOptions build() {
-            return new DynamoDbSinkOptions(this);
-        }
-
+        return Arrays.stream(this.options.computeIfAbsent("errorsToIgnore", k -> "").split(",")).filter(s -> !s.isEmpty()).collect(Collectors.toSet());
     }
 
 }

@@ -27,13 +27,11 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_RowHasStatementAndBatchSizeReached_should_ExecuteBatchExecuteStatement() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .region("us-west-2")
-                .endpoint("http://localhost:8000")
-                .batchSize(1)
-                .statementColumnIndex(0)
-                .errorsToIgnore(new HashSet<>())
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:8000");
+            put("region", "us-west-2");
+            put("batchSize", "1");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(BatchStatementResponse.builder().build())).build();
@@ -41,7 +39,7 @@ class DynamoDbSinkDataWriterUnitTest {
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
 
         // Act
         writer.write(row);
@@ -61,13 +59,11 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_RowHasStatementAndBatchSizeReachedAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndThrowException() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .region("us-west-2")
-                .endpoint("http://localhost:8000")
-                .batchSize(1)
-                .statementColumnIndex(0)
-                .errorsToIgnore(new HashSet<>())
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:8000");
+            put("region", "us-west-2");
+            put("batchSize", "1");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.ACCESS_DENIED).message("Error message").build();
@@ -77,7 +73,7 @@ class DynamoDbSinkDataWriterUnitTest {
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
 
         // Act & Assert
         assertThrows(DynamoDbSinkBatchResultException.class, () -> writer.write(row));
@@ -97,13 +93,12 @@ class DynamoDbSinkDataWriterUnitTest {
         errorsToIgnore.add(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED.toString());
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .region("us-west-2")
-                .endpoint("http://localhost:8000")
-                .batchSize(1)
-                .statementColumnIndex(0)
-                .errorsToIgnore(errorsToIgnore)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:8000");
+            put("region", "us-west-2");
+            put("batchSize", "1");
+            put("errorsToIgnore", String.join(",", errorsToIgnore));
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED).message("Error message").build();
@@ -113,7 +108,7 @@ class DynamoDbSinkDataWriterUnitTest {
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
 
         // Act & Assert
         assertDoesNotThrow(() -> writer.write(row));
@@ -130,20 +125,18 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_RowHasStatementAndBatchSizeNotReachedButCommitCalled_should_ExecuteBatchExecuteStatement() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .region("us-west-2")
-                .endpoint("http://localhost:8000")
-                .batchSize(2)
-                .statementColumnIndex(0)
-                .errorsToIgnore(new HashSet<>())
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:8000");
+            put("region", "us-west-2");
+            put("batchSize", "2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(BatchExecuteStatementResponse.builder().build());
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
 
         // Act
         writer.write(row);
@@ -163,17 +156,15 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_AbortCalled_should_DoNothing() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .region("us-west-2")
-                .endpoint("http://localhost:8000")
-                .batchSize(2)
-                .statementColumnIndex(0)
-                .errorsToIgnore(new HashSet<>())
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:8000");
+            put("region", "us-west-2");
+            put("batchSize", "2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
 
         // Act & Assert
         assertDoesNotThrow(writer::abort);

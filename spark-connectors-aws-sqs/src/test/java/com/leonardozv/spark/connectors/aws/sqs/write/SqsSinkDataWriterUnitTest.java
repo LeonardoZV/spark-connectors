@@ -13,9 +13,7 @@ import software.amazon.awssdk.services.sqs.model.BatchResultErrorEntry;
 import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageBatchResponse;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -33,16 +31,13 @@ class SqsSinkDataWriterUnitTest {
     void when_RowHasValueAndMsgAttributesAndGroupIdAndBatchSizeReached_should_SendMessageBatch() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .endpoint("http://localhost:4566")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("123456789012")
-                .batchSize(1)
-                .valueColumnIndex(0)
-                .msgAttributesColumnIndex(1)
-                .groupIdColumnIndex(2)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:4566");
+            put("region", "us-east-1");
+            put("queueOwnerAWSAccountId", "123456789012");
+            put("queueName", "test-queue");
+            put("batchSize", "1");
+        }};
 
         String queueUrl = "http://localhost:4566/123456789012/test-queue";
 
@@ -52,7 +47,7 @@ class SqsSinkDataWriterUnitTest {
         ArrayBasedMapData map = new ArrayBasedMapData(new GenericArrayData(Collections.singletonList("attribute-a")), new GenericArrayData(Collections.singletonList("attribute")));
         InternalRow row = createInternalRow(UTF8String.fromString("test-message"), map, UTF8String.fromString("test-group"));
 
-        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, queueUrl, options);
+        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, queueUrl, new SqsSinkOptions(options), 0, 1, 2);
 
         // Act
         writer.write(row);
@@ -75,16 +70,13 @@ class SqsSinkDataWriterUnitTest {
     void when_RowHasValueOnlyAndAndBatchSizeReachedAndSqsRespondsWithError_should_SendMessageBatchAndThrowException() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .endpoint("http://localhost:4566")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("123456789012")
-                .batchSize(1)
-                .valueColumnIndex(0)
-                .msgAttributesColumnIndex(-1)
-                .groupIdColumnIndex(-1)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:4566");
+            put("region", "us-east-1");
+            put("queueOwnerAWSAccountId", "123456789012");
+            put("queueName", "test-queue");
+            put("batchSize", "1");
+        }};
 
         String queueUrl = "http://localhost:4566/123456789012/test-queue";
 
@@ -97,7 +89,7 @@ class SqsSinkDataWriterUnitTest {
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-message"));
 
-        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, queueUrl, options);
+        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, queueUrl, new SqsSinkOptions(options), 0, -1, -1);
 
         // Act & Assert
         assertThrows(SqsSinkBatchResultException.class, () -> writer.write(row));
@@ -115,16 +107,13 @@ class SqsSinkDataWriterUnitTest {
     void when_RowHasValueAndMsgAttributesAndGroupIdAndBatchSizeNotReachedButCommitCalled_should_SendMessageBatch() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .endpoint("http://localhost:4566")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("123456789012")
-                .batchSize(2)
-                .valueColumnIndex(0)
-                .msgAttributesColumnIndex(1)
-                .groupIdColumnIndex(2)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:4566");
+            put("region", "us-east-1");
+            put("queueOwnerAWSAccountId", "123456789012");
+            put("queueName", "test-queue");
+            put("batchSize", "2");
+        }};
 
         String queueUrl = "http://localhost:4566/123456789012/test-queue";
 
@@ -134,7 +123,7 @@ class SqsSinkDataWriterUnitTest {
         ArrayBasedMapData map = new ArrayBasedMapData(new GenericArrayData(Collections.singletonList("attribute-a")), new GenericArrayData(Collections.singletonList("attribute")));
         InternalRow row = createInternalRow(UTF8String.fromString("test-message"), map, UTF8String.fromString("test-group"));
 
-        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, queueUrl, options);
+        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, queueUrl, new SqsSinkOptions(options), 0, 1, 2);
 
         // Act
         writer.write(row);
@@ -157,20 +146,17 @@ class SqsSinkDataWriterUnitTest {
     void when_AbortCalled_should_DoNothing() {
 
         // Arrange
-        SqsSinkOptions options = SqsSinkOptions.builder()
-                .endpoint("http://localhost:4566")
-                .region("us-east-1")
-                .queueName("test-queue")
-                .queueOwnerAWSAccountId("123456789012")
-                .batchSize(10)
-                .valueColumnIndex(0)
-                .msgAttributesColumnIndex(1)
-                .groupIdColumnIndex(2)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:4566");
+            put("region", "us-east-1");
+            put("queueOwnerAWSAccountId", "123456789012");
+            put("queueName", "test-queue");
+            put("batchSize", "10");
+        }};
 
         SqsClient mockSqsClient = mock(SqsClient.class);
 
-        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, "http://localhost:4566/123456789012/test-queue", options);
+        SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, "http://localhost:4566/123456789012/test-queue", new SqsSinkOptions(options), 0, 1, 2);
 
         // Act & Assert
         assertDoesNotThrow(writer::abort);

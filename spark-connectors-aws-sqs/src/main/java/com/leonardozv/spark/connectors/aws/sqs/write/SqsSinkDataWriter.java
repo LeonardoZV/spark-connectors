@@ -17,14 +17,20 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
     private final SqsClient sqs;
     private final String queueUrl;
     private final SqsSinkOptions options;
+    private final int valueColumnIndex;
+    private final int msgAttributesColumnIndex;
+    private final int groupIdColumnIndex;
     private final List<SendMessageBatchRequestEntry> messages = new ArrayList<>();
 
-    public SqsSinkDataWriter(int partitionId, long taskId, SqsClient sqs, String queueUrl, SqsSinkOptions options) {
+    public SqsSinkDataWriter(int partitionId, long taskId, SqsClient sqs, String queueUrl, SqsSinkOptions options, int valueColumnIndex, int msgAttributesColumnIndex, int groupIdColumnIndex) {
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.sqs = sqs;
         this.queueUrl = queueUrl;
         this.options = options;
+        this.valueColumnIndex = valueColumnIndex;
+        this.msgAttributesColumnIndex = msgAttributesColumnIndex;
+        this.groupIdColumnIndex = groupIdColumnIndex;
     }
 
     @Override
@@ -32,17 +38,17 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
 
         Optional<MapData> msgAttributesData = Optional.empty();
 
-        if(this.options.msgAttributesColumnIndex() >= 0) {
-            msgAttributesData = Optional.of(row.getMap(this.options.msgAttributesColumnIndex()));
+        if(this.msgAttributesColumnIndex >= 0) {
+            msgAttributesData = Optional.of(row.getMap(this.msgAttributesColumnIndex));
         }
 
         SendMessageBatchRequestEntry.Builder sendMessageBatchRequestEntryBuilder = SendMessageBatchRequestEntry.builder()
-                .messageBody(row.getString(this.options.valueColumnIndex()))
+                .messageBody(row.getString(this.valueColumnIndex))
                 .messageAttributes(convertMapData(msgAttributesData))
                 .id(UUID.randomUUID().toString());
 
-        if(this.options.groupIdColumnIndex() >= 0) {
-            sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(this.options.groupIdColumnIndex()));
+        if(this.groupIdColumnIndex >= 0) {
+            sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(this.groupIdColumnIndex));
         }
 
         SendMessageBatchRequestEntry sendMessageBatchRequestEntry = sendMessageBatchRequestEntryBuilder.build();

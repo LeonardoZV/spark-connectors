@@ -8,14 +8,20 @@ import org.apache.spark.sql.connector.write.WriterCommitMessage;
 public class SqsSinkBatchWrite implements BatchWrite {
 
     private final SqsSinkOptions options;
+    private final int valueColumnIndex;
+    private final int msgAttributesColumnIndex;
+    private final int groupIdColumnIndex;
 
-    public SqsSinkBatchWrite(SqsSinkOptions options) {
+    public SqsSinkBatchWrite(SqsSinkOptions options, int valueColumnIndex, int msgAttributesColumnIndex, int groupIdColumnIndex) {
         this.options = options;
+        this.valueColumnIndex = valueColumnIndex;
+        this.msgAttributesColumnIndex = msgAttributesColumnIndex;
+        this.groupIdColumnIndex = groupIdColumnIndex;
     }
 
     @Override
     public DataWriterFactory createBatchWriterFactory(PhysicalWriteInfo info) {
-        return new SqsSinkDataWriterFactory(this.options);
+        return new SqsSinkDataWriterFactory(this.options, valueColumnIndex, msgAttributesColumnIndex, groupIdColumnIndex);
     }
 
     @Override

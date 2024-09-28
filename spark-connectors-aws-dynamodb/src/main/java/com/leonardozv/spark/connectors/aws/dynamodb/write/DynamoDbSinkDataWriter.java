@@ -15,19 +15,21 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
     private final long taskId;
     private final DynamoDbClient dynamodb;
     private final DynamoDbSinkOptions options;
+    private final int statementColumnIndex;
     private final List<BatchStatementRequest> statements = new ArrayList<>();
 
-    public DynamoDbSinkDataWriter(int partitionId, long taskId, DynamoDbClient dynamodb, DynamoDbSinkOptions options) {
+    public DynamoDbSinkDataWriter(int partitionId, long taskId, DynamoDbClient dynamodb, DynamoDbSinkOptions options, int statementColumnIndex) {
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.dynamodb = dynamodb;
         this.options = options;
+        this.statementColumnIndex = statementColumnIndex;
     }
 
     @Override
     public void write(InternalRow row) {
 
-        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder().statement(row.getString(this.options.statementColumnIndex())).build();
+        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder().statement(row.getString(this.statementColumnIndex)).build();
 
         this.statements.add(batchStatementRequest);
 

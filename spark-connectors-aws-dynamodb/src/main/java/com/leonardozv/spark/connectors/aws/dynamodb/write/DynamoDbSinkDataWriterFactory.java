@@ -4,7 +4,6 @@ import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;
 import org.apache.spark.sql.connector.write.DataWriterFactory;
 import software.amazon.awssdk.auth.credentials.*;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
@@ -13,9 +12,11 @@ import java.net.URI;
 public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
     private final DynamoDbSinkOptions options;
+    private final int statementColumnIndex;
 
-    public DynamoDbSinkDataWriterFactory(DynamoDbSinkOptions options) {
+    public DynamoDbSinkDataWriterFactory(DynamoDbSinkOptions options, int statementColumnIndex) {
         this.options = options;
+        this.statementColumnIndex = statementColumnIndex;
     }
 
     @Override
@@ -23,7 +24,7 @@ public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
         DynamoDbClient dynamoDbClient = getDynamoDbClient();
 
-        return new DynamoDbSinkDataWriter(partitionId, taskId, dynamoDbClient, this.options);
+        return new DynamoDbSinkDataWriter(partitionId, taskId, dynamoDbClient, this.options, this.statementColumnIndex);
 
     }
 
@@ -76,7 +77,7 @@ public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
         clientBuilder.credentialsProvider(identityCredentialsProvider(this.options.credentialsProvider(), this.options.profile(), this.options.accessKeyId(), this.options.secretAccessKey(), this.options.sessionToken()));
 
-        clientBuilder.region(Region.of(this.options.region()));
+        clientBuilder.region(this.options.region());
 
         if (!this.options.endpoint().isEmpty())
             clientBuilder.endpointOverride(URI.create(this.options.endpoint()));

@@ -15,9 +15,15 @@ import java.net.URI;
 public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
     private final SqsSinkOptions options;
+    private int valueColumnIndex;
+    private int msgAttributesColumnIndex;
+    private int groupIdColumnIndex;
 
-    public SqsSinkDataWriterFactory(SqsSinkOptions options) {
+    public SqsSinkDataWriterFactory(SqsSinkOptions options, int valueColumnIndex, int msgAttributesColumnIndex, int groupIdColumnIndex) {
         this.options = options;
+        this.valueColumnIndex = valueColumnIndex;
+        this.msgAttributesColumnIndex = msgAttributesColumnIndex;
+        this.groupIdColumnIndex = groupIdColumnIndex;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         String queueUrl = sqsClient.getQueueUrl(queueUrlRequest).queueUrl();
 
-        return new SqsSinkDataWriter(partitionId, taskId, sqsClient, queueUrl, this.options);
+        return new SqsSinkDataWriter(partitionId, taskId, sqsClient, queueUrl, this.options, valueColumnIndex, msgAttributesColumnIndex, groupIdColumnIndex);
 
     }
 
@@ -100,7 +106,7 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         clientBuilder.credentialsProvider(identityCredentialsProvider(this.options.credentialsProvider(), this.options.profile(), this.options.accessKeyId(), this.options.secretAccessKey(), this.options.sessionToken()));
 
-        clientBuilder.region(Region.of(this.options.region()));
+        clientBuilder.region(this.options.region());
 
         if (!this.options.endpoint().isEmpty())
             clientBuilder.endpointOverride(URI.create(this.options.endpoint()));
@@ -128,7 +134,7 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         s3ClientBuilderClass.getMethod("credentialsProvider", AwsCredentialsProvider.class).invoke(clientBuilder, identityCredentialsProvider(this.options.s3CredentialsProvider(), this.options.s3Profile(), this.options.s3AccessKeyId(), this.options.s3SecretAccessKey(), this.options.s3SessionToken()));
 
-        s3ClientBuilderClass.getMethod("region", Region.class).invoke(clientBuilder, Region.of(this.options.s3Region()));
+        s3ClientBuilderClass.getMethod("region", Region.class).invoke(clientBuilder, this.options.s3Region());
 
         if (!this.options.s3Endpoint().isEmpty())
             s3ClientBuilderClass.getMethod("endpointOverride", URI.class).invoke(clientBuilder, URI.create(this.options.s3Endpoint()));

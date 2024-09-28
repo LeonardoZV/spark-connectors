@@ -10,7 +10,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
 import java.net.URI;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,18 +23,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsSystemPropertyCredentialsProvider_should_CreateWriterWithSystemPropertyCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("SystemPropertyCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "SystemPropertyCredentialsProvider");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -49,7 +42,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 SystemPropertyCredentialsProvider mockCredentialsProvider = mock(SystemPropertyCredentialsProvider.class);
                 staticCredentialsProvider.when(SystemPropertyCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -68,18 +61,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsEnvironmentVariableCredentialsProvider_should_CreateWriterWithEnvironmentVariableCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("EnvironmentVariableCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "EnvironmentVariableCredentialsProvider");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -95,7 +80,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 EnvironmentVariableCredentialsProvider mockCredentialsProvider = mock(EnvironmentVariableCredentialsProvider.class);
                 staticCredentialsProvider.when(EnvironmentVariableCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -114,18 +99,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsWebIdentityTokenFileCredentialsProvider_should_CreateWriterWithWebIdentityTokenFileCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("WebIdentityTokenFileCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "WebIdentityTokenFileCredentialsProvider");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -141,7 +118,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 WebIdentityTokenFileCredentialsProvider mockCredentialsProvider = mock(WebIdentityTokenFileCredentialsProvider.class);
                 staticCredentialsProvider.when(WebIdentityTokenFileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -160,18 +137,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("ProfileCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "ProfileCredentialsProvider");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -187,7 +156,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(ProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -206,18 +175,11 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsNotEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("ProfileCredentialsProvider")
-                .profile("localstack")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "ProfileCredentialsProvider");
+            put("profile", "localstack");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -233,7 +195,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(() -> ProfileCredentialsProvider.create("localstack")).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -252,18 +214,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsContainerCredentialsProvider_should_CreateWriterWithContainerCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("ContainerCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "ContainerCredentialsProvider");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -279,7 +233,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 ContainerCredentialsProvider mockCredentialsProvider = mock(ContainerCredentialsProvider.class);
                 staticCredentialsProvider.when(ContainerCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -298,18 +252,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsInstanceProfileCredentialsProvider_should_CreateWriterWithInstanceProfileCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("InstanceProfileCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "InstanceProfileCredentialsProvider");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -325,7 +271,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 InstanceProfileCredentialsProvider mockCredentialsProvider = mock(InstanceProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(InstanceProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -344,18 +290,12 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("StaticCredentialsProvider")
-                .profile("")
-                .accessKeyId("test")
-                .secretAccessKey("test")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "StaticCredentialsProvider");
+            put("accessKeyId", "test");
+            put("secretAccessKey", "test");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -376,7 +316,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -397,18 +337,13 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsNotEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("StaticCredentialsProvider")
-                .profile("")
-                .accessKeyId("test")
-                .secretAccessKey("test")
-                .sessionToken("test")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "StaticCredentialsProvider");
+            put("accessKeyId", "test");
+            put("secretAccessKey", "test");
+            put("sessionToken", "test");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -429,7 +364,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -450,18 +385,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsAnonymousCredentialsProvider_should_CreateWriterWithAnonymousCredentialsProvider() {
 
         // Arrange
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("AnonymousCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("credentialsProvider", "AnonymousCredentialsProvider");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -477,7 +404,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 AnonymousCredentialsProvider mockCredentialsProvider = mock(AnonymousCredentialsProvider.class);
                 staticCredentialsProvider.when(AnonymousCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -495,18 +422,11 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     @Test
     void when_EndpointIsNotEmpty_should_CreateWriterWithEndpoint() {
 
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("DefaultCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("http://localhost:8000")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:8000");
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -517,7 +437,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
 
             staticDynamoDbClient.when(DynamoDbClient::builder).thenReturn(mockDynamoDbClientBuilder);
 
-            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -533,18 +453,10 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     @Test
     void when_EndpointIsEmpty_should_CreateWriterWithoutEndpoint() {
 
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
-                .credentialsProvider("DefaultCredentialsProvider")
-                .profile("")
-                .accessKeyId("")
-                .secretAccessKey("")
-                .sessionToken("")
-                .endpoint("")
-                .region("us-west-2")
-                .batchSize(25)
-                .errorsToIgnore(new HashSet<>())
-                .statementColumnIndex(0)
-                .build();
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("region", "us-west-2");
+        }};
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
@@ -555,7 +467,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
 
             staticDynamoDbClient.when(DynamoDbClient::builder).thenReturn(mockDynamoDbClientBuilder);
 
-            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(options);
+            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);
