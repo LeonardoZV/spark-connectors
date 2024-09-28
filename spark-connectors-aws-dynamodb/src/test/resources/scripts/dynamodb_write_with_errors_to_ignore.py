@@ -18,7 +18,9 @@ if __name__ == "__main__":
     df.show()
     df.printSchema()
 
-    df.write.format("dynamodb").mode("append") \
+    df.write \
+        .format("dynamodb") \
+        .mode("append") \
         .option("endpoint", sys.argv[1]) \
         .option("batchSize", "25") \
         .option("errorsToIgnore", "ConditionalCheckFailed") \

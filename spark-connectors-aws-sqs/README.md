@@ -20,44 +20,64 @@ To run the connector you will need **Java 8+** and **Spark 3.2.1+**
 
 The IAM permissions needed for this library to write on a SQS queue are *sqs:GetQueueUrl* and *sqs:SendMessage*.
 
-The IAM permission needed for this library to write on a S3 when using the SQS Extended Client *s3:PutObject* and *s3:ListBucket*.
+The IAM permission needed for this library to write on a S3 when using the SQS Extended Client are *s3:PutObject* and *s3:ListBucket*.
 
 Don't forget to configure the default credentials in your machine. See [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for more information.
 
 ### Configuration
 
 The following options can be configured:
+- **credentialProvider** to be used by the sqs client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html). Default DefaultCredentialsProvider.
+- **profile** to be used by the sqs client when credentialProvider is ProfileCredentialsProvider. Default default.
+- **accessKey** to be used by the sqs client when credentialProvider is StaticCredentialsProvider. Optional.
+- **secretKey** to be used by the sqs client when credentialProvider is StaticCredentialsProvider. Optional.
+- **sessionToken** to be used by the sqs client when credentialProvider is StaticCredentialsProvider. Optional.
 - **endpoint** to be used by the sqs client. Optional.
 - **region** of the queue. Default us-east-1.
 - **queueName** of the queue.
-- **batchSize** so we can group N messages in one call. Default 10.
+- **batchSize** so we can group N messages in one call. It increases performance but also increases latency. Default 10.
 - **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs is in a different account than the spark job. Optional.
 - **useSqsExtendedClient** if you want to use the SQS Extended Client to send messages larger than 256KB. Default false.
-- 
+
 AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
+- **s3CredentialProvider** to be used by the s3 client. Default DefaultCredentialsProvider.
+- **s3Profile** to be used by the s3 client when credentialProvider is ProfileCredentialsProvider. Default default.
+- **s3AccessKey** to be used by the s3 client when credentialProvider is StaticCredentialsProvider. Optional.
+- **s3SecretKey** to be used by the s3 client when credentialProvider is StaticCredentialsProvider. Optional.
+- **s3SessionToken** to be used by the s3 client when credentialProvider is StaticCredentialsProvider. Optional.
 - **s3Endpoint** to be used by the s3 client. Optional.
 - **s3Region** of the bucket. Default us-east-1.
 - **forcePathStyle** force a path-style endpoint to be used where the bucket name is part of the path. Default false.
 - **bucketName** when using the sqs extended client, you need to specify the bucket name where the messages will be stored. 
 - **payloadSizeThreshold** when using the sqs extended client, you need to specify the threshold size in bytes. Default 256KB.
-
-PS: AWS SQS Extended Client does not support AWS S3 key prefixes.
+- **s3KeyPrefix** when using the sqs extended client, you can specify a key prefix to be used in the s3 bucket. Optional.
 
 ```python
 df.write
     .format("sqs") \
     .mode("append") \
+    .option("credentialProvider", "DefaultCredentialsProvider") \
+    .option("profile", "default") \
+    .option("accessKey", "AKIAIOSFODNN7EXAMPLE") \
+    .option("secretKey", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY") \
+    .option("sessionToken", "AQoDYXdzEJr") \
     .option("endpoint", "http://localstack:4566") \
     .option("region", "us-east-1") \
     .option("queueName", "my-test-queue") \
     .option("batchSize", "10") \
     .option("queueOwnerAWSAccountId", "123456789012") \
     .option("useSqsExtendedClient", "true") \
+    .option("s3credentialProvider", "DefaultCredentialsProvider") \
+    .option("s3profile", "default") \
+    .option("s3accessKey", "AKIAIOSFODNN7EXAMPLE") \
+    .option("s3secretKey", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY") \
+    .option("s3sessionToken", "AQoDYXdzEJr") \
     .option("s3Endpoint", "http://localstack:4566") \
     .option("s3Region", "us-east-1") \
     .option("forcePathStyle", "false") \
     .option("bucketName", "my-test-bucket") \
     .option("payloadSizeThreshold", "262144") \
+    .option("s3KeyPrefix", "prefix/") \
     .save()
 ```
 
@@ -68,7 +88,7 @@ The dataframe:
 
 ### Running
 
-This library is available at Maven Central repository as **com.leonardozv:spark-connectors-aws-sqs:1.0.0** and can be installed in your spark cluster through the packages parameter of spark-submit.
+This library is available at maven central repository as **com.leonardozv:spark-connectors-aws-sqs:1.0.0** and can be installed in your spark cluster through the packages parameter of spark-submit.
 
 Dependencies needed to run this library are:
 
@@ -109,7 +129,6 @@ if __name__ == "__main__":
         .mode("append") \
         .option("region", "sa-east-1") \
         .option("queueName", "test") \
-        .option("batchSize", "10") \
         .save()
 
     spark.stop()

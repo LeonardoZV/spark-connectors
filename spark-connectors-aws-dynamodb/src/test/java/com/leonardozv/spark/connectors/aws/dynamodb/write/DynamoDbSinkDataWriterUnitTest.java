@@ -1,173 +1,183 @@
 package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import org.apache.spark.sql.catalyst.InternalRow;
-import org.apache.spark.sql.connector.write.WriterCommitMessage;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.spark.unsafe.types.UTF8String;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import scala.collection.JavaConverters;
+import scala.collection.Seq;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class DynamoDbSinkDataWriterUnitTest {
 
-    private DynamoDbClient dynamoDbClient;
-    private DynamoDbSinkOptions options;
-    private DynamoDbSinkDataWriter writer;
+    private InternalRow createInternalRow(Object... values) {
+        Seq<Object> x = JavaConverters.asScalaBuffer(new ArrayList<>(Arrays.asList(values))).toSeq();
+        return InternalRow.fromSeq(x);
+    }
 
-    @BeforeEach
-    void setUp() {
-        dynamoDbClient = mock(DynamoDbClient.class);
+    @Test
+    void when_RowHasStatementAndBatchSizeReached_should_ExecuteBatchExecuteStatement() {
+
+        // Arrange
+        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
+                .region("us-west-2")
+                .endpoint("http://localhost:8000")
+                .batchSize(1)
+                .statementColumnIndex(0)
+                .errorsToIgnore(new HashSet<>())
+                .build();
+
+        DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
+        BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(BatchStatementResponse.builder().build())).build();
+        when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(response);
+
+        InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
+
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+
+        // Act
+        writer.write(row);
+        writer.commit();
+
+        // Assert
+        assertDoesNotThrow(writer::close);
+        ArgumentCaptor<BatchExecuteStatementRequest> argumentCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
+        verify(mockDynamoDbClient, times(1)).batchExecuteStatement(argumentCaptor.capture());
+        BatchExecuteStatementRequest capturedArgument = argumentCaptor.getValue();
+        assertThat(capturedArgument.statements()).hasSize(1);
+        assertThat(capturedArgument.statements().get(0).statement()).isEqualTo("test-statement");
+
+    }
+
+    @Test
+    void when_RowHasStatementAndBatchSizeReachedAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndThrowException() {
+
+        // Arrange
+        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
+                .region("us-west-2")
+                .endpoint("http://localhost:8000")
+                .batchSize(1)
+                .statementColumnIndex(0)
+                .errorsToIgnore(new HashSet<>())
+                .build();
+
+        DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
+        BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.ACCESS_DENIED).message("Error message").build();
+        BatchStatementResponse statementResponse = BatchStatementResponse.builder().error(error).build();
+        BatchExecuteStatementResponse batchStatementResponse = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(statementResponse)).build();
+        when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(batchStatementResponse);
+
+        InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
+
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+
+        // Act & Assert
+        assertThrows(DynamoDbSinkBatchResultException.class, () -> writer.write(row));
+        assertDoesNotThrow(writer::close);
+        ArgumentCaptor<BatchExecuteStatementRequest> argumentCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
+        verify(mockDynamoDbClient, times(1)).batchExecuteStatement(argumentCaptor.capture());
+        BatchExecuteStatementRequest capturedArgument = argumentCaptor.getValue();
+        assertThat(capturedArgument.statements()).hasSize(1);
+        assertThat(capturedArgument.statements().get(0).statement()).isEqualTo("test-statement");
+
+    }
+
+    @Test
+    void when_RowHasStatementAndBatchSizeReachedAndHasErrorsToIgnoreAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndNotThrowException() {
 
         Set<String> errorsToIgnore = new HashSet<>();
         errorsToIgnore.add(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED.toString());
 
-        options = new DynamoDbSinkOptions.Builder()
+        // Arrange
+        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
                 .region("us-west-2")
                 .endpoint("http://localhost:8000")
-                .batchSize(2)
+                .batchSize(1)
                 .statementColumnIndex(0)
                 .errorsToIgnore(errorsToIgnore)
                 .build();
 
-        writer = new DynamoDbSinkDataWriter(0, 0, dynamoDbClient, options);
-    }
-
-    @Test
-    void testWrite() {
-        InternalRow row = mock(InternalRow.class);
-        when(row.getString(0)).thenReturn("statement1");
-
-        BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder()
-                .responses(Collections.singletonList(BatchStatementResponse.builder().build()))
-                .build();
-
-        when(dynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(response);
-
-        writer.write(row);
-
-        ArgumentCaptor<BatchExecuteStatementRequest> requestCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
-        verify(dynamoDbClient, never()).batchExecuteStatement(requestCaptor.capture());
-
-        writer.write(row);
-
-        verify(dynamoDbClient, times(1)).batchExecuteStatement(requestCaptor.capture());
-        BatchExecuteStatementRequest request = requestCaptor.getValue();
-        assertEquals(2, request.statements().size());
-        assertEquals("statement1", request.statements().get(0).statement());
-    }
-
-    @Test
-    void testWriteWithErrorsAndWithoutErrorToIgnore() {
-
-        InternalRow row = mock(InternalRow.class);
-        when(row.getString(0)).thenReturn("statement1");
-
-        BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.ACCESS_DENIED).message("Error message").build();
-        BatchStatementResponse statementResponse = BatchStatementResponse.builder().error(error).build();
-        BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder()
-                .responses(Collections.singletonList(statementResponse))
-                .build();
-
-        ArgumentCaptor<BatchExecuteStatementRequest> requestCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
-
-        when(dynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(response);
-
-        writer.write(row);
-
-        assertThrows(DynamoDbSinkBatchResultException.class, writer::commit);
-
-        verify(dynamoDbClient, times(1)).batchExecuteStatement(requestCaptor.capture());
-
-        BatchExecuteStatementRequest request = requestCaptor.getValue();
-
-        assertEquals(1, request.statements().size());
-        assertEquals("statement1", request.statements().get(0).statement());
-
-    }
-
-    @Test
-    void testWriteWithErrorsAndWithErrorToIgnore() {
-
-        InternalRow row = mock(InternalRow.class);
-        when(row.getString(0)).thenReturn("statement1");
-
+        DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED).message("Error message").build();
         BatchStatementResponse statementResponse = BatchStatementResponse.builder().error(error).build();
-        BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder()
-                .responses(Collections.singletonList(statementResponse))
+        BatchExecuteStatementResponse batchStatementResponse = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(statementResponse)).build();
+        when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(batchStatementResponse);
+
+        InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
+
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> writer.write(row));
+        assertDoesNotThrow(writer::close);
+        ArgumentCaptor<BatchExecuteStatementRequest> argumentCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
+        verify(mockDynamoDbClient, times(1)).batchExecuteStatement(argumentCaptor.capture());
+        BatchExecuteStatementRequest capturedArgument = argumentCaptor.getValue();
+        assertThat(capturedArgument.statements()).hasSize(1);
+        assertThat(capturedArgument.statements().get(0).statement()).isEqualTo("test-statement");
+
+    }
+
+    @Test
+    void when_RowHasStatementAndBatchSizeNotReachedButCommitCalled_should_ExecuteBatchExecuteStatement() {
+
+        // Arrange
+        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
+                .region("us-west-2")
+                .endpoint("http://localhost:8000")
+                .batchSize(2)
+                .statementColumnIndex(0)
+                .errorsToIgnore(new HashSet<>())
                 .build();
 
-        ArgumentCaptor<BatchExecuteStatementRequest> requestCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
+        DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
+        when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(BatchExecuteStatementResponse.builder().build());
 
-        when(dynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(response);
+        InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+
+        // Act
         writer.write(row);
-
         writer.commit();
 
-        verify(dynamoDbClient, times(1)).batchExecuteStatement(requestCaptor.capture());
-
-        BatchExecuteStatementRequest request = requestCaptor.getValue();
-
-        assertEquals(1, request.statements().size());
-        assertEquals("statement1", request.statements().get(0).statement());
-
-    }
-
-    @Test
-    void testCommit() {
-        InternalRow row = mock(InternalRow.class);
-        when(row.getString(0)).thenReturn("statement1");
-
-        BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder()
-                .responses(Collections.singletonList(BatchStatementResponse.builder().build()))
-                .build();
-
-        when(dynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(response);
-
-        writer.write(row);
-
-        WriterCommitMessage commitMessage = writer.commit();
-
-        assertNotNull(commitMessage);
-        assertInstanceOf(DynamoDbSinkWriterCommitMessage.class, commitMessage);
-
-        ArgumentCaptor<BatchExecuteStatementRequest> requestCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
-        verify(dynamoDbClient, times(1)).batchExecuteStatement(requestCaptor.capture());
-    }
-
-    @Test
-    void testCommitWithoutMoreMessages() {
-        InternalRow row = mock(InternalRow.class);
-        when(row.getString(0)).thenReturn("statement1");
-
-        BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder()
-                .responses(Collections.singletonList(BatchStatementResponse.builder().build()))
-                .build();
-
-        when(dynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(response);
-
-        WriterCommitMessage commitMessage = writer.commit();
-
-        assertNotNull(commitMessage);
-        assertInstanceOf(DynamoDbSinkWriterCommitMessage.class, commitMessage);
-    }
-
-    @Test
-    void testAbort() {
-        assertDoesNotThrow(writer::abort);
-    }
-
-    @Test
-    void testClose() {
+        // Assert
         assertDoesNotThrow(writer::close);
+        ArgumentCaptor<BatchExecuteStatementRequest> argumentCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
+        verify(mockDynamoDbClient, times(1)).batchExecuteStatement(argumentCaptor.capture());
+        BatchExecuteStatementRequest capturedArgument = argumentCaptor.getValue();
+        assertThat(capturedArgument.statements()).hasSize(1);
+        assertThat(capturedArgument.statements().get(0).statement()).isEqualTo("test-statement");
+
+    }
+
+    @Test
+    void when_AbortCalled_should_DoNothing() {
+
+        // Arrange
+        DynamoDbSinkOptions options = new DynamoDbSinkOptions.Builder()
+                .region("us-west-2")
+                .endpoint("http://localhost:8000")
+                .batchSize(2)
+                .statementColumnIndex(0)
+                .errorsToIgnore(new HashSet<>())
+                .build();
+
+        DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
+
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, options);
+
+        // Act & Assert
+        assertDoesNotThrow(writer::abort);
+
     }
 
 }

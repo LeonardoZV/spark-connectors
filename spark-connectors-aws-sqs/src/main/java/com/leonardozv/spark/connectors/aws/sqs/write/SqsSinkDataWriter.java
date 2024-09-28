@@ -55,19 +55,6 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
 
     }
 
-    private Map<String, MessageAttributeValue> convertMapData(Optional<MapData> arrayData) {
-
-        Map<String, MessageAttributeValue> attributes = new HashMap<>();
-
-        arrayData.ifPresent(mapData -> mapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
-            attributes.put(key.toString(), MessageAttributeValue.builder().dataType("String").stringValue(value.toString()).build());
-            return null;
-        }));
-
-        return attributes;
-
-    }
-
     @Override
     public WriterCommitMessage commit() {
 
@@ -87,6 +74,19 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
     @Override
     public void close() {
         // nothing to close
+    }
+
+    private Map<String, MessageAttributeValue> convertMapData(Optional<MapData> arrayData) {
+
+        Map<String, MessageAttributeValue> attributes = new HashMap<>();
+
+        arrayData.ifPresent(mapData -> mapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
+            attributes.put(key.toString(), MessageAttributeValue.builder().dataType("String").stringValue(value.toString()).build());
+            return null;
+        }));
+
+        return attributes;
+
     }
 
     private void sendMessages() {

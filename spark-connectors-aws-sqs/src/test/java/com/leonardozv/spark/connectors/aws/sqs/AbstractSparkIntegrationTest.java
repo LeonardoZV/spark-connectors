@@ -44,7 +44,7 @@ abstract class AbstractSparkIntegrationTest {
             "checksums-2.27.17.jar",
             "checksums-spi-2.27.17.jar",
             "endpoints-spi-2.27.17.jar",
-//            "eventstream-1.0.1.jar",
+            "eventstream-1.0.1.jar",
             "http-auth-2.27.17.jar",
             "http-auth-aws-2.27.17.jar",
             "http-auth-aws-eventstream-2.27.17.jar",
@@ -313,8 +313,10 @@ abstract class AbstractSparkIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(message.body());
         JsonNode payloadNode = rootNode.get(1);
-        String s3key = payloadNode.get("s3Key").asText();
-        String line = getLines(s3, s3key).get(0);
+        String s3Key = payloadNode.get("s3Key").asText();
+        assertThat(s3Key).startsWith("prefix/");
+
+        String line = getLines(s3, s3Key).get(0);
         assertThat(line).isEqualTo("foo");
 
     }

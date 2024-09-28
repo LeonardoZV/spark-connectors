@@ -18,7 +18,9 @@ if __name__ == "__main__":
     df.show()
     df.printSchema()
 
-    df.write.format("sqs").mode("append") \
+    df.write \
+        .format("sqs") \
+        .mode("append") \
         .option("endpoint", sys.argv[1]) \
         .option("queueName", "my-test") \
         .option("batchSize", "3") \
@@ -27,6 +29,7 @@ if __name__ == "__main__":
         .option("forcePathStyle", "true") \
         .option("bucketName", "my-bucket") \
         .option("payloadSizeThreshold", "1") \
+        .option("s3KeyPrefix", "prefix/") \
         .save()
 
     spark.stop()

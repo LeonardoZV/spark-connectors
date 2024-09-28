@@ -20,6 +20,11 @@ public class DynamoDbSinkWriteBuilder implements WriteBuilder {
     public Write build() {
 
         DynamoDbSinkOptions options = DynamoDbSinkOptions.builder()
+                .credentialsProvider(this.info.options().getOrDefault("credentialProvider", "DefaultCredentialsProvider"))
+                .profile(this.info.options().getOrDefault("profile", ""))
+                .accessKeyId(this.info.options().getOrDefault("accessKeyId", ""))
+                .secretAccessKey(this.info.options().getOrDefault("secretAccessKey", ""))
+                .sessionToken(this.info.options().getOrDefault("sessionToken", ""))
                 .endpoint(this.info.options().getOrDefault("endpoint",""))
                 .region(this.info.options().getOrDefault("region", "us-east-1"))
                 .batchSize(Integer.parseInt(this.info.options().getOrDefault("batchSize", "25")))
