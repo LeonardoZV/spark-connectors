@@ -41,6 +41,8 @@ The following options can be configured in the writer:
 | `batchSize`            | The number of statements to be grouped in one call.                                                                                                                                                           | No                                                        | 25                         |
 | `errorsToIgnore`       | Errors that you want to be ignored and treated as a success separated by comma.                                                                                                                               | No                                                        |                            |
 
+Example:
+
 ```python
 df.write
     .format("dynamodb") \
@@ -106,9 +108,9 @@ if __name__ == "__main__":
 
 ## Messaging delivery semantics and error handling
 
-The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark will retry the task in another node until it reaches *spark.task.maxFailures*. Statements that have already been executed could be executed again.
+The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark default behavior is to retry the task in another node until it reaches *spark.task.maxFailures*. Statements that have already been executed could be executed again.
 
-The errorsToIgnore option can be used to ignore errors and treat the execution as a success. If there are no more errors in the batch that match the ignoreError option, the entire batch will be a success and the statements will not be retried. If there are more erros in the batch that not match the ignoreError option, the entire batch will be a error and all statements will be retried (even the ones market with the ignoreErrors option). That's because the spark behavior is to retry the entire batch when there are errors.
+The errorsToIgnore option can be used to ignore errors and treat the execution as a success. If there are no more errors in the batch that match the ignoreError option, the entire batch will be a success and the statements will not be retried. If there are more erros in the batch that not match the ignoreError option, the entire batch will be a error and all statements will be retried (even the ones marked with the ignoreErrors option). That's because the spark behavior is to retry the entire batch when there are errors.
 
 ## How to
 

@@ -58,6 +58,8 @@ AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
 | `payloadSizeThreshold`   | The threshold size in bytes.                                                                                                                                                                            | No                                                          | 262144                     |
 | `s3KeyPrefix`            | The key prefix to be used in the s3 bucket.                                                                                                                                                             | No                                                          |                            |
 
+Example:
+
 ```python
 df.write
     .format("sqs") \
@@ -143,7 +145,7 @@ if __name__ == "__main__":
 
 ## Messaging delivery semantics and error handling
 
-The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark will retry the task in another node until it reaches *spark.task.maxFailures*. Messages that have already been sent could be sent again, generating duplicates. That's because the spark behavior is to retry the entire batch when there are errors.
+The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark default behavior is to retry the task in another node until it reaches *spark.task.maxFailures*. Messages that have already been sent could be sent again, generating duplicates. That's because the spark behavior is to retry the entire batch when there are errors.
 
 ## How to
 
