@@ -46,7 +46,7 @@ class SqsSinkWriteBuilderUnitTest {
         assertEquals(Region.of("us-east-1"), write.options().s3Region());
         assertFalse(write.options().forcePathStyle());
         assertEquals("", write.options().bucketName());
-        assertEquals(262144, write.options().payloadSizeThreshold());
+        assertEquals(-1, write.options().payloadSizeThreshold());
         assertEquals("", write.options().s3KeyPrefix());
         assertEquals(0, write.valueColumnIndex());
         assertEquals(-1, write.msgAttributesColumnIndex());

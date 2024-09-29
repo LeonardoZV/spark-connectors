@@ -26,31 +26,37 @@ Don't forget to configure the default credentials in your machine. See [Configur
 
 ### Configuration
 
-The following options can be configured:
-- **credentialProvider** to be used by the sqs client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html). Default DefaultCredentialsProvider.
-- **profile** to be used by the sqs client when credentialProvider is ProfileCredentialsProvider. Default default.
-- **accessKey** to be used by the sqs client when credentialProvider is StaticCredentialsProvider. Optional.
-- **secretKey** to be used by the sqs client when credentialProvider is StaticCredentialsProvider. Optional.
-- **sessionToken** to be used by the sqs client when credentialProvider is StaticCredentialsProvider. Optional.
-- **endpoint** to be used by the sqs client. Optional.
-- **region** of the queue. Default us-east-1.
-- **queueName** of the queue.
-- **batchSize** so we can group N messages in one call. It increases performance but also increases latency. Default 10.
-- **queueOwnerAWSAccountId** aws account of the sqs queue. Needed if the sqs is in a different account than the spark job. Optional.
-- **useSqsExtendedClient** if you want to use the SQS Extended Client to send messages larger than 256KB. Default false.
+The following options can be configured in the writer:
+
+| Option                   | Description                                                                                                                                                                                            | Required                                                  | Default                    |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|----------------------------|
+| `credentialProvider`     | The credential provider to be used by the sqs client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html). | No                                                        | DefaultCredentialsProvider |
+| `profile`                | The profile to be used by the sqs client when credentialProvider is ProfileCredentialsProvider.                                                                                                        | Yes when credentialProvider is ProfileCredentialsProvider | default                    |
+| `accessKey`              | The access key to be used by the sqs client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when credentialProvider is StaticCredentialsProvider  |                            |
+| `secretKey`              | The secret key to be used by the sqs client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when credentialProvider is StaticCredentialsProvider  |                            |
+| `sessionToken`           | The session token to be used by the sqs client when credentialProvider is StaticCredentialsProvider.                                                                                                   | Yes when credentialProvider is StaticCredentialsProvider  |                            |
+| `endpoint`               | The endpoint to be used by the sqs client.                                                                                                                                                             | No                                                        |                            |
+| `region`                 | The region of the queue.                                                                                                                                                                               | No                                                        | us-east-1                  |
+| `queueName`              | The name of the queue.                                                                                                                                                                                 | Yes                                                       |                            |
+| `batchSize`              | The number of messages to be sent in one call.                                                                                                                                                         | No                                                        | 10                         |
+| `queueOwnerAWSAccountId` | The AWS account of the sqs queue. Needed if the sqs is in a different account than the spark job.                                                                                                      | No                                                        |                            |
+| `useSqsExtendedClient`   | If you want to use the SQS Extended Client to send messages larger than 256KB.                                                                                                                         | No                                                        | false                      |
 
 AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
-- **s3CredentialProvider** to be used by the s3 client. Default DefaultCredentialsProvider.
-- **s3Profile** to be used by the s3 client when credentialProvider is ProfileCredentialsProvider. Default default.
-- **s3AccessKey** to be used by the s3 client when credentialProvider is StaticCredentialsProvider. Optional.
-- **s3SecretKey** to be used by the s3 client when credentialProvider is StaticCredentialsProvider. Optional.
-- **s3SessionToken** to be used by the s3 client when credentialProvider is StaticCredentialsProvider. Optional.
-- **s3Endpoint** to be used by the s3 client. Optional.
-- **s3Region** of the bucket. Default us-east-1.
-- **forcePathStyle** force a path-style endpoint to be used where the bucket name is part of the path. Default false.
-- **bucketName** when using the sqs extended client, you need to specify the bucket name where the messages will be stored. 
-- **payloadSizeThreshold** when using the sqs extended client, you need to specify the threshold size in bytes. Default 256KB.
-- **s3KeyPrefix** when using the sqs extended client, you can specify a key prefix to be used in the s3 bucket. Optional.
+
+| Option                   | Description                                                                                                                                                                                             | Required                                                    | Default                    |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|----------------------------|
+| `s3CredentialProvider`   | The credential provider to be used by the s3 client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html).   | No                                                          | DefaultCredentialsProvider |
+| `s3Profile`              | The profile to be used by the s3 client when credentialProvider is ProfileCredentialsProvider.                                                                                                          | Yes when s3CredentialProvider is ProfileCredentialsProvider | default                    |
+| `s3AccessKey`            | The access key to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when s3CredentialProvider is StaticCredentialsProvider  |                            |
+| `s3SecretKey`            | The secret key to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when s3CredentialProvider is StaticCredentialsProvider  |                            |
+| `s3SessionToken`         | The session token to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                     | Yes when s3CredentialProvider is StaticCredentialsProvider  |                            |
+| `s3Endpoint`             | The endpoint to be used by the s3 client.                                                                                                                                                               | No                                                          |                            |
+| `s3Region`               | The region of the bucket.                                                                                                                                                                               | No                                                          | us-east-1                  |
+| `forcePathStyle`         | Force a path-style endpoint to be used where the bucket name is part of the path.                                                                                                                       | No                                                          | false                      |
+| `bucketName`             | The bucket name where the messages will be stored.                                                                                                                                                      | Yes                                                         |                            |
+| `payloadSizeThreshold`   | The threshold size in bytes.                                                                                                                                                                            | No                                                          | 262144                     |
+| `s3KeyPrefix`            | The key prefix to be used in the s3 bucket.                                                                                                                                                             | No                                                          |                            |
 
 ```python
 df.write
@@ -67,11 +73,11 @@ df.write
     .option("batchSize", "10") \
     .option("queueOwnerAWSAccountId", "123456789012") \
     .option("useSqsExtendedClient", "true") \
-    .option("s3credentialProvider", "DefaultCredentialsProvider") \
-    .option("s3profile", "default") \
-    .option("s3accessKey", "AKIAIOSFODNN7EXAMPLE") \
-    .option("s3secretKey", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY") \
-    .option("s3sessionToken", "AQoDYXdzEJr") \
+    .option("s3CredentialProvider", "DefaultCredentialsProvider") \
+    .option("s3Profile", "default") \
+    .option("s3AccessKey", "AKIAIOSFODNN7EXAMPLE") \
+    .option("s3SecretKey", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY") \
+    .option("s3SessionToken", "AQoDYXdzEJr") \
     .option("s3Endpoint", "http://localstack:4566") \
     .option("s3Region", "us-east-1") \
     .option("forcePathStyle", "false") \
@@ -82,6 +88,7 @@ df.write
 ```
 
 The dataframe:
+
 - **must** have a column called **value** (string) containing the body of each message.
 - **may** have a column called **msg_attributes** (map of [string, string]). Each key/value wil be add as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
 - **may** have a column called **group_id** (string) containing the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).

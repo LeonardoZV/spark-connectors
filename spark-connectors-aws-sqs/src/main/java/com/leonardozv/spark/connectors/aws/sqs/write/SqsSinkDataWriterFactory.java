@@ -15,9 +15,9 @@ import java.net.URI;
 public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
     private final SqsSinkOptions options;
-    private int valueColumnIndex;
-    private int msgAttributesColumnIndex;
-    private int groupIdColumnIndex;
+    private final int valueColumnIndex;
+    private final int msgAttributesColumnIndex;
+    private final int groupIdColumnIndex;
 
     public SqsSinkDataWriterFactory(SqsSinkOptions options, int valueColumnIndex, int msgAttributesColumnIndex, int groupIdColumnIndex) {
         this.options = options;

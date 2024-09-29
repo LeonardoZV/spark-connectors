@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -508,111 +509,54 @@ class SqsSinkDataWriterFactoryUnitTest {
 
     }
 
-//    @Test
-//    void when_SqsQueueOwnerAWSAccountIdIsNotEmpty_should_CreateWriterWithQueueOwnerAWSAccountId() {
-//
-//        String queueOwnerAWSAccountId = "123456789012";
-//
-//        SqsSinkOptions options = SqsSinkOptions.builder()
-//                .credentialsProvider("DefaultCredentialsProvider")
-//                .profile("")
-//                .accessKeyId("")
-//                .secretAccessKey("")
-//                .sessionToken("")
-//                .endpoint("http://localhost:4566")
-//                .region("us-east-1")
-//                .queueName("test-queue")
-//                .queueOwnerAWSAccountId(queueOwnerAWSAccountId)
-//                .batchSize(10)
-//                .useSqsExtendedClient(false)
-//                .build();
-//
-//        SqsClient mockSqsClient = mock(SqsClient.class);
-//        when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
-//
-//        SqsClientBuilder mockSqsClientBuilder = mock(SqsClientBuilder.class);
-//        when(mockSqsClientBuilder.build()).thenReturn(mockSqsClient);
-//
-//        try (MockedStatic<SqsClient> staticSqsClient = Mockito.mockStatic(SqsClient.class)) {
-//
-//            staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
-//
-//            GetQueueUrlRequest getQueueUrlRequest = mock(GetQueueUrlRequest.class);
-//
-//            GetQueueUrlRequest.Builder mockGetQueueUrlRequestBuilder = mock(GetQueueUrlRequest.Builder.class);
-//            when(mockGetQueueUrlRequestBuilder.build()).thenReturn(getQueueUrlRequest);
-//
-//            try (MockedStatic<GetQueueUrlRequest> staticGetQueueUrlRequest = Mockito.mockStatic(GetQueueUrlRequest.class)) {
-//
-//                staticGetQueueUrlRequest.when(GetQueueUrlRequest::builder).thenReturn(mockGetQueueUrlRequestBuilder);
-//
-//                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
-//
-//                // Act
-//                DataWriter<InternalRow> writer = factory.createWriter(0, 0);
-//
-//                // Assert
-//                assertNotNull(writer);
-//                verify(mockGetQueueUrlRequestBuilder, times(1)).queueOwnerAWSAccountId(queueOwnerAWSAccountId);
-//
-//            }
-//
-//        }
-//
-//    }
+    @Test
+    void when_SqsQueueOwnerAWSAccountIdIsNotEmpty_should_CreateWriterWithQueueOwnerAWSAccountId() {
 
-//    @Test
-//    void testCreateWriterWithExtendedClient() {
-//
-//        SqsSinkOptions options = SqsSinkOptions.builder()
-//                .credentialsProvider("DefaultCredentialsProvider")
-//                .profile("")
-//                .accessKeyId("")
-//                .secretAccessKey("")
-//                .sessionToken("")
-//                .endpoint("http://localhost:4566")
-//                .region("us-east-1")
-//                .queueName("test-queue")
-//                .queueOwnerAWSAccountId("123456789012")
-//                .batchSize(10)
-//                .useSqsExtendedClient(true)
-//                .s3credentialsProvider("DefaultCredentialsProvider")
-//                .s3profile("")
-//                .s3accessKeyId("")
-//                .s3secretAccessKey("")
-//                .s3sessionToken("")
-//                .s3Endpoint("")
-//                .s3Endpoint("")
-//                .s3Region("us-east-1")
-//                .bucketName("")
-//                .payloadSizeThreshold(-1)
-//                .build();
-//
-//        SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
-//
-//        try (MockedStatic<SqsClient> mockedSqsClient = Mockito.mockStatic(SqsClient.class)) {
-//            SqsClientBuilder mockBuilder = mock(SqsClientBuilder.class);
-//            SqsClient mockClient = mock(SqsClient.class);
-//            GetQueueUrlResponse mockResponse = mock(GetQueueUrlResponse.class);
-//
-//            when(mockBuilder.region(any(Region.class))).thenReturn(mockBuilder);
-//            when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
-//            when(mockBuilder.build()).thenReturn(mockClient);
-//            when(mockClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(mockResponse);
-//            when(mockResponse.queueUrl()).thenReturn("http://localhost:4566/123456789012/test-queue");
-//
-//            mockedSqsClient.when(SqsClient::builder).thenReturn(mockBuilder);
-//
-//            DataWriter<InternalRow> writer = factory.createWriter(0, 0);
-//
-//            assertNotNull(writer);
-//            assertInstanceOf(SqsSinkDataWriter.class, writer);
-//        }
-//
-//    }
+        String queueOwnerAWSAccountId = "123456789012";
+
+        HashMap<String, String> options = new HashMap<String, String>() {{
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+            put("queueOwnerAWSAccountId", queueOwnerAWSAccountId);
+        }};
+
+        SqsClient mockSqsClient = mock(SqsClient.class);
+        when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
+
+        SqsClientBuilder mockSqsClientBuilder = mock(SqsClientBuilder.class);
+        when(mockSqsClientBuilder.build()).thenReturn(mockSqsClient);
+
+        try (MockedStatic<SqsClient> staticSqsClient = Mockito.mockStatic(SqsClient.class)) {
+
+            staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
+
+            GetQueueUrlRequest getQueueUrlRequest = mock(GetQueueUrlRequest.class);
+
+            GetQueueUrlRequest.Builder mockGetQueueUrlRequestBuilder = mock(GetQueueUrlRequest.Builder.class);
+            when(mockGetQueueUrlRequestBuilder.queueName(anyString())).thenReturn(mockGetQueueUrlRequestBuilder);
+            when(mockGetQueueUrlRequestBuilder.build()).thenReturn(getQueueUrlRequest);
+
+            try (MockedStatic<GetQueueUrlRequest> staticGetQueueUrlRequest = Mockito.mockStatic(GetQueueUrlRequest.class)) {
+
+                staticGetQueueUrlRequest.when(GetQueueUrlRequest::builder).thenReturn(mockGetQueueUrlRequestBuilder);
+
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+
+                // Act
+                DataWriter<InternalRow> writer = factory.createWriter(0, 0);
+
+                // Assert
+                assertNotNull(writer);
+                verify(mockGetQueueUrlRequestBuilder, times(1)).queueOwnerAWSAccountId(queueOwnerAWSAccountId);
+
+            }
+
+        }
+
+    }
 
     @Test
-    void when_S3EndpointIsNotEmpty_should_CreateWriterWithS3Endpoint() {
+    void testCreateWriterWithExtendedClient() {
 
         // Arrange
         Map<String, String> options = new LinkedHashMap<String, String>() {{
@@ -620,6 +564,54 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
             put("useSqsExtendedClient", "true");
             put("s3Endpoint", "http://localhost:4566");
+            put("s3Region", "us-east-1");
+            put("bucketName", "test-bucket");
+            put("payloadSizeThreshold", "1");
+            put("s3KeyPrefix", "test/");
+        }};
+
+        SqsClient mockSqsClient = mock(SqsClient.class);
+        when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
+
+        SqsClientBuilder mockSqsClientBuilder = mock(SqsClientBuilder.class);
+        when(mockSqsClientBuilder.build()).thenReturn(mockSqsClient);
+
+        try (MockedStatic<SqsClient> staticSqsClient = Mockito.mockStatic(SqsClient.class)) {
+
+            staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
+
+            S3Client mockS3Client = mock(S3Client.class);
+
+            S3ClientBuilder mockS3ClientBuilder = mock(S3ClientBuilder.class);
+            when(mockS3ClientBuilder.build()).thenReturn(mockS3Client);
+
+            try (MockedStatic<S3Client> staticS3Client = Mockito.mockStatic(S3Client.class)) {
+
+                staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
+
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+
+                // Act
+                SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
+
+                // Assert
+                assertNotNull(writer);
+                verify(mockS3ClientBuilder, times(1)).endpointOverride(URI.create("http://localhost:4566"));
+
+            }
+
+        }
+
+    }
+
+    @Test
+    void when_S3EndpointIsEmpty_should_CreateWriterWithoutS3Endpoint() {
+
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+            put("useSqsExtendedClient", "true");
             put("s3Region", "us-east-1");
             put("bucketName", "test-bucket");
         }};
@@ -646,11 +638,11 @@ class SqsSinkDataWriterFactoryUnitTest {
                 SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
 
                 // Act
-                DataWriter<InternalRow> writer = factory.createWriter(0, 0);
+                SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
 
                 // Assert
                 assertNotNull(writer);
-                verify(mockS3ClientBuilder, times(1)).endpointOverride(URI.create("http://localhost:4566"));
+                verify(mockS3ClientBuilder, times(0)).endpointOverride(any(URI.class));
 
             }
 
@@ -658,113 +650,49 @@ class SqsSinkDataWriterFactoryUnitTest {
 
     }
 
-//    @Test
-//    void when_BucketNameIsNotEmpty_should_CreateWriterWithPayloadSupportEnabled() {
-//
-//        SqsSinkOptions options = SqsSinkOptions.builder()
-//                .credentialsProvider("DefaultCredentialsProvider")
-//                .profile("")
-//                .accessKeyId("")
-//                .secretAccessKey("")
-//                .sessionToken("")
-//                .endpoint("")
-//                .region("us-east-1")
-//                .queueName("test-queue")
-//                .queueOwnerAWSAccountId("")
-//                .batchSize(10)
-//                .useSqsExtendedClient(true)
-//                .s3credentialsProvider("DefaultCredentialsProvider")
-//                .s3profile("")
-//                .s3accessKeyId("")
-//                .s3secretAccessKey("")
-//                .s3sessionToken("")
-//                .s3Endpoint("")
-//                .s3Endpoint("")
-//                .s3Region("us-east-1")
-//                .bucketName("test-bucket")
-//                .build();
-//
-//        SqsClient mockSqsClient = mock(SqsClient.class);
-//        when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
-//
-//        SqsClientBuilder mockSqsClientBuilder = mock(SqsClientBuilder.class);
-//        when(mockSqsClientBuilder.build()).thenReturn(mockSqsClient);
-//
-//        try (MockedStatic<SqsClient> staticSqsClient = Mockito.mockStatic(SqsClient.class)) {
-//
-//            staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
-//
-//            S3Client mockS3Client = mock(S3Client.class);
-//
-//            S3ClientBuilder mockS3ClientBuilder = mock(S3ClientBuilder.class);
-//            when(mockS3ClientBuilder.build()).thenReturn(mockS3Client);
-//
-//            try (MockedStatic<S3Client> staticS3Client = Mockito.mockStatic(S3Client.class)) {
-//
-//                staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
-//
-//                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
-//
-//                // Act
-//                SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
-//
-//                // Assert
-//                assertNotNull(writer);
-//                verify(mockS3ClientBuilder, times(1)).endpointOverride(URI.create("http://localhost:4566"));
-//
-//            }
-//
-//        }
-//
-//    }
-//
-//    @Test
-//    void testCreateWriterWithPayloadSizeThreshold() {
-//
-//        SqsSinkOptions options = SqsSinkOptions.builder()
-//                .credentialsProvider("DefaultCredentialsProvider")
-//                .profile("")
-//                .accessKeyId("")
-//                .secretAccessKey("")
-//                .sessionToken("")
-//                .endpoint("http://localhost:4566")
-//                .region("us-east-1")
-//                .queueName("test-queue")
-//                .queueOwnerAWSAccountId("123456789012")
-//                .batchSize(10)
-//                .useSqsExtendedClient(true)
-//                .s3credentialsProvider("DefaultCredentialsProvider")
-//                .s3profile("")
-//                .s3accessKeyId("")
-//                .s3secretAccessKey("")
-//                .s3sessionToken("")
-//                .s3Endpoint("")
-//                .s3Region("us-east-1")
-//                .bucketName("test-bucket")
-//                .payloadSizeThreshold(256)
-//                .build();
-//
-//        SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(options);
-//
-//        try (MockedStatic<SqsClient> mockedSqsClient = Mockito.mockStatic(SqsClient.class)) {
-//            SqsClientBuilder mockBuilder = mock(SqsClientBuilder.class);
-//            SqsClient mockClient = mock(SqsClient.class);
-//            GetQueueUrlResponse mockResponse = mock(GetQueueUrlResponse.class);
-//
-//            when(mockBuilder.region(any(Region.class))).thenReturn(mockBuilder);
-//            when(mockBuilder.endpointOverride(any(URI.class))).thenReturn(mockBuilder);
-//            when(mockBuilder.build()).thenReturn(mockClient);
-//            when(mockClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(mockResponse);
-//            when(mockResponse.queueUrl()).thenReturn("http://localhost:4566/123456789012/test-queue");
-//
-//            mockedSqsClient.when(SqsClient::builder).thenReturn(mockBuilder);
-//
-//            DataWriter<InternalRow> writer = factory.createWriter(0, 0);
-//
-//            assertNotNull(writer);
-//            assertInstanceOf(SqsSinkDataWriter.class, writer);
-//        }
-//
-//    }
+    @Test
+    void when_BucketNameIsEmpty_should_CreateWriterWithoutPayloadSupportEnabled() {
+
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+            put("useSqsExtendedClient", "true");
+            put("s3Region", "us-east-1");
+        }};
+
+        SqsClient mockSqsClient = mock(SqsClient.class);
+        when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
+
+        SqsClientBuilder mockSqsClientBuilder = mock(SqsClientBuilder.class);
+        when(mockSqsClientBuilder.build()).thenReturn(mockSqsClient);
+
+        try (MockedStatic<SqsClient> staticSqsClient = Mockito.mockStatic(SqsClient.class)) {
+
+            staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
+
+            S3Client mockS3Client = mock(S3Client.class);
+
+            S3ClientBuilder mockS3ClientBuilder = mock(S3ClientBuilder.class);
+            when(mockS3ClientBuilder.build()).thenReturn(mockS3Client);
+
+            try (MockedStatic<S3Client> staticS3Client = Mockito.mockStatic(S3Client.class)) {
+
+                staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
+
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+
+                // Act
+                SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
+
+                // Assert
+                assertNotNull(writer);
+                verify(mockS3ClientBuilder, times(0)).endpointOverride(any(URI.class));
+
+            }
+
+        }
+
+    }
 
 }

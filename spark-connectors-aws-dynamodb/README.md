@@ -27,16 +27,29 @@ Don't forget to configure the default credentials in your machine. See [Configur
 
 ### Configuration
 
-The following options can be configured:
-- **endpoint** to be used by the dynamodb client. Optional.
-- **region** of the queue. Default us-east-2.
-- **batchSize** so we can group N statements in one call. Default 25.
-- **errorsToIgnore** errors that you want to be ignored and treated as a success separated by comma. Default empty.
+The following options can be configured in the writer:
+
+| Option                 | Description                                                                                                                                                                                                   | Required                                                  | Default                    |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|----------------------------|
+| `credentialProvider`   | The credential provider to be used by the dynamodb client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html).   | No                                                        | DefaultCredentialsProvider |
+| `profile`              | The profile to be used by the dynamodb client when credentialProvider is ProfileCredentialsProvider.                                                                                                          | Yes when credentialProvider is ProfileCredentialsProvider | default                    |
+| `accessKey`            | The access key to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when credentialProvider is StaticCredentialsProvider  |                            |
+| `secretKey`            | The secret key to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when credentialProvider is StaticCredentialsProvider  |                            |
+| `sessionToken`         | The session token to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                     | Yes when credentialProvider is StaticCredentialsProvider  |                            |
+| `endpoint`             | The endpoint to be used by the dynamodb client.                                                                                                                                                               | No                                                        |                            |
+| `region`               | The region of the queue.                                                                                                                                                                                      | No                                                        | us-east-1                  |
+| `batchSize`            | The number of statements to be grouped in one call.                                                                                                                                                           | No                                                        | 25                         |
+| `errorsToIgnore`       | Errors that you want to be ignored and treated as a success separated by comma.                                                                                                                               | No                                                        |                            |
 
 ```python
 df.write
     .format("dynamodb") \
     .mode("append") \
+    .option("credentialProvider", "DefaultCredentialsProvider") \
+    .option("profile", "default") \
+    .option("accessKey", "AKIAIOSFODNN7EXAMPLE") \
+    .option("secretKey", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY") \
+    .option("sessionToken", "AQoDYXdzEJr") \
     .option("endpoint", "http://localstack:4566") \
     .option("region", "us-east-1") \
     .option("batchSize", "25") \
@@ -45,6 +58,7 @@ df.write
 ```
 
 The dataframe:
+
 - **must** have a column called **statement** (string) containing the PartiQL Statement.
 
 ### Running

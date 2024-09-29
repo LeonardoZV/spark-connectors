@@ -95,7 +95,7 @@ public class SqsSinkOptions implements Serializable {
     }
 
     public int payloadSizeThreshold() {
-        return Integer.parseInt(this.options.computeIfAbsent("payloadSizeThreshold", k -> "262144"));
+        return Integer.parseInt(this.options.computeIfAbsent("payloadSizeThreshold", k -> "-1"));
     }
 
     public String s3KeyPrefix() {
