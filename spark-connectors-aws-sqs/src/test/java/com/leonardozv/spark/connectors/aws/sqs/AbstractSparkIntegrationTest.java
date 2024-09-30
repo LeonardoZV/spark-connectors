@@ -98,6 +98,7 @@ abstract class AbstractSparkIntegrationTest {
     public ExecResult executeSparkSubmitJars(String script, String... args) throws IOException, InterruptedException {
 
         String dependenciesContainerPath =  "/home/libs/" + LIB_SPARK_CONNECTORS + "," + dependencies.stream().map(element -> "/home/libs/" + element).collect(Collectors.joining(","));
+
         String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", dependenciesContainerPath, "--master", "local", script}, args);
 
         ExecResult result = spark.execInContainer(command);
