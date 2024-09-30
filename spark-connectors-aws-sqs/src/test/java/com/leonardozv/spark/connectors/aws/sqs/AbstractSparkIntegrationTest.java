@@ -84,7 +84,7 @@ abstract class AbstractSparkIntegrationTest {
 
     public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
 
-        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1", "--master", "local", script}, args);
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:sqs:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1,software.amazon.awssdk:s3:2.27.17", "--master", "local", script}, args);
 
         ExecResult result = spark.execInContainer(command);
 
