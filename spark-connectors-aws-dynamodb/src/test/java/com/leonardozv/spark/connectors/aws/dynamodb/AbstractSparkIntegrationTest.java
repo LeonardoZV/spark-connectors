@@ -51,7 +51,7 @@ abstract class AbstractSparkIntegrationTest {
             "retries-2.27.17.jar",
             "retries-spi-2.27.17.jar",
             "sdk-core-2.27.17.jar",
-//            "slf4j-api-1.7.36.jar",
+            "slf4j-api-1.7.36.jar",
             "third-party-jackson-core-2.27.17.jar",
             "utils-2.27.17.jar"
     ));
@@ -66,11 +66,23 @@ abstract class AbstractSparkIntegrationTest {
             .withNetworkAliases("localstack")
             .withServices(DYNAMODB);
 
-    private ExecResult executeSparkJob(String script, String... args) throws IOException, InterruptedException {
+    public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
 
-//        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:dynamodb:2.27.17", "--master", "local", script}, args);
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:sqs:2.27.17,software.amazon.awssdk:s3:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1", "--master", "local", script}, args);
+
+        ExecResult result = spark.execInContainer(command);
+
+        System.out.println(result.getStdout());
+        System.out.println(result.getStderr());
+
+        return result;
+
+    }
+
+    public ExecResult executeSparkSubmitJars(String script, String... args) throws IOException, InterruptedException {
 
         String dependenciesContainerPath =  "/home/libs/" + LIB_SPARK_CONNECTORS + "," + dependencies.stream().map(element -> "/home/libs/" + element).collect(Collectors.joining(","));
+
         String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", dependenciesContainerPath, "--master", "local", script}, args);
 
         ExecResult result = spark.execInContainer(command);
@@ -126,7 +138,7 @@ abstract class AbstractSparkIntegrationTest {
         DynamoDbClient dynamodb = configureTable();
 
         // act
-        ExecResult result = executeSparkJob("/home/scripts/dynamodb_write.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
@@ -147,7 +159,7 @@ abstract class AbstractSparkIntegrationTest {
         configureTable();
 
         // act
-        ExecResult result = executeSparkJob("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();

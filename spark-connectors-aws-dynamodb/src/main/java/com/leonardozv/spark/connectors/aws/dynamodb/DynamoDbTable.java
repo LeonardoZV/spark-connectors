@@ -12,8 +12,8 @@ import java.util.Set;
 
 public class DynamoDbTable implements SupportsWrite {
 
-    private Set<TableCapability> capabilities;
     private final StructType schema;
+    private Set<TableCapability> capabilities;
 
     public DynamoDbTable(StructType schema) {
         this.schema = schema;
