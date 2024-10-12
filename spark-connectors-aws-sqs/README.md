@@ -30,7 +30,7 @@ The following options can be configured in the writer:
 
 | Option                   | Description                                                                                                                                                                                            | Required                                                  | Default                    |
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|----------------------------|
-| `credentialProvider`     | The credential provider to be used by the sqs client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html). | No                                                        | DefaultCredentialsProvider |
+| `credentialsProvider`    | The credential provider to be used by the sqs client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html). | No                                                        | DefaultCredentialsProvider |
 | `profile`                | The profile to be used by the sqs client when credentialProvider is ProfileCredentialsProvider.                                                                                                        | Yes when credentialProvider is ProfileCredentialsProvider | default                    |
 | `accessKey`              | The access key to be used by the sqs client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when credentialProvider is StaticCredentialsProvider  |                            |
 | `secretKey`              | The secret key to be used by the sqs client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when credentialProvider is StaticCredentialsProvider  |                            |
@@ -44,19 +44,21 @@ The following options can be configured in the writer:
 
 AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
 
-| Option                   | Description                                                                                                                                                                                             | Required                                                    | Default                    |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|----------------------------|
-| `s3CredentialProvider`   | The credential provider to be used by the s3 client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html).   | No                                                          | DefaultCredentialsProvider |
-| `s3Profile`              | The profile to be used by the s3 client when credentialProvider is ProfileCredentialsProvider.                                                                                                          | Yes when s3CredentialProvider is ProfileCredentialsProvider | default                    |
-| `s3AccessKey`            | The access key to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when s3CredentialProvider is StaticCredentialsProvider  |                            |
-| `s3SecretKey`            | The secret key to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when s3CredentialProvider is StaticCredentialsProvider  |                            |
-| `s3SessionToken`         | The session token to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                     | Yes when s3CredentialProvider is StaticCredentialsProvider  |                            |
-| `s3Endpoint`             | The endpoint to be used by the s3 client.                                                                                                                                                               | No                                                          |                            |
-| `s3Region`               | The region of the bucket.                                                                                                                                                                               | No                                                          | us-east-1                  |
-| `forcePathStyle`         | Force a path-style endpoint to be used where the bucket name is part of the path.                                                                                                                       | No                                                          | false                      |
-| `bucketName`             | The bucket name where the messages will be stored.                                                                                                                                                      | Yes                                                         |                            |
-| `payloadSizeThreshold`   | The threshold size in bytes.                                                                                                                                                                            | No                                                          | 262144                     |
-| `s3KeyPrefix`            | The key prefix to be used in the s3 bucket.                                                                                                                                                             | No                                                          |                            |
+| Option                     | Description                                                                                                                                                                                           | Required                                                   | Default                    |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|----------------------------|
+| `s3CredentialsProvider`    | The credential provider to be used by the s3 client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html). | No                                                         | DefaultCredentialsProvider |
+| `s3Profile`                | The profile to be used by the s3 client when credentialProvider is ProfileCredentialsProvider.                                                                                                        | No                                                         | default                    |
+| `s3AccessKey`              | The access key to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when s3CredentialProvider is StaticCredentialsProvider |                            |
+| `s3SecretKey`              | The secret key to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when s3CredentialProvider is StaticCredentialsProvider |                            |
+| `s3SessionToken`           | The session token to be used by the s3 client when credentialProvider is StaticCredentialsProvider.                                                                                                   | No                                                         |                            |
+| `s3Endpoint`               | The endpoint to be used by the s3 client.                                                                                                                                                             | No                                                         |                            |
+| `s3Region`                 | The region of the bucket.                                                                                                                                                                             | No                                                         | us-east-1                  |
+| `forcePathStyle`           | Force a path-style endpoint to be used where the bucket name is part of the path.                                                                                                                     | No                                                         | false                      |
+| `bucketName`               | The bucket name where the messages will be stored.                                                                                                                                                    | Yes                                                        |                            |
+| `payloadSizeThreshold`     | The threshold size in bytes.                                                                                                                                                                          | No                                                         | 262144                     |
+| `s3KeyPrefix`              | The key prefix to be used in the s3 bucket.                                                                                                                                                           | No                                                         |                            |
+| `s3ServerSideEncryption`   | The server-side encryption strategy to be used by the s3 client. Currently, only SSE-KMS is supported by the SQS Extended Client.                                                                     | No                                                         |                            |
+| `s3SseKmsKeyId`            | The KMS key id to be used by the s3 client when s3ServerSideEncryptionStrategy is SSE-KMS.                                                                                                            | No                                                         |                            |
 
 Example:
 
@@ -64,7 +66,7 @@ Example:
 df.write
     .format("sqs") \
     .mode("append") \
-    .option("credentialProvider", "DefaultCredentialsProvider") \
+    .option("credentialsProvider", "DefaultCredentialsProvider") \
     .option("profile", "default") \
     .option("accessKey", "AKIAIOSFODNN7EXAMPLE") \
     .option("secretKey", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY") \
@@ -75,7 +77,7 @@ df.write
     .option("batchSize", "10") \
     .option("queueOwnerAWSAccountId", "123456789012") \
     .option("useSqsExtendedClient", "true") \
-    .option("s3CredentialProvider", "DefaultCredentialsProvider") \
+    .option("s3CredentialsProvider", "DefaultCredentialsProvider") \
     .option("s3Profile", "default") \
     .option("s3AccessKey", "AKIAIOSFODNN7EXAMPLE") \
     .option("s3SecretKey", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY") \
@@ -85,15 +87,19 @@ df.write
     .option("forcePathStyle", "false") \
     .option("bucketName", "my-test-bucket") \
     .option("payloadSizeThreshold", "262144") \
-    .option("s3KeyPrefix", "prefix/") \
+    .option("s3KeyPrefix", "prefix/")
+    .option("s3ServerSideEncryption", "SSE-KMS")
+    .option("s3SseKmsKeyId", "kms-key-id")
     .save()
 ```
 
 The dataframe:
 
 - **must** have a column called **value** (string) containing the body of each message.
+- **may** have a column called **delay_seconds** (integer) containing the delay time in seconds for the message to be available in the queue.
 - **may** have a column called **msg_attributes** (map of [string, string]). Each key/value wil be add as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
-- **may** have a column called **group_id** (string) containing the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
+- **may** have a column called **message_deduplication_id** (string) containing the deduplication id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
+- **may** have a column called **message_group_id** (string) containing the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 
 ### Running
 

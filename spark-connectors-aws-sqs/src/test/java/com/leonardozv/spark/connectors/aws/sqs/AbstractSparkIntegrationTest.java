@@ -14,9 +14,13 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.kms.KmsClient;
+import software.amazon.awssdk.services.kms.model.CreateKeyRequest;
+import software.amazon.awssdk.services.kms.model.CreateKeyResponse;
+import software.amazon.awssdk.services.kms.model.KeySpec;
+import software.amazon.awssdk.services.kms.model.KeyUsageType;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -24,11 +28,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.*;
 
 abstract class AbstractSparkIntegrationTest {
 
@@ -80,7 +84,7 @@ abstract class AbstractSparkIntegrationTest {
             .withNetwork(network)
             .withNetworkAliases("localstack")
             .withEnv("SQS_ENDPOINT_STRATEGY", "off")
-            .withServices(SQS, S3);
+            .withServices(SQS, S3, KMS);
 
     public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
 
@@ -110,13 +114,33 @@ abstract class AbstractSparkIntegrationTest {
 
     }
 
-    private SqsClient configureQueue(boolean isFIFO) {
+    private SqsClient configureSqsClient() {
 
-        SqsClient sqs = SqsClient.builder()
+        return SqsClient.builder()
                 .endpointOverride(localstack.getEndpointOverride(SQS))
                 .region(Region.of(localstack.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
                 .build();
+
+    }
+
+    private S3Client configureS3Client() {
+
+        return S3Client.builder()
+                .endpointOverride(localstack.getEndpointOverride(S3))
+                .region(Region.of(localstack.getRegion()))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
+                .build();
+
+    }
+
+    private KmsClient configureKmsClient() {
+
+        return KmsClient.builder().build();
+
+    }
+
+    private CreateQueueResponse configureQueue(SqsClient sqs, boolean isFIFO) {
 
         String queueName = "my-test";
 
@@ -133,23 +157,25 @@ abstract class AbstractSparkIntegrationTest {
                 .attributes(queueAttributes)
                 .build();
 
-        sqs.createQueue(createQueueRequest);
-
-        return sqs;
+        return sqs.createQueue(createQueueRequest);
 
     }
 
-    private S3Client configureBucket() {
+    private CreateBucketResponse configureBucket(S3Client s3) {
 
-        S3Client s3 = S3Client.builder()
-                .endpointOverride(localstack.getEndpointOverride(S3))
-                .region(Region.of(localstack.getRegion()))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
+        return s3.createBucket(CreateBucketRequest.builder().bucket("my-bucket").build());
+
+    }
+
+    private CreateKeyResponse configureKmsKey(KmsClient kms) {
+
+        CreateKeyRequest createKeyRequest = CreateKeyRequest.builder()
+                .description("Minha chave de criptografia KMS")
+                .keyUsage(KeyUsageType.ENCRYPT_DECRYPT)
+                .keySpec(KeySpec.SYMMETRIC_DEFAULT)
                 .build();
 
-        s3.createBucket(CreateBucketRequest.builder().bucket("my-bucket").build());
-
-        return s3;
+        return kms.createKey(createKeyRequest);
 
     }
 
@@ -185,11 +211,15 @@ abstract class AbstractSparkIntegrationTest {
 
     }
 
-    private List<String> getLines(S3Client s3, String key) throws IOException {
+    private ResponseInputStream<GetObjectResponse> getObject(S3Client s3, String key) {
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket("my-bucket").key(key).build();
 
-        ResponseInputStream<?> getObjectResponse = s3.getObject(getObjectRequest);
+        return s3.getObject(getObjectRequest);
+
+    }
+
+    private List<String> getLines(ResponseInputStream<GetObjectResponse> getObjectResponse) throws IOException {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(getObjectResponse));
 
@@ -209,7 +239,8 @@ abstract class AbstractSparkIntegrationTest {
     void when_DataframeContainsValueColumn_should_PutAnSQSMessageUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue(false);
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, false);
 
         // act
         ExecResult result = executeSparkSubmit("/home/scripts/sqs_write.py", "/home/data/sample.txt", "http://localstack:4566");
@@ -225,7 +256,8 @@ abstract class AbstractSparkIntegrationTest {
     void when_DataframeContainsValueColumnAndMultipleLines_should_PutAsManySQSMessagesInQueue() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue(false);
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, false);
 
         // act
         ExecResult result = executeSparkSubmit("/home/scripts/sqs_write.py", "/home/data/multiline_sample.txt", "http://localstack:4566");
@@ -241,7 +273,8 @@ abstract class AbstractSparkIntegrationTest {
     void when_DataframeContainsDataExceedsSQSSizeLimit_should_FailWholeBatch() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue(false);
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, false);
 
         // act
         ExecResult result = executeSparkSubmit("/home/scripts/sqs_write.py", "/home/data/large_sample.txt", "http://localstack:4566");
@@ -258,7 +291,8 @@ abstract class AbstractSparkIntegrationTest {
     void when_DataframeContainsLinesThatExceedsSQSMessageSizeLimit_should_ThrowAnException() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue(false);
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, false);
         HashMap<QueueAttributeName, String> attributes = new HashMap<>();
         attributes.put(QueueAttributeName.MAXIMUM_MESSAGE_SIZE, Integer.toString(1024));
         SetQueueAttributesRequest setQueueAttributesRequest = SetQueueAttributesRequest.builder().queueUrl(getHostAccessibleQueueUrl(sqs, "my-test")).attributes(attributes).build();
@@ -276,18 +310,23 @@ abstract class AbstractSparkIntegrationTest {
     }
 
     @Test
-    void when_DataframeContainsGroupIdColumn_should_PutAnSQSMessageWithMessageGroupIdUsingSpark() throws IOException, InterruptedException {
+    void when_DataframeContainsDelaySecondsColumn_should_PutAnSQSMessageWithDelaySecondsUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue(true);
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, false);
 
         // act
-        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_group_id.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_delay_seconds.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-        Message message = getMessages(sqs, true).get(0);
-        assertThat(message.attributes()).containsKey(MessageSystemAttributeName.MESSAGE_GROUP_ID).containsValue("id1");
+        List<Message> messages;
+        messages = getMessages(sqs, false);
+        assertThat(messages).size().isEqualTo(0);
+        TimeUnit.SECONDS.sleep(10);
+        messages = getMessages(sqs, false);
+        assertThat(messages).size().isEqualTo(4);
 
     }
 
@@ -295,7 +334,8 @@ abstract class AbstractSparkIntegrationTest {
     void when_DataframeContainsMsgAttributesColumn_should_PutAnSQSMessageWithMessageAttributesUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue(false);
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, false);
 
         // act
         ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_msg_attributes.py", "http://localstack:4566");
@@ -309,14 +349,52 @@ abstract class AbstractSparkIntegrationTest {
     }
 
     @Test
+    void when_DataframeContainsMessageGroupIdColumn_should_PutAnSQSMessageWithMessageGroupIdUsingSpark() throws IOException, InterruptedException {
+
+        // arrange
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, true);
+
+        // act
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_message_group_id.py", "http://localstack:4566");
+
+        // assert
+        assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
+        Message message = getMessages(sqs, true).get(0);
+        assertThat(message.attributes()).containsKey(MessageSystemAttributeName.MESSAGE_GROUP_ID).containsValue("id1");
+
+    }
+
+    @Test
+    void when_DataframeContainsMessageDeduplicationIdColumn_should_PutAnSQSMessageWithMessageDeduplicationIdUsingSpark() throws IOException, InterruptedException {
+
+        // arrange
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, true);
+
+        // act
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_message_group_id.py", "http://localstack:4566");
+
+        // assert
+        assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
+        Message message = getMessages(sqs, true).get(0);
+        assertThat(message.attributes()).containsKey(MessageSystemAttributeName.MESSAGE_DEDUPLICATION_ID).containsValue("id1");
+
+    }
+
+    @Test
     void when_WriterContainsUseSqsExtendedClientOption_should_PutAnSQSMessageAndS3ObjectWithSqsExtendedClientUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        SqsClient sqs = configureQueue(false);
-        S3Client s3 = configureBucket();
+        SqsClient sqs = configureSqsClient();
+        configureQueue(sqs, false);
+        S3Client s3 =  configureS3Client();
+        configureBucket(s3);
+        KmsClient kms = configureKmsClient();
+        CreateKeyResponse createKeyResponse = configureKmsKey(kms);
 
         // act
-        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_sqs_extended_client.py", "http://localstack:4566", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_sqs_extended_client.py", "http://localstack:4566", "http://localstack:4566", createKeyResponse.keyMetadata().arn());
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
@@ -328,7 +406,11 @@ abstract class AbstractSparkIntegrationTest {
         String s3Key = payloadNode.get("s3Key").asText();
         assertThat(s3Key).startsWith("prefix/");
 
-        String line = getLines(s3, s3Key).get(0);
+        ResponseInputStream<GetObjectResponse> stream = getObject(s3, s3Key);
+        assertThat(stream.response().serverSideEncryption()).isEqualTo(ServerSideEncryption.AWS_KMS);
+        assertThat(stream.response().ssekmsKeyId()).isEqualTo(createKeyResponse.keyMetadata().arn());
+
+        String line = getLines(stream).get(0);
         assertThat(line).isEqualTo("foo");
 
     }

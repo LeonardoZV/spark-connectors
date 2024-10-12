@@ -3,6 +3,7 @@ package com.leonardozv.spark.connectors.aws.sqs.write;
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;
 import org.apache.spark.sql.connector.write.DataWriterFactory;
+import org.apache.spark.sql.types.StructType;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -15,15 +16,11 @@ import java.net.URI;
 public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
     private final SqsSinkOptions options;
-    private final int valueColumnIndex;
-    private final int msgAttributesColumnIndex;
-    private final int groupIdColumnIndex;
+    private final StructType schema;
 
-    public SqsSinkDataWriterFactory(SqsSinkOptions options, int valueColumnIndex, int msgAttributesColumnIndex, int groupIdColumnIndex) {
+    public SqsSinkDataWriterFactory(SqsSinkOptions options, StructType schema) {
         this.options = options;
-        this.valueColumnIndex = valueColumnIndex;
-        this.msgAttributesColumnIndex = msgAttributesColumnIndex;
-        this.groupIdColumnIndex = groupIdColumnIndex;
+        this.schema = schema;
     }
 
     @Override
@@ -38,11 +35,11 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
                 Class<?> extendedClientConfigClass = Class.forName("com.amazon.sqs.javamessaging.ExtendedClientConfiguration");
                 Object extendedClientConfig = getExtendedClientConfiguration();
 
-                Class<?> amazonSQSExtendedClientClass = Class.forName("com.amazon.sqs.javamessaging.AmazonSQSExtendedClient");
-                sqsClient = (SqsClient) amazonSQSExtendedClientClass.getConstructor(SqsClient.class, extendedClientConfigClass).newInstance(getSqsClient(), extendedClientConfig);
+                Class<?> amazonSqsExtendedClientClass = Class.forName("com.amazon.sqs.javamessaging.AmazonSQSExtendedClient");
+                sqsClient = (SqsClient) amazonSqsExtendedClientClass.getConstructor(SqsClient.class, extendedClientConfigClass).newInstance(getSqsClient(), extendedClientConfig);
 
             } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                throw new RuntimeException("AmazonSQSExtendedClient class not found or could not be instantiated", e);
+                throw new DependencyNotFoundException("Class not found or could not be instantiated", e);
             }
 
         } else {
@@ -53,11 +50,11 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         String queueUrl = sqsClient.getQueueUrl(queueUrlRequest).queueUrl();
 
-        return new SqsSinkDataWriter(partitionId, taskId, sqsClient, queueUrl, this.options, valueColumnIndex, msgAttributesColumnIndex, groupIdColumnIndex);
+        return new SqsSinkDataWriter(partitionId, taskId, sqsClient, queueUrl, this.options, this.schema);
 
     }
 
-    private AwsCredentialsProvider identityCredentialsProvider(String credentialsProvider, String profile, String accessKeyId, String secretAccessKey, String sessionToken) {
+    private AwsCredentialsProvider identifyCredentialsProvider(String credentialsProvider, String profile, String accessKeyId, String secretAccessKey, String sessionToken) {
 
         switch (credentialsProvider) {
 
@@ -104,7 +101,7 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         SqsClientBuilder clientBuilder = SqsClient.builder();
 
-        clientBuilder.credentialsProvider(identityCredentialsProvider(this.options.credentialsProvider(), this.options.profile(), this.options.accessKeyId(), this.options.secretAccessKey(), this.options.sessionToken()));
+        clientBuilder.credentialsProvider(identifyCredentialsProvider(this.options.credentialsProvider(), this.options.profile(), this.options.accessKeyId(), this.options.secretAccessKey(), this.options.sessionToken()));
 
         clientBuilder.region(this.options.region());
 
@@ -132,7 +129,7 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
         Class<?> s3ClientBuilderClass = Class.forName("software.amazon.awssdk.services.s3.S3ClientBuilder");
         Object clientBuilder = s3ClientClass.getMethod("builder").invoke(null);
 
-        s3ClientBuilderClass.getMethod("credentialsProvider", AwsCredentialsProvider.class).invoke(clientBuilder, identityCredentialsProvider(this.options.s3CredentialsProvider(), this.options.s3Profile(), this.options.s3AccessKeyId(), this.options.s3SecretAccessKey(), this.options.s3SessionToken()));
+        s3ClientBuilderClass.getMethod("credentialsProvider", AwsCredentialsProvider.class).invoke(clientBuilder, identifyCredentialsProvider(this.options.s3CredentialsProvider(), this.options.s3Profile(), this.options.s3AccessKeyId(), this.options.s3SecretAccessKey(), this.options.s3SessionToken()));
 
         s3ClientBuilderClass.getMethod("region", Region.class).invoke(clientBuilder, this.options.s3Region());
 
@@ -145,7 +142,7 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
     }
 
-    private Object getExtendedClientConfiguration() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private Object getExtendedClientConfiguration() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
 
         Class<?> s3ClientClass = Class.forName("software.amazon.awssdk.services.s3.S3Client");
         Class<?> extendedClientConfigClass = Class.forName("com.amazon.sqs.javamessaging.ExtendedClientConfiguration");
@@ -159,6 +156,39 @@ public class SqsSinkDataWriterFactory implements DataWriterFactory {
 
         if (!this.options.s3KeyPrefix().isEmpty())
             extendedClientConfigClass.getMethod("setS3KeyPrefix", String.class).invoke(extendedClientConfig, this.options.s3KeyPrefix());
+
+        if (!this.options.s3ServerSideEncryption().isEmpty()) {
+
+            Class<?> serverSideEncryptionFactoryClass = Class.forName("software.amazon.payloadoffloading.ServerSideEncryptionFactory");
+            Class<?> serverSideEncryptionStrategyClass = Class.forName("software.amazon.payloadoffloading.ServerSideEncryptionStrategy");
+            Object serverSideEncryptionStrategy;
+
+            switch (this.options.s3ServerSideEncryption()) {
+
+                case "SSE-S3":
+                    throw new UnsupportedOperationException("The Amazon SQS Extended Client does not implement the SSE-S3 encryption yet");
+
+                case "SSE-KMS":
+                    if(this.options.s3SseKmsKeyId().isEmpty())
+                        serverSideEncryptionStrategy = serverSideEncryptionFactoryClass.getMethod("awsManagedCmk").invoke(null);
+                    else
+                        serverSideEncryptionStrategy = serverSideEncryptionFactoryClass.getMethod("customerKey", String.class).invoke(null, this.options.s3SseKmsKeyId());
+                    break;
+
+                case "SSE-C":
+                    throw new UnsupportedOperationException("The Amazon SQS Extended Client does not implement the SSE-C encryption yet");
+
+                case "DSSE-KMS":
+                    throw new UnsupportedOperationException("The Amazon SQS Extended Client does not implement the DSSE-KMS encryption yet");
+
+                default:
+                    throw new UnsupportedOperationException("Unknown server side encryption strategy");
+
+            }
+
+            extendedClientConfigClass.getMethod("setServerSideEncryptionStrategy", serverSideEncryptionStrategyClass).invoke(extendedClientConfig, serverSideEncryptionStrategy);
+
+        }
 
         return extendedClientConfig;
 

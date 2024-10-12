@@ -94,13 +94,17 @@ abstract class AbstractSparkIntegrationTest {
 
     }
 
-    private DynamoDbClient configureTable() {
+    private DynamoDbClient configureDynamoDbClient() {
 
-        DynamoDbClient dynamodb = DynamoDbClient.builder()
+        return DynamoDbClient.builder()
                 .endpointOverride(localstack.getEndpointOverride(DYNAMODB))
                 .region(Region.of(localstack.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
                 .build();
+
+    }
+
+    private CreateTableResponse configureTable(DynamoDbClient dynamodb) {
 
         String tableName = "my-table";
 
@@ -111,11 +115,11 @@ abstract class AbstractSparkIntegrationTest {
                 .provisionedThroughput(ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build())
                 .build();
 
-        dynamodb.createTable(createTableRequest);
+        CreateTableResponse createTableResponse = dynamodb.createTable(createTableRequest);
 
         dynamodb.executeStatement(ExecuteStatementRequest.builder().statement("INSERT INTO \"my-table\" VALUE {'id': '123', 'name': 'John Doe', 'age': 30}").build());
 
-        return dynamodb;
+        return createTableResponse;
 
     }
 
@@ -135,7 +139,8 @@ abstract class AbstractSparkIntegrationTest {
     void when_DataframeContainsStatementColumn_should_ExecuteStatementUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        DynamoDbClient dynamodb = configureTable();
+        DynamoDbClient dynamodb = configureDynamoDbClient();
+        configureTable(dynamodb);
 
         // act
         ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write.py", "http://localstack:4566");
@@ -156,7 +161,8 @@ abstract class AbstractSparkIntegrationTest {
     void when_DataframeContainsStatementColumnAndErrorsToIgnoreOption_should_ExecuteStatementUsingSpark() throws IOException, InterruptedException {
 
         // arrange
-        configureTable();
+        DynamoDbClient dynamodb = configureDynamoDbClient();
+        configureTable(dynamodb);
 
         // act
         ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "http://localstack:4566");

@@ -1,5 +1,6 @@
 package com.leonardozv.spark.connectors.aws.sqs;
 
+import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkOptions;
 import com.leonardozv.spark.connectors.aws.sqs.write.SqsSinkWriteBuilder;
 import org.apache.spark.sql.connector.catalog.SupportsWrite;
 import org.apache.spark.sql.connector.catalog.TableCapability;
@@ -21,7 +22,7 @@ public class SqsTable implements SupportsWrite {
 
     @Override
     public WriteBuilder newWriteBuilder(LogicalWriteInfo info) {
-        return new SqsSinkWriteBuilder(info);
+        return new SqsSinkWriteBuilder(new SqsSinkOptions(info.options().asCaseSensitiveMap()), info.schema());
     }
 
     @Override

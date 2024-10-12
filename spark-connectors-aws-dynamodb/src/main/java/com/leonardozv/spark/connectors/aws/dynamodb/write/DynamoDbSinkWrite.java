@@ -2,28 +2,28 @@ package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import org.apache.spark.sql.connector.write.BatchWrite;
 import org.apache.spark.sql.connector.write.Write;
+import org.apache.spark.sql.types.StructType;
 
 public class DynamoDbSinkWrite implements Write {
 
     private final DynamoDbSinkOptions options;
-    private final int statementColumnIndex;
+    private final StructType schema;
 
-    public DynamoDbSinkWrite(DynamoDbSinkOptions options, int statementColumnIndex) {
+    public DynamoDbSinkWrite(DynamoDbSinkOptions options, StructType schema) {
         this.options = options;
-        this.statementColumnIndex = statementColumnIndex;
+        this.schema = schema;
     }
 
     @Override
     public BatchWrite toBatch() {
-        return new DynamoDbSinkBatchWrite(this.options, this.statementColumnIndex);
+        return new DynamoDbSinkBatchWrite(this.options, this.schema);
     }
 
     public DynamoDbSinkOptions options() {
-        return options;
+        return this.options;
     }
-
-    public int statementColumnIndex() {
-        return statementColumnIndex;
+    public StructType schema() {
+        return this.schema;
     }
 
 }

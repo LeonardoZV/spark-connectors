@@ -2,29 +2,24 @@ package com.leonardozv.spark.connectors.aws.sqs.write;
 
 import org.apache.spark.sql.connector.write.BatchWrite;
 import org.apache.spark.sql.connector.write.Write;
+import org.apache.spark.sql.types.StructType;
 
 public class SqsSinkWrite implements Write {
 
     private final SqsSinkOptions options;
-    private final int valueColumnIndex;
-    private final int msgAttributesColumnIndex;
-    private final int groupIdColumnIndex;
+    private final StructType schema;
 
-    public SqsSinkWrite(SqsSinkOptions options, int valueColumnIndex, int msgAttributesColumnIndex, int groupIdColumnIndex) {
+    public SqsSinkWrite(SqsSinkOptions options, StructType schema) {
         this.options = options;
-        this.valueColumnIndex = valueColumnIndex;
-        this.msgAttributesColumnIndex = msgAttributesColumnIndex;
-        this.groupIdColumnIndex = groupIdColumnIndex;
+        this.schema = schema;
     }
 
     @Override
     public BatchWrite toBatch() {
-        return new SqsSinkBatchWrite(this.options, valueColumnIndex, msgAttributesColumnIndex, groupIdColumnIndex);
+        return new SqsSinkBatchWrite(this.options, this.schema);
     }
 
     public SqsSinkOptions options() { return this.options; }
-    public int valueColumnIndex() { return this.valueColumnIndex; }
-    public int msgAttributesColumnIndex() { return this.msgAttributesColumnIndex; }
-    public int groupIdColumnIndex() { return this.groupIdColumnIndex; }
+    public StructType schema() { return this.schema; }
 
 }

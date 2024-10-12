@@ -5,6 +5,7 @@ import org.apache.spark.sql.catalyst.util.MapData;
 import org.apache.spark.sql.connector.write.DataWriter;
 import org.apache.spark.sql.connector.write.WriterCommitMessage;
 import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructType;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -17,38 +18,39 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
     private final SqsClient sqs;
     private final String queueUrl;
     private final SqsSinkOptions options;
-    private final int valueColumnIndex;
-    private final int msgAttributesColumnIndex;
-    private final int groupIdColumnIndex;
+    private final StructType schema;
     private final List<SendMessageBatchRequestEntry> messages = new ArrayList<>();
 
-    public SqsSinkDataWriter(int partitionId, long taskId, SqsClient sqs, String queueUrl, SqsSinkOptions options, int valueColumnIndex, int msgAttributesColumnIndex, int groupIdColumnIndex) {
+    public SqsSinkDataWriter(int partitionId, long taskId, SqsClient sqs, String queueUrl, SqsSinkOptions options, StructType schema) {
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.sqs = sqs;
         this.queueUrl = queueUrl;
         this.options = options;
-        this.valueColumnIndex = valueColumnIndex;
-        this.msgAttributesColumnIndex = msgAttributesColumnIndex;
-        this.groupIdColumnIndex = groupIdColumnIndex;
+        this.schema = schema;
     }
 
     @Override
     public void write(InternalRow row) {
 
-        Optional<MapData> msgAttributesData = Optional.empty();
-
-        if(this.msgAttributesColumnIndex >= 0) {
-            msgAttributesData = Optional.of(row.getMap(this.msgAttributesColumnIndex));
-        }
-
         SendMessageBatchRequestEntry.Builder sendMessageBatchRequestEntryBuilder = SendMessageBatchRequestEntry.builder()
-                .messageBody(row.getString(this.valueColumnIndex))
-                .messageAttributes(convertMapData(msgAttributesData))
+                .messageBody(row.getString(this.schema.fieldIndex("value")))
                 .id(UUID.randomUUID().toString());
 
-        if(this.groupIdColumnIndex >= 0) {
-            sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(this.groupIdColumnIndex));
+        if (!this.schema.getFieldIndex("delay_seconds").isEmpty()) {
+            sendMessageBatchRequestEntryBuilder.delaySeconds(row.getInt(this.schema.fieldIndex("delay_seconds")));
+        }
+
+        if(!this.schema.getFieldIndex("msg_attributes").isEmpty()) {
+            sendMessageBatchRequestEntryBuilder.messageAttributes(convertMapDataToMapMessageAttributes(row.getMap(this.schema.fieldIndex("msg_attributes"))));
+        }
+
+        if (!this.schema.getFieldIndex("message_deduplication_id").isEmpty()) {
+            sendMessageBatchRequestEntryBuilder.messageDeduplicationId(row.getString(this.schema.fieldIndex("message_deduplication_id")));
+        }
+
+        if(!this.schema.getFieldIndex("message_group_id").isEmpty()) {
+            sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(this.schema.fieldIndex("message_group_id")));
         }
 
         SendMessageBatchRequestEntry sendMessageBatchRequestEntry = sendMessageBatchRequestEntryBuilder.build();
@@ -82,14 +84,14 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
         // nothing to close
     }
 
-    private Map<String, MessageAttributeValue> convertMapData(Optional<MapData> arrayData) {
+    private Map<String, MessageAttributeValue> convertMapDataToMapMessageAttributes(MapData msgAttributesMapData) {
 
         Map<String, MessageAttributeValue> attributes = new HashMap<>();
 
-        arrayData.ifPresent(mapData -> mapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
+        msgAttributesMapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
             attributes.put(key.toString(), MessageAttributeValue.builder().dataType("String").stringValue(value.toString()).build());
             return null;
-        }));
+        });
 
         return attributes;
 

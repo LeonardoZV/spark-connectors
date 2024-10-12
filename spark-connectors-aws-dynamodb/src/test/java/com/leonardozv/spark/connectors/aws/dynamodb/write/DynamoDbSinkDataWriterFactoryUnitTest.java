@@ -2,6 +2,7 @@ package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;
+import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -28,6 +29,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -42,7 +46,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 SystemPropertyCredentialsProvider mockCredentialsProvider = mock(SystemPropertyCredentialsProvider.class);
                 staticCredentialsProvider.when(SystemPropertyCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -66,6 +70,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -80,7 +87,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 EnvironmentVariableCredentialsProvider mockCredentialsProvider = mock(EnvironmentVariableCredentialsProvider.class);
                 staticCredentialsProvider.when(EnvironmentVariableCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -104,6 +111,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -118,7 +128,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 WebIdentityTokenFileCredentialsProvider mockCredentialsProvider = mock(WebIdentityTokenFileCredentialsProvider.class);
                 staticCredentialsProvider.when(WebIdentityTokenFileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -142,6 +152,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -156,7 +169,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(ProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -181,6 +194,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -195,7 +211,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(() -> ProfileCredentialsProvider.create("localstack")).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -219,6 +235,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -233,7 +252,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 ContainerCredentialsProvider mockCredentialsProvider = mock(ContainerCredentialsProvider.class);
                 staticCredentialsProvider.when(ContainerCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -257,6 +276,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -271,7 +293,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 InstanceProfileCredentialsProvider mockCredentialsProvider = mock(InstanceProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(InstanceProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -297,6 +319,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -316,7 +341,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -345,6 +370,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -364,7 +392,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                    DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -390,6 +418,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -404,7 +435,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
                 AnonymousCredentialsProvider mockCredentialsProvider = mock(AnonymousCredentialsProvider.class);
                 staticCredentialsProvider.when(AnonymousCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+                DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -428,6 +459,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -437,7 +471,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
 
             staticDynamoDbClient.when(DynamoDbClient::builder).thenReturn(mockDynamoDbClientBuilder);
 
-            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -458,6 +492,9 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
             put("region", "us-west-2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
         DynamoDbClientBuilder mockDynamoDbClientBuilder = mock(DynamoDbClientBuilder.class);
@@ -467,7 +504,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
 
             staticDynamoDbClient.when(DynamoDbClient::builder).thenReturn(mockDynamoDbClientBuilder);
 
-            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), 0);
+            DynamoDbSinkDataWriterFactory factory = new DynamoDbSinkDataWriterFactory(new DynamoDbSinkOptions(options), schema);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);

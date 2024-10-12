@@ -1,6 +1,7 @@
 package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
 import org.apache.spark.sql.catalyst.InternalRow;
+import org.apache.spark.sql.types.StructType;
 import org.apache.spark.unsafe.types.UTF8String;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -33,13 +34,16 @@ class DynamoDbSinkDataWriterUnitTest {
             put("batchSize", "1");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(BatchStatementResponse.builder().build())).build();
         when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(response);
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), schema);
 
         // Act
         writer.write(row);
@@ -65,6 +69,9 @@ class DynamoDbSinkDataWriterUnitTest {
             put("batchSize", "1");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.ACCESS_DENIED).message("Error message").build();
         BatchStatementResponse statementResponse = BatchStatementResponse.builder().error(error).build();
@@ -73,7 +80,7 @@ class DynamoDbSinkDataWriterUnitTest {
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), schema);
 
         // Act & Assert
         assertThrows(DynamoDbSinkBatchResultException.class, () -> writer.write(row));
@@ -100,6 +107,9 @@ class DynamoDbSinkDataWriterUnitTest {
             put("errorsToIgnore", String.join(",", errorsToIgnore));
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED).message("Error message").build();
         BatchStatementResponse statementResponse = BatchStatementResponse.builder().error(error).build();
@@ -108,7 +118,7 @@ class DynamoDbSinkDataWriterUnitTest {
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), schema);
 
         // Act & Assert
         assertDoesNotThrow(() -> writer.write(row));
@@ -131,12 +141,15 @@ class DynamoDbSinkDataWriterUnitTest {
             put("batchSize", "2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(BatchExecuteStatementResponse.builder().build());
 
         InternalRow row = createInternalRow(UTF8String.fromString("test-statement"));
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), schema);
 
         // Act
         writer.write(row);
@@ -162,9 +175,12 @@ class DynamoDbSinkDataWriterUnitTest {
             put("batchSize", "2");
         }};
 
+        StructType schema = new StructType()
+                .add("statement", "string");
+
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
-        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), 0);
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), schema);
 
         // Act & Assert
         assertDoesNotThrow(writer::abort);

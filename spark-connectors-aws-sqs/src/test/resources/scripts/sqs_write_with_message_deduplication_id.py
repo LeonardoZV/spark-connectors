@@ -1,5 +1,5 @@
 import sys
-from pyspark.sql.types import StructType,StructField, StringType, MapType
+from pyspark.sql.types import StructType,StructField, StringType
 from pyspark.sql import SparkSession
 
 if __name__ == "__main__":
@@ -12,11 +12,14 @@ if __name__ == "__main__":
         .appName("SQS Write") \
         .getOrCreate()
 
-    data = [("value 1", {"attribute-a" : 1000, "attribute-b" : "2000"})]
+    data = [("value 1","id1"),
+            ("value 2","id2"),
+            ("value 3","id1"),
+            ("value 4","id2")]
 
     schema = StructType([
         StructField("value",StringType(),False),
-        StructField("msg_attributes",MapType(StringType(), StringType(), True), False)
+        StructField("message_deduplication_id",StringType(),False),
     ])
 
     df = spark.createDataFrame(data=data,schema=schema)
@@ -28,7 +31,7 @@ if __name__ == "__main__":
         .format("sqs") \
         .mode("append") \
         .option("endpoint", sys.argv[1]) \
-        .option("queueName", "my-test") \
+        .option("queueName", "my-test.fifo") \
         .save()
 
     spark.stop()

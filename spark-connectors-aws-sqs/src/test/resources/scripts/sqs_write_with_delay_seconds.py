@@ -1,6 +1,5 @@
 import sys
-from operator import add
-from pyspark.sql.types import StructType,StructField, StringType, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from pyspark.sql import SparkSession
 
 if __name__ == "__main__":
@@ -13,14 +12,14 @@ if __name__ == "__main__":
         .appName("SQS Write") \
         .getOrCreate()
 
-    data = [("value 1","id1"),
-            ("value 2","id2"),
-            ("value 3","id1"),
-            ("value 4","id2")]
+    data = [("value 1", 5),
+            ("value 2", 5),
+            ("value 3", 5),
+            ("value 4", 5)]
 
     schema = StructType([
         StructField("value",StringType(),False),
-        StructField("group_id",StringType(),False),
+        StructField("delay_seconds",IntegerType(),False),
     ])
 
     df = spark.createDataFrame(data=data,schema=schema)
@@ -32,8 +31,7 @@ if __name__ == "__main__":
         .format("sqs") \
         .mode("append") \
         .option("endpoint", sys.argv[1]) \
-        .option("queueName", "my-test.fifo") \
-        .option("batchSize", "10") \
+        .option("queueName", "my-test") \
         .save()
 
     spark.stop()

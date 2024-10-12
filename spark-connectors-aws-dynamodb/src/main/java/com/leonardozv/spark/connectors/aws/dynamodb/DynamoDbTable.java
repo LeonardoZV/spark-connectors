@@ -1,5 +1,6 @@
 package com.leonardozv.spark.connectors.aws.dynamodb;
 
+import com.leonardozv.spark.connectors.aws.dynamodb.write.DynamoDbSinkOptions;
 import com.leonardozv.spark.connectors.aws.dynamodb.write.DynamoDbSinkWriteBuilder;
 import org.apache.spark.sql.connector.catalog.SupportsWrite;
 import org.apache.spark.sql.connector.catalog.TableCapability;
@@ -21,7 +22,7 @@ public class DynamoDbTable implements SupportsWrite {
 
     @Override
     public WriteBuilder newWriteBuilder(LogicalWriteInfo info) {
-        return new DynamoDbSinkWriteBuilder(info);
+        return new DynamoDbSinkWriteBuilder(new DynamoDbSinkOptions(info.options().asCaseSensitiveMap()), info.schema());
     }
 
     @Override

@@ -1,37 +1,26 @@
 package com.leonardozv.spark.connectors.aws.sqs.write;
 
-import org.apache.spark.sql.connector.write.LogicalWriteInfo;
 import org.apache.spark.sql.types.StructType;
-import org.apache.spark.sql.util.CaseInsensitiveStringMap;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.regions.Region;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class SqsSinkWriteBuilderUnitTest {
 
     @Test
     void testBuildWithDefaultOptionsAndWithoutMessageAttributesAndGroupId() {
 
-        LogicalWriteInfo info = mock(LogicalWriteInfo.class);
-
-        Map<String, String> optionsMap = new HashMap<String, String>(){{
+        SqsSinkOptions options = new SqsSinkOptions(new HashMap<String, String>(){{
             put("queueName", "test-queue");
-        }};
-
-        when(info.options()).thenReturn(new CaseInsensitiveStringMap(optionsMap));
+        }});
 
         StructType schema = new StructType()
                 .add("value", "string");
 
-        when(info.schema()).thenReturn(schema);
-
-        SqsSinkWriteBuilder builder = new SqsSinkWriteBuilder(info);
+        SqsSinkWriteBuilder builder = new SqsSinkWriteBuilder(options, schema);
 
         SqsSinkWrite write = (SqsSinkWrite) builder.build();
 
@@ -48,18 +37,14 @@ class SqsSinkWriteBuilderUnitTest {
         assertEquals("", write.options().bucketName());
         assertEquals(-1, write.options().payloadSizeThreshold());
         assertEquals("", write.options().s3KeyPrefix());
-        assertEquals(0, write.valueColumnIndex());
-        assertEquals(-1, write.msgAttributesColumnIndex());
-        assertEquals(-1, write.groupIdColumnIndex());
+        assertEquals(0, write.schema().getFieldIndex("value").get());
 
     }
 
     @Test
     void testBuildWithCustomOptionsAndWithMessageAttributesAndGroupId() {
 
-        LogicalWriteInfo info = mock(LogicalWriteInfo.class);
-
-        Map<String, String> optionsMap = new HashMap<String, String>(){{
+        SqsSinkOptions options = new SqsSinkOptions(new HashMap<String, String>(){{
             put("endpoint", "http://localhost:4566");
             put("region", "us-west-2");
             put("queueName", "test-queue");
@@ -72,18 +57,14 @@ class SqsSinkWriteBuilderUnitTest {
             put("bucketName", "test-bucket");
             put("payloadSizeThreshold", "1024");
             put("s3KeyPrefix", "Q0/");
-        }};
-
-        when(info.options()).thenReturn(new CaseInsensitiveStringMap(optionsMap));
+        }});
 
         StructType schema = new StructType()
                 .add("value", "string")
                 .add("msg_attributes", "map<string,string>")
-                .add("group_id", "string");
+                .add("message_group_id", "string");
 
-        when(info.schema()).thenReturn(schema);
-
-        SqsSinkWriteBuilder builder = new SqsSinkWriteBuilder(info);
+        SqsSinkWriteBuilder builder = new SqsSinkWriteBuilder(options, schema);
 
         SqsSinkWrite write = (SqsSinkWrite) builder.build();
 
@@ -101,9 +82,9 @@ class SqsSinkWriteBuilderUnitTest {
         assertEquals("test-bucket", write.options().bucketName());
         assertEquals(1024, write.options().payloadSizeThreshold());
         assertEquals("Q0/", write.options().s3KeyPrefix());
-        assertEquals(0, write.valueColumnIndex());
-        assertEquals(1, write.msgAttributesColumnIndex());
-        assertEquals(2, write.groupIdColumnIndex());
+        assertEquals(0, write.schema().getFieldIndex("value").get());
+        assertEquals(1, write.schema().getFieldIndex("msg_attributes").get());
+        assertEquals(2, write.schema().getFieldIndex("message_group_id").get());
 
     }
 

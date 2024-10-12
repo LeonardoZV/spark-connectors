@@ -2,7 +2,10 @@ package com.leonardozv.spark.connectors.aws.sqs.write;
 
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;
+import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import software.amazon.awssdk.auth.credentials.*;
@@ -19,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -33,6 +37,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("region", "us-east-1");
             put("queueName", "test-queue");
         }};
+
+        StructType schema = new StructType()
+                .add("value", "string");
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -49,7 +56,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 SystemPropertyCredentialsProvider mockCredentialsProvider = mock(SystemPropertyCredentialsProvider.class);
                 staticCredentialsProvider.when(SystemPropertyCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -74,6 +81,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -89,7 +99,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 EnvironmentVariableCredentialsProvider mockCredentialsProvider = mock(EnvironmentVariableCredentialsProvider.class);
                 staticCredentialsProvider.when(EnvironmentVariableCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -114,6 +124,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -129,7 +142,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 WebIdentityTokenFileCredentialsProvider mockCredentialsProvider = mock(WebIdentityTokenFileCredentialsProvider.class);
                 staticCredentialsProvider.when(WebIdentityTokenFileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -154,6 +167,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -169,7 +185,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(ProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -195,6 +211,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -210,7 +229,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 ProfileCredentialsProvider mockCredentialsProvider = mock(ProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(() -> ProfileCredentialsProvider.create("localstack")).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -235,6 +254,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -250,7 +272,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 ContainerCredentialsProvider mockCredentialsProvider = mock(ContainerCredentialsProvider.class);
                 staticCredentialsProvider.when(ContainerCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -275,6 +297,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -290,7 +315,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 InstanceProfileCredentialsProvider mockCredentialsProvider = mock(InstanceProfileCredentialsProvider.class);
                 staticCredentialsProvider.when(InstanceProfileCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -317,6 +342,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -337,7 +365,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -367,6 +395,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -387,7 +418,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                     StaticCredentialsProvider mockCredentialsProvider = mock(StaticCredentialsProvider.class);
                     staticCredentialsProvider.when(() -> StaticCredentialsProvider.create(mockAwsCredentials)).thenReturn(mockCredentialsProvider);
 
-                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                    SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                     // Act
                     DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -414,6 +445,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -429,7 +463,7 @@ class SqsSinkDataWriterFactoryUnitTest {
                 AnonymousCredentialsProvider mockCredentialsProvider = mock(AnonymousCredentialsProvider.class);
                 staticCredentialsProvider.when(AnonymousCredentialsProvider::create).thenReturn(mockCredentialsProvider);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -454,6 +488,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -464,7 +501,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
             staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
 
-            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -486,6 +523,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueName", "test-queue");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -496,7 +536,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
             staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
 
-            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+            SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
             // Act
             DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -520,6 +560,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("queueOwnerAWSAccountId", queueOwnerAWSAccountId);
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -540,7 +583,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
                 staticGetQueueUrlRequest.when(GetQueueUrlRequest::builder).thenReturn(mockGetQueueUrlRequestBuilder);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 DataWriter<InternalRow> writer = factory.createWriter(0, 0);
@@ -568,7 +611,11 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("bucketName", "test-bucket");
             put("payloadSizeThreshold", "1");
             put("s3KeyPrefix", "test/");
+            put("s3ServerSideEncryption", "SSE-KMS");
         }};
+
+        StructType schema = new StructType()
+                .add("value", "string");
 
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
@@ -589,7 +636,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
                 staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
@@ -616,6 +663,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("bucketName", "test-bucket");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -635,7 +685,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
                 staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
@@ -661,6 +711,9 @@ class SqsSinkDataWriterFactoryUnitTest {
             put("s3Region", "us-east-1");
         }};
 
+        StructType schema = new StructType()
+                .add("value", "string");
+
         SqsClient mockSqsClient = mock(SqsClient.class);
         when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
 
@@ -680,7 +733,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
                 staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
 
-                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), 0, 0, 0);
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
 
                 // Act
                 SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
@@ -688,6 +741,110 @@ class SqsSinkDataWriterFactoryUnitTest {
                 // Assert
                 assertNotNull(writer);
                 verify(mockS3ClientBuilder, times(0)).endpointOverride(any(URI.class));
+
+            }
+
+        }
+
+    }
+
+    @Test
+    void when_s3ServerSideEncryptionIsSSEKMS_should_CreateWriterWiths3ServerSideEncryptionSSEKMS() {
+
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+            put("useSqsExtendedClient", "true");
+            put("s3Endpoint", "http://localhost:4566");
+            put("s3Region", "us-east-1");
+            put("bucketName", "test-bucket");
+            put("payloadSizeThreshold", "1");
+            put("s3KeyPrefix", "test/");
+            put("s3ServerSideEncryption", "SSE-KMS");
+            put("s3SseKmsKeyId", "my-key-id");
+        }};
+
+        StructType schema = new StructType()
+                .add("value", "string");
+
+        SqsClient mockSqsClient = mock(SqsClient.class);
+        when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
+
+        SqsClientBuilder mockSqsClientBuilder = mock(SqsClientBuilder.class);
+        when(mockSqsClientBuilder.build()).thenReturn(mockSqsClient);
+
+        try (MockedStatic<SqsClient> staticSqsClient = Mockito.mockStatic(SqsClient.class)) {
+
+            staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
+
+            S3Client mockS3Client = mock(S3Client.class);
+
+            S3ClientBuilder mockS3ClientBuilder = mock(S3ClientBuilder.class);
+            when(mockS3ClientBuilder.build()).thenReturn(mockS3Client);
+
+            try (MockedStatic<S3Client> staticS3Client = Mockito.mockStatic(S3Client.class)) {
+
+                staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
+
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
+
+                // Act
+                SqsSinkDataWriter writer = (SqsSinkDataWriter) factory.createWriter(0, 0);
+
+                // Assert
+                assertNotNull(writer);
+                verify(mockS3ClientBuilder, times(1)).endpointOverride(URI.create("http://localhost:4566"));
+
+            }
+
+        }
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"SSE-S3", "SSE-C", "DSSE-KMS", "UNKNOWN"})
+    void when_s3ServerSideEncryptionIsUnknown_should_ThrowException(String s3ServerSideEncryption) {
+
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("region", "us-east-1");
+            put("queueName", "test-queue");
+            put("useSqsExtendedClient", "true");
+            put("s3Endpoint", "http://localhost:4566");
+            put("s3Region", "us-east-1");
+            put("bucketName", "test-bucket");
+            put("payloadSizeThreshold", "1");
+            put("s3KeyPrefix", "test/");
+            put("s3ServerSideEncryption", s3ServerSideEncryption);
+        }};
+
+        StructType schema = new StructType()
+                .add("value", "string");
+
+        SqsClient mockSqsClient = mock(SqsClient.class);
+        when(mockSqsClient.getQueueUrl(any(GetQueueUrlRequest.class))).thenReturn(GetQueueUrlResponse.builder().build());
+
+        SqsClientBuilder mockSqsClientBuilder = mock(SqsClientBuilder.class);
+        when(mockSqsClientBuilder.build()).thenReturn(mockSqsClient);
+
+        try (MockedStatic<SqsClient> staticSqsClient = Mockito.mockStatic(SqsClient.class)) {
+
+            staticSqsClient.when(SqsClient::builder).thenReturn(mockSqsClientBuilder);
+
+            S3Client mockS3Client = mock(S3Client.class);
+
+            S3ClientBuilder mockS3ClientBuilder = mock(S3ClientBuilder.class);
+            when(mockS3ClientBuilder.build()).thenReturn(mockS3Client);
+
+            try (MockedStatic<S3Client> staticS3Client = Mockito.mockStatic(S3Client.class)) {
+
+                staticS3Client.when(S3Client::builder).thenReturn(mockS3ClientBuilder);
+
+                SqsSinkDataWriterFactory factory = new SqsSinkDataWriterFactory(new SqsSinkOptions(options), schema);
+
+                // Act & Assert
+                assertThrows(UnsupportedOperationException.class, () -> factory.createWriter(0, 0));
 
             }
 

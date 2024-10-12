@@ -1,10 +1,8 @@
 import sys
-from operator import add
-
 from pyspark.sql import SparkSession
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("Missing parameters")
         sys.exit(-1)
 
@@ -23,13 +21,14 @@ if __name__ == "__main__":
         .mode("append") \
         .option("endpoint", sys.argv[1]) \
         .option("queueName", "my-test") \
-        .option("batchSize", "3") \
         .option("useSqsExtendedClient", "true") \
         .option("s3Endpoint", sys.argv[2]) \
         .option("forcePathStyle", "true") \
         .option("bucketName", "my-bucket") \
         .option("payloadSizeThreshold", "1") \
         .option("s3KeyPrefix", "prefix/") \
+        .option("s3ServerSideEncryption", "SSE-KMS") \
+        .option("s3SseKmsKeyId", sys.argv[3]) \
         .save()
 
     spark.stop()

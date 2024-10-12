@@ -3,6 +3,7 @@ package com.leonardozv.spark.connectors.aws.dynamodb.write;
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;
 import org.apache.spark.sql.connector.write.WriterCommitMessage;
+import org.apache.spark.sql.types.StructType;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -15,21 +16,23 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
     private final long taskId;
     private final DynamoDbClient dynamodb;
     private final DynamoDbSinkOptions options;
-    private final int statementColumnIndex;
+    private final StructType schema;
     private final List<BatchStatementRequest> statements = new ArrayList<>();
 
-    public DynamoDbSinkDataWriter(int partitionId, long taskId, DynamoDbClient dynamodb, DynamoDbSinkOptions options, int statementColumnIndex) {
+    public DynamoDbSinkDataWriter(int partitionId, long taskId, DynamoDbClient dynamodb, DynamoDbSinkOptions options, StructType schema) {
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.dynamodb = dynamodb;
         this.options = options;
-        this.statementColumnIndex = statementColumnIndex;
+        this.schema = schema;
     }
 
     @Override
     public void write(InternalRow row) {
 
-        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder().statement(row.getString(this.statementColumnIndex)).build();
+        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder()
+                .statement(row.getString(this.schema.fieldIndex("statement")))
+                .build();
 
         this.statements.add(batchStatementRequest);
 

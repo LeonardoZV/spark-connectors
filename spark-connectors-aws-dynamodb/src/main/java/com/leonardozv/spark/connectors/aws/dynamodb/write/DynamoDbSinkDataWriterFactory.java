@@ -3,6 +3,7 @@ package com.leonardozv.spark.connectors.aws.dynamodb.write;
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.write.DataWriter;
 import org.apache.spark.sql.connector.write.DataWriterFactory;
+import org.apache.spark.sql.types.StructType;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
@@ -12,11 +13,11 @@ import java.net.URI;
 public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
     private final DynamoDbSinkOptions options;
-    private final int statementColumnIndex;
+    private final StructType schema;
 
-    public DynamoDbSinkDataWriterFactory(DynamoDbSinkOptions options, int statementColumnIndex) {
+    public DynamoDbSinkDataWriterFactory(DynamoDbSinkOptions options, StructType schema) {
         this.options = options;
-        this.statementColumnIndex = statementColumnIndex;
+        this.schema = schema;
     }
 
     @Override
@@ -24,11 +25,11 @@ public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
         DynamoDbClient dynamoDbClient = getDynamoDbClient();
 
-        return new DynamoDbSinkDataWriter(partitionId, taskId, dynamoDbClient, this.options, this.statementColumnIndex);
+        return new DynamoDbSinkDataWriter(partitionId, taskId, dynamoDbClient, this.options, this.schema);
 
     }
 
-    private AwsCredentialsProvider identityCredentialsProvider(String credentialsProvider, String profile, String accessKeyId, String secretAccessKey, String sessionToken) {
+    private AwsCredentialsProvider identifyCredentialsProvider(String credentialsProvider, String profile, String accessKeyId, String secretAccessKey, String sessionToken) {
 
         switch (credentialsProvider) {
 
@@ -75,7 +76,7 @@ public class DynamoDbSinkDataWriterFactory implements DataWriterFactory {
 
         DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder();
 
-        clientBuilder.credentialsProvider(identityCredentialsProvider(this.options.credentialsProvider(), this.options.profile(), this.options.accessKeyId(), this.options.secretAccessKey(), this.options.sessionToken()));
+        clientBuilder.credentialsProvider(identifyCredentialsProvider(this.options.credentialsProvider(), this.options.profile(), this.options.accessKeyId(), this.options.secretAccessKey(), this.options.sessionToken()));
 
         clientBuilder.region(this.options.region());
 

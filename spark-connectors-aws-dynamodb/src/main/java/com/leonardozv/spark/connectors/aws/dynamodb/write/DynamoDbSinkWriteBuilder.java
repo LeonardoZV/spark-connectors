@@ -1,24 +1,22 @@
 package com.leonardozv.spark.connectors.aws.dynamodb.write;
 
-import org.apache.spark.sql.connector.write.LogicalWriteInfo;
 import org.apache.spark.sql.connector.write.Write;
 import org.apache.spark.sql.connector.write.WriteBuilder;
+import org.apache.spark.sql.types.StructType;
 
 public class DynamoDbSinkWriteBuilder implements WriteBuilder {
 
-    private final LogicalWriteInfo info;
+    private final DynamoDbSinkOptions options;
+    private final StructType schema;
 
-    private static final String STATEMENT_COLUMN_NAME = "statement";
-
-    public DynamoDbSinkWriteBuilder(LogicalWriteInfo info) {
-        this.info = info;
+    public DynamoDbSinkWriteBuilder(DynamoDbSinkOptions options, StructType schema) {
+        this.options = options;
+        this.schema = schema;
     }
 
     @Override
     public Write build() {
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions(this.info.options().asCaseSensitiveMap());
-        int statementColumnIndex = this.info.schema().fieldIndex(STATEMENT_COLUMN_NAME);
-        return new DynamoDbSinkWrite(options, statementColumnIndex);
+        return new DynamoDbSinkWrite(this.options, this.schema);
     }
 
 }

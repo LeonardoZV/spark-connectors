@@ -102,4 +102,12 @@ public class SqsSinkOptions implements Serializable {
         return this.options.computeIfAbsent("s3KeyPrefix", k -> "");
     }
 
+    public String s3ServerSideEncryption() {
+        return this.options.computeIfAbsent("s3ServerSideEncryption", k -> "");
+    }
+
+    public String s3SseKmsKeyId() {
+        return this.options.computeIfAbsent("s3SseKmsKeyId", k -> "");
+    }
+
 }
