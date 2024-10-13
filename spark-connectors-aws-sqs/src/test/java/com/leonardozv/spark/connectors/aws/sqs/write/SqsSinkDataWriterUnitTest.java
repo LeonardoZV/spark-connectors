@@ -29,7 +29,7 @@ class SqsSinkDataWriterUnitTest {
     }
 
     @Test
-    void when_RowHasValueAndDelaySecondsAndMsgAttributesAndMessageGroupIdAndMessageDeduplicationIdAndBatchSizeReached_should_SendMessageBatch() {
+    void when_RowHasValueAndDelaySecondsAndMessageAttributesAndMessageGroupIdAndMessageDeduplicationIdAndBatchSizeReached_should_SendMessageBatch() {
 
         // Arrange
         Map<String, String> options = new LinkedHashMap<String, String>() {{
@@ -43,7 +43,7 @@ class SqsSinkDataWriterUnitTest {
         StructType schema = new StructType()
                 .add("value", "string")
                 .add("delay_seconds", "integer")
-                .add("msg_attributes", "map<string,string>")
+                .add("message_attributes", "map<string,string>")
                 .add("message_group_id", "string")
                 .add("message_deduplication_id", "string");
 
@@ -117,7 +117,7 @@ class SqsSinkDataWriterUnitTest {
     }
 
     @Test
-    void when_RowHasValueAndMsgAttributesAndGroupIdAndBatchSizeNotReachedButCommitCalled_should_SendMessageBatch() {
+    void when_RowHasValueAndMessageAttributesAndMessageGroupIdAndBatchSizeNotReachedButCommitCalled_should_SendMessageBatch() {
 
         // Arrange
         Map<String, String> options = new LinkedHashMap<String, String>() {{
@@ -130,7 +130,7 @@ class SqsSinkDataWriterUnitTest {
 
         StructType schema = new StructType()
                 .add("value", "string")
-                .add("msg_attributes", "map<string,string>")
+                .add("message_attributes", "map<string,string>")
                 .add("message_group_id", "string");
 
         String queueUrl = "http://localhost:4566/123456789012/test-queue";
@@ -174,7 +174,7 @@ class SqsSinkDataWriterUnitTest {
 
         StructType schema = new StructType()
                 .add("value", "string")
-                .add("msg_attributes", "map<string,string>")
+                .add("message_attributes", "map<string,string>")
                 .add("message_group_id", "string");
 
         SqsClient mockSqsClient = mock(SqsClient.class);

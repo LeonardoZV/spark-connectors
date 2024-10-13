@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     schema = StructType([
         StructField("value",StringType(),False),
-        StructField("msg_attributes",MapType(StringType(), StringType(), True), False)
+        StructField("message_attributes",MapType(StringType(), StringType(), True), False)
     ])
 
     df = spark.createDataFrame(data=data,schema=schema)

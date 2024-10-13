@@ -11,7 +11,7 @@ if __name__ == "__main__":
         .appName("DynamoDb Write") \
         .getOrCreate()
 
-    df = spark.createDataFrame([("UPDATE \"my-table\" SET age = 31 WHERE id = '124'",)], ["statement"])
+    df = spark.createDataFrame([("UPDATE \"my-table\" SET age = 31 WHERE id = '124'",)], ["value"])
 
     df.show()
     df.printSchema()
@@ -20,7 +20,6 @@ if __name__ == "__main__":
         .format("dynamodb") \
         .mode("append") \
         .option("endpoint", sys.argv[1]) \
-        .option("batchSize", "25") \
         .option("errorsToIgnore", "ConditionalCheckFailed") \
         .save()
 

@@ -31,7 +31,7 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
     public void write(InternalRow row) {
 
         BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder()
-                .statement(row.getString(this.schema.fieldIndex("statement")))
+                .statement(row.getString(this.schema.fieldIndex("value")))
                 .build();
 
         this.statements.add(batchStatementRequest);

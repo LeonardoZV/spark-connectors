@@ -29,17 +29,17 @@ Don't forget to configure the default credentials in your machine. See [Configur
 
 The following options can be configured in the writer:
 
-| Option                | Description                                                                                                                                                                                                   | Required                                                 | Default                    |
-|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|----------------------------|
-| `credentialsProvider` | The credential provider to be used by the dynamodb client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html).   | No                                                       | DefaultCredentialsProvider |
-| `profile`             | The profile to be used by the dynamodb client when credentialProvider is ProfileCredentialsProvider.                                                                                                          | No                                                       | default                    |
-| `accessKey`           | The access key to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when credentialProvider is StaticCredentialsProvider |                            |
-| `secretKey`           | The secret key to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                        | Yes when credentialProvider is StaticCredentialsProvider |                            |
-| `sessionToken`        | The session token to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                     | No                                                       |                            |
-| `endpoint`            | The endpoint to be used by the dynamodb client.                                                                                                                                                               | No                                                       |                            |
-| `region`              | The region of the queue.                                                                                                                                                                                      | No                                                       | us-east-1                  |
-| `batchSize`           | The number of statements to be grouped in one call.                                                                                                                                                           | No                                                       | 25                         |
-| `errorsToIgnore`      | Errors that you want to be ignored and treated as a success separated by comma.                                                                                                                               | No                                                       |                            |
+| Option                | Description                                                                                                                                                                                                 | Required                                                 | Default                    |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|----------------------------|
+| `credentialsProvider` | The credential provider to be used by the dynamodb client. [Credential providers available](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/AwsCredentialsProvider.html). | No                                                       | DefaultCredentialsProvider |
+| `profile`             | The profile to be used by the dynamodb client when credentialProvider is ProfileCredentialsProvider.                                                                                                        | No                                                       | default                    |
+| `accessKey`           | The access key to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when credentialProvider is StaticCredentialsProvider |                            |
+| `secretKey`           | The secret key to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                      | Yes when credentialProvider is StaticCredentialsProvider |                            |
+| `sessionToken`        | The session token to be used by the dynamodb client when credentialProvider is StaticCredentialsProvider.                                                                                                   | No                                                       |                            |
+| `endpoint`            | The endpoint to be used by the dynamodb client.                                                                                                                                                             | No                                                       |                            |
+| `region`              | The region of the queue.                                                                                                                                                                                    | No                                                       | us-east-1                  |
+| `batchSize`           | The number of statements to be grouped in one call.                                                                                                                                                         | No                                                       | 25                         |
+| `errorsToIgnore`      | Errors that you want to be ignored and treated as a success separated by comma. [Possible errors](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchStatementError.html)              | No                                                       |                            |
 
 Example:
 
@@ -61,7 +61,7 @@ df.write
 
 The dataframe:
 
-- **must** have a column called **statement** (string) containing the PartiQL Statement.
+- **must** have a column called **value** (string) containing the PartiQL Statement.
 
 ### Running
 

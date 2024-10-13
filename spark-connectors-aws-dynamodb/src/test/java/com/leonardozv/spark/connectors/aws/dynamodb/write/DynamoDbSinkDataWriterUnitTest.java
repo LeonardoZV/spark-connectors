@@ -35,7 +35,7 @@ class DynamoDbSinkDataWriterUnitTest {
         }};
 
         StructType schema = new StructType()
-                .add("statement", "string");
+                .add("value", "string");
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchExecuteStatementResponse response = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(BatchStatementResponse.builder().build())).build();
@@ -70,7 +70,7 @@ class DynamoDbSinkDataWriterUnitTest {
         }};
 
         StructType schema = new StructType()
-                .add("statement", "string");
+                .add("value", "string");
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.ACCESS_DENIED).message("Error message").build();
@@ -108,7 +108,7 @@ class DynamoDbSinkDataWriterUnitTest {
         }};
 
         StructType schema = new StructType()
-                .add("statement", "string");
+                .add("value", "string");
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED).message("Error message").build();
@@ -142,7 +142,7 @@ class DynamoDbSinkDataWriterUnitTest {
         }};
 
         StructType schema = new StructType()
-                .add("statement", "string");
+                .add("value", "string");
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
         when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(BatchExecuteStatementResponse.builder().build());
@@ -176,7 +176,7 @@ class DynamoDbSinkDataWriterUnitTest {
         }};
 
         StructType schema = new StructType()
-                .add("statement", "string");
+                .add("value", "string");
 
         DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
 
