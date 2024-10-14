@@ -338,7 +338,7 @@ abstract class AbstractSparkIntegrationTest {
         configureQueue(sqs, false);
 
         // act
-        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_msg_attributes.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_message_attributes.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();

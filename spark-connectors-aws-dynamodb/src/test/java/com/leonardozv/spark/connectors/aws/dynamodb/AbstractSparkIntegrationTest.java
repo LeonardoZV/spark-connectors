@@ -143,7 +143,7 @@ abstract class AbstractSparkIntegrationTest {
         configureTable(dynamodb);
 
         // act
-        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write.py", "/home/data/sample.txt", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
@@ -165,7 +165,7 @@ abstract class AbstractSparkIntegrationTest {
         configureTable(dynamodb);
 
         // act
-        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "/home/data/sample.txt", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();

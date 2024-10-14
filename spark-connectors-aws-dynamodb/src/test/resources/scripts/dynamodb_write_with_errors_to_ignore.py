@@ -2,7 +2,7 @@ import sys
 from pyspark.sql import SparkSession
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Missing parameters")
         sys.exit(-1)
 
@@ -11,7 +11,7 @@ if __name__ == "__main__":
         .appName("DynamoDb Write") \
         .getOrCreate()
 
-    df = spark.createDataFrame([("UPDATE \"my-table\" SET age = 31 WHERE id = '124'",)], ["value"])
+    df = spark.read.text(sys.argv[1])
 
     df.show()
     df.printSchema()
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     df.write \
         .format("dynamodb") \
         .mode("append") \
-        .option("endpoint", sys.argv[1]) \
+        .option("endpoint", sys.argv[2]) \
         .option("errorsToIgnore", "ConditionalCheckFailed") \
         .save()
 
