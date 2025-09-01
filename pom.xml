@@ -36,10 +36,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spark.version>3.3.0</spark.version>
+        <spark.version>3.5.4</spark.version>
         <resilience4j-retry.version>2.3.0</resilience4j-retry.version>
         <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
         <junit.version>5.11.0</junit.version>
@@ -55,7 +55,6 @@
         <pitest.version>1.16.3</pitest.version>
         <pitest-junit5.version>1.2.1</pitest-junit5.version>
         <sonar.version>3.9.1.2184</sonar.version>
-        <gpg.version>3.2.6</gpg.version>
     </properties>
 
     <dependencyManagement>
@@ -87,6 +86,7 @@
             <groupId>io.github.resilience4j</groupId>
             <artifactId>resilience4j-retry</artifactId>
             <version>${resilience4j-retry.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
