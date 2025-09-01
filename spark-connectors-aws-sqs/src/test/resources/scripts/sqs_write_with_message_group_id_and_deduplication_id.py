@@ -12,13 +12,14 @@ if __name__ == "__main__":
         .appName("SQS Write") \
         .getOrCreate()
 
-    data = [("value 1","id1"),
-            ("value 1","id1"),
-            ("value 2","id2"),
-            ("value 2","id2")]
+    data = [("value 1","id1","id1"),
+            ("value 1","id1","id1"),
+            ("value 2","id2","id2"),
+            ("value 2","id2","id2")]
 
     schema = StructType([
         StructField("value",StringType(),False),
+        StructField("message_group_id",StringType(),False),
         StructField("message_deduplication_id",StringType(),False),
     ])
 

@@ -20,7 +20,7 @@ if __name__ == "__main__":
         .format("dynamodb") \
         .mode("append") \
         .option("endpoint", sys.argv[2]) \
-        .option("errorsToIgnore", "ConditionalCheckFailed") \
+        .option("ignoreErrors", "ConditionalCheckFailed") \
         .save()
 
     spark.stop()

@@ -28,7 +28,8 @@ class DynamoDbSinkWriteBuilderUnitTest {
         assertTrue(write.options().endpoint().isEmpty());
         assertEquals(Region.of("us-east-1"), write.options().region());
         assertEquals(25, write.options().batchSize());
-        assertTrue(write.options().errorsToIgnore().isEmpty());
+        assertTrue(write.options().retryErrors().isEmpty());
+        assertTrue(write.options().ignoreErrors().isEmpty());
         assertEquals(0, write.schema().getFieldIndex("statement").get());
 
     }
@@ -40,7 +41,7 @@ class DynamoDbSinkWriteBuilderUnitTest {
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "3");
-            put("errorsToIgnore", "ConditionalCheckFailed,ProvisionedThroughputExceeded");
+            put("ignoreErrors", "ConditionalCheckFailed,ProvisionedThroughputExceeded");
         }});
 
         StructType schema = new StructType()
@@ -55,8 +56,8 @@ class DynamoDbSinkWriteBuilderUnitTest {
         assertEquals("http://localhost:8000", write.options().endpoint());
         assertEquals(Region.of("us-west-2"), write.options().region());
         assertEquals(3, write.options().batchSize());
-        assertTrue(write.options().errorsToIgnore().contains(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED.toString()));
-        assertTrue(write.options().errorsToIgnore().contains(BatchStatementErrorCodeEnum.PROVISIONED_THROUGHPUT_EXCEEDED.toString()));
+        assertTrue(write.options().ignoreErrors().contains(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED.toString()));
+        assertTrue(write.options().ignoreErrors().contains(BatchStatementErrorCodeEnum.PROVISIONED_THROUGHPUT_EXCEEDED.toString()));
         assertEquals(0, write.schema().getFieldIndex("statement").get());
 
     }

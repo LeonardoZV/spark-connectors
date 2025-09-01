@@ -53,6 +53,10 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
             sendMessageBatchRequestEntryBuilder.messageGroupId(row.getString(this.schema.fieldIndex("message_group_id")));
         }
 
+        if(!this.schema.getFieldIndex("message_system_attributes").isEmpty()) {
+            sendMessageBatchRequestEntryBuilder.messageSystemAttributesWithStrings(convertMapDataToMapMessageSystemAttributes(row.getMap(this.schema.fieldIndex("message_system_attributes"))));
+        }
+
         SendMessageBatchRequestEntry sendMessageBatchRequestEntry = sendMessageBatchRequestEntryBuilder.build();
 
         this.messages.add(sendMessageBatchRequestEntry);
@@ -90,6 +94,19 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
 
         msgAttributesMapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
             attributes.put(key.toString(), MessageAttributeValue.builder().dataType("String").stringValue(value.toString()).build());
+            return null;
+        });
+
+        return attributes;
+
+    }
+
+    private Map<String, MessageSystemAttributeValue> convertMapDataToMapMessageSystemAttributes(MapData msgAttributesMapData) {
+
+        Map<String, MessageSystemAttributeValue> attributes = new HashMap<>();
+
+        msgAttributesMapData.foreach(DataTypes.StringType, DataTypes.StringType, (key, value) -> {
+            attributes.put(key.toString(), MessageSystemAttributeValue.builder().dataType("String").stringValue(value.toString()).build());
             return null;
         });
 

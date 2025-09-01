@@ -12,11 +12,12 @@ if __name__ == "__main__":
         .appName("SQS Write") \
         .getOrCreate()
 
-    data = [("value 1", {"attribute-a" : 1000, "attribute-b" : "2000"})]
+    data = [("value 1", {"attribute" : "1000"}, {"AWSTraceHeader" : "test"})]
 
     schema = StructType([
         StructField("value",StringType(),False),
-        StructField("message_attributes",MapType(StringType(), StringType(), True), False)
+        StructField("message_attributes",MapType(StringType(), StringType(), True), False),
+        StructField("message_system_attributes",MapType(StringType(), StringType(), True), False)
     ])
 
     df = spark.createDataFrame(data=data,schema=schema)

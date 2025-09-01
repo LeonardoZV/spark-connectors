@@ -2,7 +2,7 @@
 
 A custom connector for Apache Spark that sends messages to AWS SQS.
 
-It supports the [AWS SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html) to manage large message payloads, from 256 KB and up to 2 GB.
+It supports the [AWS SQS Extended Client](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html) to manage large message payloads, from 1 MiB and up to 2 GB.
 
 It currently supports the following spark operations:
 - batch write operation.
@@ -55,7 +55,7 @@ AWS SQS Extended Client options (to be used if useSqsExtendedClient is true):
 | `s3Region`                 | The region of the bucket.                                                                                                                                                                             | No                                                         | us-east-1                  |
 | `forcePathStyle`           | Force a path-style endpoint to be used where the bucket name is part of the path.                                                                                                                     | No                                                         | false                      |
 | `bucketName`               | The bucket name where the messages will be stored.                                                                                                                                                    | Yes                                                        |                            |
-| `payloadSizeThreshold`     | The threshold size in bytes.                                                                                                                                                                          | No                                                         | 262144                     |
+| `payloadSizeThreshold`     | The threshold size in bytes.                                                                                                                                                                          | No                                                         | 1048576                    |
 | `s3KeyPrefix`              | The key prefix to be used in the s3 bucket.                                                                                                                                                           | No                                                         |                            |
 | `s3ServerSideEncryption`   | The server-side encryption strategy to be used by the s3 client. Currently, only SSE-KMS is supported by the SQS Extended Client.                                                                     | No                                                         |                            |
 | `s3SseKmsKeyId`            | The KMS key id to be used by the s3 client when s3ServerSideEncryptionStrategy is SSE-KMS.                                                                                                            | No                                                         |                            |
@@ -86,7 +86,7 @@ df.write
     .option("s3Region", "us-east-1") \
     .option("forcePathStyle", "false") \
     .option("bucketName", "my-test-bucket") \
-    .option("payloadSizeThreshold", "262144") \
+    .option("payloadSizeThreshold", "1048576") \
     .option("s3KeyPrefix", "prefix/")
     .option("s3ServerSideEncryption", "SSE-KMS")
     .option("s3SseKmsKeyId", "kms-key-id")

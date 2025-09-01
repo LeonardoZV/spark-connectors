@@ -1,4 +1,4 @@
-package com.leonardozv.spark.connectors.aws.dynamodb;
+package com.leonardozv.spark.connectors.aws.sqs;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,11 +11,11 @@ import org.testcontainers.utility.MountableFile;
 import java.nio.file.Paths;
 
 @Testcontainers
-class Spark3_2_1IntegrationTest extends AbstractSparkIntegrationTest {
+class Spark3_5_4IntegrationTest extends AbstractSparkIntegrationTest {
 
     @BeforeAll
     static void startContainer() {
-        spark = new GenericContainer<>(DockerImageName.parse("bitnami/spark:3.2.1"))
+        spark = new GenericContainer<>(DockerImageName.parse("bitnami/spark:3.5.4"))
                 .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/test-classes/"), 0777), "/home")
                 .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/" + LIB_SPARK_CONNECTORS), 0445), "/home/libs/" + LIB_SPARK_CONNECTORS)
                 .withCopyFileToContainer(MountableFile.forHostPath(Paths.get("target/libs/"), 0777), "/home/libs")

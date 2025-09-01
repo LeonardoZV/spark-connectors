@@ -4,13 +4,13 @@ import software.amazon.awssdk.services.dynamodb.model.BatchStatementError;
 
 import java.util.List;
 
-public class DynamoDbSinkBatchResultException extends RuntimeException {
+public class ResponseContainsRetryableErrorsException extends RuntimeException {
 
-    public DynamoDbSinkBatchResultException(String message) {
+    public ResponseContainsRetryableErrorsException(String message) {
         super(message);
     }
 
-    public DynamoDbSinkBatchResultException(String message, Throwable cause) {
+    public ResponseContainsRetryableErrorsException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -23,9 +23,9 @@ public class DynamoDbSinkBatchResultException extends RuntimeException {
             return this;
         }
 
-        public DynamoDbSinkBatchResultException build() {
+        public ResponseContainsRetryableErrorsException build() {
             String[] failedMessages = errors.stream().map(error -> error.code() + ": " + error.message()).distinct().toArray(String[]::new);
-            return new DynamoDbSinkBatchResultException("Some statements failed to be executed in DynamoDB with the following errors: [" + String.join("; ", failedMessages) + "]");
+            return new ResponseContainsRetryableErrorsException("Some statements failed to be executed in DynamoDB with the following errors: [" + String.join("; ", failedMessages) + "]");
         }
 
     }

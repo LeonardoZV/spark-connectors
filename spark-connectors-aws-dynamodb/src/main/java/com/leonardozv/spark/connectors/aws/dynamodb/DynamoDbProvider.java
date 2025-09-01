@@ -26,7 +26,9 @@ public class DynamoDbProvider implements TableProvider, DataSourceRegister {
 
     /* This allows the dataframe to have more columns than expected (or optional columns) */
     @Override
-    public boolean supportsExternalMetadata() { return true; }
+    public boolean supportsExternalMetadata() {
+        return true;
+    }
 
     @Override
     public String shortName() {

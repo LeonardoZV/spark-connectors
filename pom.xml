@@ -40,6 +40,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spark.version>3.3.0</spark.version>
+        <resilience4j-retry.version>2.3.0</resilience4j-retry.version>
         <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
         <junit.version>5.11.0</junit.version>
         <mockito.version>5.13.0</mockito.version>
@@ -81,6 +82,11 @@
             <artifactId>spark-catalyst_2.12</artifactId>
             <version>${spark.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-retry</artifactId>
+            <version>${resilience4j-retry.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -229,35 +235,7 @@
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${sonar.version}</version>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-gpg-plugin</artifactId>-->
-<!--                <version>${gpg.version}</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>sign-artifacts</id>-->
-<!--                        <phase>verify</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>sign</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <signer>bc</signer>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
 </project>

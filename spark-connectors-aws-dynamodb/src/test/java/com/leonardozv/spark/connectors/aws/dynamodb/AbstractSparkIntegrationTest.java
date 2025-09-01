@@ -53,7 +53,9 @@ abstract class AbstractSparkIntegrationTest {
             "sdk-core-2.27.17.jar",
             "slf4j-api-1.7.36.jar",
             "third-party-jackson-core-2.27.17.jar",
-            "utils-2.27.17.jar"
+            "utils-2.27.17.jar",
+            "resilience4j-retry-2.3.0.jar",
+            "resilience4j-core-2.3.0.jar"
     ));
 
     protected static final Network network = Network.newNetwork();
@@ -68,7 +70,7 @@ abstract class AbstractSparkIntegrationTest {
 
     public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
 
-        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:dynamodb:2.27.17", "--master", "local", script}, args);
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:dynamodb:2.27.17,io.github.resilience4j:resilience4j-retry:2.3.0", "--master", "local", script}, args);
 
         ExecResult result = spark.execInContainer(command);
 
@@ -158,14 +160,14 @@ abstract class AbstractSparkIntegrationTest {
     }
 
     @Test
-    void when_DataframeContainsStatementColumnAndErrorsToIgnoreOption_should_ExecuteStatementUsingSpark() throws IOException, InterruptedException {
+    void when_DataframeContainsStatementColumnAndIgnoreErrorsOption_should_ExecuteStatementUsingSpark() throws IOException, InterruptedException {
 
         // arrange
         DynamoDbClient dynamodb = configureDynamoDbClient();
         configureTable(dynamodb);
 
         // act
-        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write_with_errors_to_ignore.py", "/home/data/sample.txt", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/dynamodb_write_with_ignore_errors.py", "/home/data/sample_with_error.txt", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();

@@ -136,7 +136,11 @@ abstract class AbstractSparkIntegrationTest {
 
     private KmsClient configureKmsClient() {
 
-        return KmsClient.builder().build();
+        return KmsClient.builder()
+                .endpointOverride(localstack.getEndpointOverride(KMS))
+                .region(Region.of(localstack.getRegion()))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
+                .build();
 
     }
 
@@ -144,12 +148,11 @@ abstract class AbstractSparkIntegrationTest {
 
         String queueName = "my-test";
 
-        Map<QueueAttributeName, String> queueAttributes = new HashMap<>();
+        EnumMap<QueueAttributeName, String> queueAttributes = new EnumMap<>(QueueAttributeName.class);
 
         if(isFIFO) {
             queueName = queueName + ".fifo";
             queueAttributes.put(QueueAttributeName.FIFO_QUEUE, "true");
-            queueAttributes.put(QueueAttributeName.CONTENT_BASED_DEDUPLICATION, "true");
         }
 
         CreateQueueRequest createQueueRequest = CreateQueueRequest.builder()
@@ -247,8 +250,10 @@ abstract class AbstractSparkIntegrationTest {
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-        Message message = getMessages(sqs, false).get(0);
-        assertThat(message.body()).isEqualTo("my message body");
+
+        List<Message> messages = getMessages(sqs, false);
+
+        assertThat(messages.get(0).body()).isEqualTo("my message body");
 
     }
 
@@ -264,8 +269,10 @@ abstract class AbstractSparkIntegrationTest {
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
+
         List<Message> messages = getMessages(sqs, false);
-        assertThat(messages).size().isEqualTo(10);
+
+        assertThat(messages).hasSize(10);
 
     }
 
@@ -281,8 +288,10 @@ abstract class AbstractSparkIntegrationTest {
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute fail").isNotZero();
-        assertThat(result.getStdout()).as("Spark job should fail due to exceeding size limit").contains("Batch requests cannot be longer than 262144 bytes");
+        assertThat(result.getStdout()).as("Spark job should fail due to exceeding size limit").contains("Batch requests cannot be longer than 1048576 bytes");
+
         List<Message> messages = getMessages(sqs, false);
+
         assertThat(messages).size().as("No messages should be written when the batch fails").isZero();
 
     }
@@ -293,7 +302,7 @@ abstract class AbstractSparkIntegrationTest {
         // arrange
         SqsClient sqs = configureSqsClient();
         configureQueue(sqs, false);
-        HashMap<QueueAttributeName, String> attributes = new HashMap<>();
+        EnumMap<QueueAttributeName, String> attributes = new EnumMap<>(QueueAttributeName.class);
         attributes.put(QueueAttributeName.MAXIMUM_MESSAGE_SIZE, Integer.toString(1024));
         SetQueueAttributesRequest setQueueAttributesRequest = SetQueueAttributesRequest.builder().queueUrl(getHostAccessibleQueueUrl(sqs, "my-test")).attributes(attributes).build();
         sqs.setQueueAttributes(setQueueAttributesRequest);
@@ -304,8 +313,10 @@ abstract class AbstractSparkIntegrationTest {
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute fail").isNotZero();
         assertThat(result.getStdout()).as("Spark job should fail due to exceeding size limit").contains("Some messages failed to be sent to the SQS queue");
+
         List<Message> messages = getMessages(sqs, false);
-        assertThat(messages).size().as("Only messages up to 1024 should be written").isEqualTo(2);
+
+        assertThat(messages).as("Only messages up to 1024 should be written").hasSize(2);
 
     }
 
@@ -321,12 +332,16 @@ abstract class AbstractSparkIntegrationTest {
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
+
         List<Message> messages;
+
         messages = getMessages(sqs, false);
-        assertThat(messages).size().isEqualTo(0);
+        assertThat(messages).isEmpty();
+
         TimeUnit.SECONDS.sleep(10);
+
         messages = getMessages(sqs, false);
-        assertThat(messages).size().isEqualTo(4);
+        assertThat(messages).hasSize(4);
 
     }
 
@@ -342,43 +357,34 @@ abstract class AbstractSparkIntegrationTest {
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-        Message message = getMessages(sqs, false).get(0);
-        assertThat(message.messageAttributes().get("attribute-a").stringValue()).isEqualTo("1000");
-        assertThat(message.messageAttributes().get("attribute-b").stringValue()).isEqualTo("2000");
+
+        List<Message> messages = getMessages(sqs, false);
+
+        assertThat(messages.get(0).messageAttributes()).containsEntry("attribute", MessageAttributeValue.builder().dataType("String").stringValue("1000").build());
+        assertThat(messages.get(0).attributes()).containsEntry(MessageSystemAttributeName.AWS_TRACE_HEADER, "test");
 
     }
 
     @Test
-    void when_DataframeContainsMessageGroupIdColumn_should_PutAnSQSMessageWithMessageGroupIdUsingSpark() throws IOException, InterruptedException {
+    void when_DataframeContainsMessageGroupIdAndDeduplicationIdColumn_should_PutAnSQSMessageWithMessageGroupIdAndDeduplicationIdUsingSpark() throws IOException, InterruptedException {
 
         // arrange
         SqsClient sqs = configureSqsClient();
         configureQueue(sqs, true);
 
         // act
-        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_message_group_id.py", "http://localstack:4566");
+        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_message_group_id_and_deduplication_id.py", "http://localstack:4566");
 
         // assert
         assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-        Message message = getMessages(sqs, true).get(0);
-        assertThat(message.attributes()).containsKey(MessageSystemAttributeName.MESSAGE_GROUP_ID).containsValue("id1");
 
-    }
+        List<Message> messages = getMessages(sqs, true);
 
-    @Test
-    void when_DataframeContainsMessageDeduplicationIdColumn_should_PutAnSQSMessageWithMessageDeduplicationIdUsingSpark() throws IOException, InterruptedException {
-
-        // arrange
-        SqsClient sqs = configureSqsClient();
-        configureQueue(sqs, true);
-
-        // act
-        ExecResult result = executeSparkSubmit("/home/scripts/sqs_write_with_message_group_id.py", "http://localstack:4566");
-
-        // assert
-        assertThat(result.getExitCode()).as("Spark job should execute with no errors").isZero();
-        Message message = getMessages(sqs, true).get(0);
-        assertThat(message.attributes()).containsKey(MessageSystemAttributeName.MESSAGE_DEDUPLICATION_ID).containsValue("id1");
+        assertThat(messages).hasSize(2);
+        assertThat(messages.get(0).attributes()).containsEntry(MessageSystemAttributeName.MESSAGE_GROUP_ID, "id1");
+        assertThat(messages.get(0).attributes()).containsEntry(MessageSystemAttributeName.MESSAGE_DEDUPLICATION_ID, "id1");
+        assertThat(messages.get(1).attributes()).containsEntry(MessageSystemAttributeName.MESSAGE_GROUP_ID, "id2");
+        assertThat(messages.get(1).attributes()).containsEntry(MessageSystemAttributeName.MESSAGE_DEDUPLICATION_ID, "id2");
 
     }
 
@@ -410,8 +416,9 @@ abstract class AbstractSparkIntegrationTest {
         assertThat(stream.response().serverSideEncryption()).isEqualTo(ServerSideEncryption.AWS_KMS);
         assertThat(stream.response().ssekmsKeyId()).isEqualTo(createKeyResponse.keyMetadata().arn());
 
-        String line = getLines(stream).get(0);
-        assertThat(line).isEqualTo("foo");
+        List<String> lines = getLines(stream);
+
+        assertThat(lines.get(0)).isEqualTo("foo");
 
     }
 

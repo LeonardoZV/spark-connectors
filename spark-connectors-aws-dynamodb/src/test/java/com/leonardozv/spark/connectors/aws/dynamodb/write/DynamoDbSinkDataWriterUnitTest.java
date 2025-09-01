@@ -83,7 +83,7 @@ class DynamoDbSinkDataWriterUnitTest {
         DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), schema);
 
         // Act & Assert
-        assertThrows(DynamoDbSinkBatchResultException.class, () -> writer.write(row));
+        assertThrows(ResponseContainsNonRetryableErrorsException.class, () -> writer.write(row));
         assertDoesNotThrow(writer::close);
         ArgumentCaptor<BatchExecuteStatementRequest> argumentCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
         verify(mockDynamoDbClient, times(1)).batchExecuteStatement(argumentCaptor.capture());
@@ -94,17 +94,67 @@ class DynamoDbSinkDataWriterUnitTest {
     }
 
     @Test
-    void when_RowHasStatementAndBatchSizeReachedAndHasErrorsToIgnoreAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndNotThrowException() {
+    void when_RowHasStatementAndBatchSizeReachedAndHasRetryErrorsAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndNotThrowException() {
 
-        Set<String> errorsToIgnore = new HashSet<>();
-        errorsToIgnore.add(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED.toString());
+        Set<String> retryErrors = new HashSet<>();
+        retryErrors.add(BatchStatementErrorCodeEnum.THROTTLING_ERROR.toString());
+
+        // Arrange
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
+            put("endpoint", "http://localhost:8000");
+            put("region", "us-west-2");
+            put("batchSize", "2");
+            put("retryErrors", String.join(",", retryErrors));
+        }};
+
+        StructType schema = new StructType()
+                .add("value", "string");
+
+        DynamoDbClient mockDynamoDbClient = mock(DynamoDbClient.class);
+        BatchStatementError error = BatchStatementError.builder().code(BatchStatementErrorCodeEnum.THROTTLING_ERROR).message("Error message").build();
+        BatchStatementResponse batchStatementResponseError = BatchStatementResponse.builder().error(error).build();
+        List<BatchStatementResponse> firstBatchStatementResponse = new ArrayList<>();
+        firstBatchStatementResponse.add(BatchStatementResponse.builder().build());
+        firstBatchStatementResponse.add(batchStatementResponseError);
+        BatchExecuteStatementResponse firstBatchExecuteStatementResponse = BatchExecuteStatementResponse.builder().responses(firstBatchStatementResponse).build();
+        BatchExecuteStatementResponse secondBatchExecuteStatementResponse = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(batchStatementResponseError)).build();
+        BatchExecuteStatementResponse thirdBatchExecuteStatementResponse = BatchExecuteStatementResponse.builder().responses(Collections.singletonList(batchStatementResponseError)).build();
+        when(mockDynamoDbClient.batchExecuteStatement(any(BatchExecuteStatementRequest.class))).thenReturn(firstBatchExecuteStatementResponse, secondBatchExecuteStatementResponse, thirdBatchExecuteStatementResponse);
+
+        InternalRow row1 = createInternalRow(UTF8String.fromString("test-statement-1"));
+        InternalRow row2 = createInternalRow(UTF8String.fromString("test-statement-2"));
+
+        DynamoDbSinkDataWriter writer = new DynamoDbSinkDataWriter(0, 0, mockDynamoDbClient, new DynamoDbSinkOptions(options), schema);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> writer.write(row1));
+        assertThrows(ResponseContainsRetryableErrorsException.class, () -> writer.write(row2));
+        assertDoesNotThrow(writer::close);
+        ArgumentCaptor<BatchExecuteStatementRequest> argumentCaptor = ArgumentCaptor.forClass(BatchExecuteStatementRequest.class);
+        verify(mockDynamoDbClient, times(3)).batchExecuteStatement(argumentCaptor.capture());
+        List<BatchExecuteStatementRequest> capturedArgument = argumentCaptor.getAllValues();
+        assertThat(capturedArgument.get(0).statements()).hasSize(2);
+        assertThat(capturedArgument.get(0).statements().get(0).statement()).isEqualTo("test-statement-1");
+        assertThat(capturedArgument.get(1).statements().get(0).statement()).isEqualTo("test-statement-2");
+        assertThat(capturedArgument.get(1).statements()).hasSize(1);
+        assertThat(capturedArgument.get(1).statements().get(0).statement()).isEqualTo("test-statement-2");
+        assertThat(capturedArgument.get(2).statements()).hasSize(1);
+        assertThat(capturedArgument.get(2).statements().get(0).statement()).isEqualTo("test-statement-2");
+
+    }
+
+    @Test
+    void when_RowHasStatementAndBatchSizeReachedAndHasIgnoreErrorsAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndNotThrowException() {
+
+        Set<String> ignoreErrors = new HashSet<>();
+        ignoreErrors.add(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED.toString());
 
         // Arrange
         Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "1");
-            put("errorsToIgnore", String.join(",", errorsToIgnore));
+            put("ignoreErrors", String.join(",", ignoreErrors));
         }};
 
         StructType schema = new StructType()
