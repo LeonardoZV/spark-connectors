@@ -23,55 +23,16 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
     private final DynamoDbClient dynamodb;
     private final DynamoDbSinkOptions options;
     private final StructType schema;
+    private final Retry retry;
     private List<BatchStatementRequest> statements = new ArrayList<>();
 
     public DynamoDbSinkDataWriter(int partitionId, long taskId, DynamoDbClient dynamodb, DynamoDbSinkOptions options, StructType schema) {
+
         this.partitionId = partitionId;
         this.taskId = taskId;
         this.dynamodb = dynamodb;
         this.options = options;
         this.schema = schema;
-    }
-
-    @Override
-    public void write(InternalRow row) {
-
-        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder()
-                .statement(row.getString(this.schema.fieldIndex("value")))
-                .build();
-
-        this.statements.add(batchStatementRequest);
-
-        if (this.statements.size() >= this.options.batchSize()) {
-            executeStatementsWithExponentialRandomBackoff();
-        }
-
-    }
-
-    @Override
-    public WriterCommitMessage commit() {
-
-        if (!this.statements.isEmpty()) {
-            executeStatementsWithExponentialRandomBackoff();
-        }
-
-        return new DynamoDbSinkWriterCommitMessage(this.partitionId, this.taskId);
-
-    }
-
-    @Override
-    public void abort() {
-        // nothing to abort here, since this sink is not atomic
-    }
-
-    @Override
-    public void close() {
-        // nothing to close
-    }
-
-
-
-    private void executeStatementsWithExponentialRandomBackoff() {
 
         IntervalFunction intervalFunction = IntervalFunction
                 .ofExponentialRandomBackoff(this.options.retryInitialInterval(), this.options.retryMultiplier(), this.options.retryRandomizationFactor(), this.options.retryMaxInterval());
@@ -87,12 +48,44 @@ public class DynamoDbSinkDataWriter implements DataWriter<InternalRow> {
                 .ignoreExceptions(DynamoDbSinkParsers.parseExceptions(this.options.ignoreExceptions()))
                 .build();
 
-        Retry retry = Retry.of("executeStatements", retryConfig);
+        this.retry = Retry.of("executeStatements", retryConfig);
 
-        Runnable executeFunction = Retry.decorateRunnable(retry, this::executeStatements);
+    }
 
-        executeFunction.run();
+    @Override
+    public void write(InternalRow row) {
 
+        BatchStatementRequest batchStatementRequest = BatchStatementRequest.builder()
+                .statement(row.getString(this.schema.fieldIndex("value")))
+                .build();
+
+        this.statements.add(batchStatementRequest);
+
+        if (this.statements.size() >= this.options.batchSize()) {
+            Retry.decorateRunnable(retry, this::executeStatements).run();
+        }
+
+    }
+
+    @Override
+    public WriterCommitMessage commit() {
+
+        if (!this.statements.isEmpty()) {
+            Retry.decorateRunnable(retry, this::executeStatements).run();
+        }
+
+        return new DynamoDbSinkWriterCommitMessage(this.partitionId, this.taskId);
+
+    }
+
+    @Override
+    public void abort() {
+        // nothing to abort here, since this sink is not atomic
+    }
+
+    @Override
+    public void close() {
+        // nothing to close
     }
 
     private void executeStatements() {

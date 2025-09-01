@@ -28,7 +28,7 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_RowHasStatementAndBatchSizeReached_should_ExecuteBatchExecuteStatement() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<String, String>() {{
+        Map<String, String> options = new LinkedHashMap<>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "1");
@@ -63,7 +63,7 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_RowHasStatementAndBatchSizeReachedAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndThrowException() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<String, String>() {{
+        Map<String, String> options = new LinkedHashMap<>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "1");
@@ -100,7 +100,7 @@ class DynamoDbSinkDataWriterUnitTest {
         retryErrors.add(BatchStatementErrorCodeEnum.THROTTLING_ERROR.toString());
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<String, String>() {{
+        Map<String, String> options = new LinkedHashMap<>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "2");
@@ -150,7 +150,7 @@ class DynamoDbSinkDataWriterUnitTest {
         ignoreErrors.add(BatchStatementErrorCodeEnum.CONDITIONAL_CHECK_FAILED.toString());
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<String, String>() {{
+        Map<String, String> options = new LinkedHashMap<>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "1");
@@ -185,7 +185,7 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_RowHasStatementAndBatchSizeNotReachedButCommitCalled_should_ExecuteBatchExecuteStatement() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<String, String>() {{
+        Map<String, String> options = new LinkedHashMap<>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "2");
@@ -219,7 +219,7 @@ class DynamoDbSinkDataWriterUnitTest {
     void when_AbortCalled_should_DoNothing() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<String, String>() {{
+        Map<String, String> options = new LinkedHashMap<>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "2");

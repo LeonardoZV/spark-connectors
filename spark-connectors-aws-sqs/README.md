@@ -97,7 +97,7 @@ The dataframe:
 
 - **must** have a column called **value** (string) containing the body of each message.
 - **may** have a column called **delay_seconds** (integer) containing the delay time in seconds for the message to be available in the queue.
-- **may** have a column called **message_attributes** (map of [string, string]). Each key/value wil be add as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
+- **may** have a column called **message_attributes** (map of [string, string]). Each key/value wil be added as a [metadata attribute](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html) to the SQS message.
 - **may** have a column called **message_deduplication_id** (string) containing the deduplication id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 - **may** have a column called **message_group_id** (string) containing the group id used by [FIFO queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 
