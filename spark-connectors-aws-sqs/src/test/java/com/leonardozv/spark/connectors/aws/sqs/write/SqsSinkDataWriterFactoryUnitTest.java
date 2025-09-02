@@ -31,7 +31,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsSystemPropertyCredentialsProvider_should_CreateWriterWithSystemPropertyCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "SystemPropertyCredentialsProvider");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -74,7 +74,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsEnvironmentVariableCredentialsProvider_should_CreateWriterWithEnvironmentVariableCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "EnvironmentVariableCredentialsProvider");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -117,7 +117,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsWebIdentityTokenFileCredentialsProvider_should_CreateWriterWithWebIdentityTokenFileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "WebIdentityTokenFileCredentialsProvider");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -160,7 +160,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "ProfileCredentialsProvider");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -203,7 +203,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsNotEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "ProfileCredentialsProvider");
             put("profile", "localstack");
             put("region", "us-east-1");
@@ -247,7 +247,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsContainerCredentialsProvider_should_CreateWriterWithContainerCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "ContainerCredentialsProvider");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -290,7 +290,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsInstanceProfileCredentialsProvider_should_CreateWriterWithInstanceProfileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "InstanceProfileCredentialsProvider");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -333,7 +333,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "StaticCredentialsProvider");
             put("accessKeyId", "test");
             put("secretAccessKey", "test");
@@ -385,7 +385,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsNotEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "StaticCredentialsProvider");
             put("accessKeyId", "test");
             put("secretAccessKey", "test");
@@ -438,7 +438,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsAnonymousCredentialsProvider_should_CreateWriterWithAnonymousCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "AnonymousCredentialsProvider");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -481,7 +481,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_SqsEndpointIsNotEmpty_should_CreateWriterWithSqsEndpoint() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("endpoint", "http://localhost:4566");
             put("region", "us-east-1");
             put("queueName", "test-queue");
@@ -517,7 +517,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_SqsEndpointIsEmpty_should_CreateWriterWithoutSqsEndpoint() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("region", "us-east-1");
             put("queueName", "test-queue");
         }};
@@ -553,7 +553,7 @@ class SqsSinkDataWriterFactoryUnitTest {
 
         String queueOwnerAWSAccountId = "123456789012";
 
-        HashMap<String, String> options = new HashMap<>() {{
+        HashMap<String, String> options = new HashMap<String, String>() {{
             put("region", "us-east-1");
             put("queueName", "test-queue");
             put("queueOwnerAWSAccountId", queueOwnerAWSAccountId);
@@ -601,7 +601,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void testCreateWriterWithExtendedClient() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("region", "us-east-1");
             put("queueName", "test-queue");
             put("useSqsExtendedClient", "true");
@@ -654,7 +654,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_S3EndpointIsEmpty_should_CreateWriterWithoutS3Endpoint() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("region", "us-east-1");
             put("queueName", "test-queue");
             put("useSqsExtendedClient", "true");
@@ -703,7 +703,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_BucketNameIsEmpty_should_CreateWriterWithoutPayloadSupportEnabled() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("region", "us-east-1");
             put("queueName", "test-queue");
             put("useSqsExtendedClient", "true");
@@ -751,7 +751,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_s3ServerSideEncryptionIsSSEKMS_should_CreateWriterWiths3ServerSideEncryptionSSEKMS() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("region", "us-east-1");
             put("queueName", "test-queue");
             put("useSqsExtendedClient", "true");
@@ -806,7 +806,7 @@ class SqsSinkDataWriterFactoryUnitTest {
     void when_s3ServerSideEncryptionIsUnknown_should_ThrowException(String s3ServerSideEncryption) {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("region", "us-east-1");
             put("queueName", "test-queue");
             put("useSqsExtendedClient", "true");

@@ -54,8 +54,8 @@ abstract class AbstractSparkIntegrationTest {
             "slf4j-api-1.7.36.jar",
             "third-party-jackson-core-2.27.17.jar",
             "utils-2.27.17.jar",
-            "resilience4j-retry-2.3.0.jar",
-            "resilience4j-core-2.3.0.jar"
+            "resilience4j-retry-1.7.1.jar",
+            "resilience4j-core-1.7.1.jar"
     ));
 
     protected static final Network network = Network.newNetwork();
@@ -70,7 +70,7 @@ abstract class AbstractSparkIntegrationTest {
 
     public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
 
-        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:dynamodb:2.27.17,io.github.resilience4j:resilience4j-retry:2.3.0", "--master", "local", script}, args);
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:dynamodb:2.27.17,io.github.resilience4j:resilience4j-retry:1.7.1", "--master", "local", script}, args);
 
         ExecResult result = spark.execInContainer(command);
 

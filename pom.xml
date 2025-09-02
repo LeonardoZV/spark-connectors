@@ -36,11 +36,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>17</java.version>
+        <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spark.version>3.5.4</spark.version>
-        <resilience4j-retry.version>2.3.0</resilience4j-retry.version>
+        <spark.version>3.3.0</spark.version>
+        <resilience4j-retry.version>1.7.1</resilience4j-retry.version>
         <aws-java-sdk.version>2.27.17</aws-java-sdk.version>
         <junit.version>5.11.0</junit.version>
         <mockito.version>5.13.0</mockito.version>

@@ -37,7 +37,7 @@ class DynamoDbSinkWriteBuilderUnitTest {
     @Test
     void testBuildWithCustomOptions() {
 
-        DynamoDbSinkOptions options = new DynamoDbSinkOptions(new HashMap<>() {{
+        DynamoDbSinkOptions options = new DynamoDbSinkOptions(new HashMap<String, String>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
             put("batchSize", "3");

@@ -13,7 +13,7 @@ class SqsSinkWriteBuilderUnitTest {
     @Test
     void testBuildWithDefaultOptionsAndWithoutMessageAttributesAndGroupId() {
 
-        SqsSinkOptions options = new SqsSinkOptions(new HashMap<>() {{
+        SqsSinkOptions options = new SqsSinkOptions(new HashMap<String, String>() {{
             put("queueName", "test-queue");
         }});
 
@@ -44,7 +44,7 @@ class SqsSinkWriteBuilderUnitTest {
     @Test
     void testBuildWithCustomOptionsAndWithMessageAttributesAndGroupId() {
 
-        SqsSinkOptions options = new SqsSinkOptions(new HashMap<>() {{
+        SqsSinkOptions options = new SqsSinkOptions(new HashMap<String, String>() {{
             put("endpoint", "http://localhost:4566");
             put("region", "us-west-2");
             put("queueName", "test-queue");

@@ -23,7 +23,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsSystemPropertyCredentialsProvider_should_CreateWriterWithSystemPropertyCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "SystemPropertyCredentialsProvider");
             put("region", "us-west-2");
         }};
@@ -64,7 +64,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsEnvironmentVariableCredentialsProvider_should_CreateWriterWithEnvironmentVariableCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "EnvironmentVariableCredentialsProvider");
             put("region", "us-west-2");
         }};
@@ -105,7 +105,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsWebIdentityTokenFileCredentialsProvider_should_CreateWriterWithWebIdentityTokenFileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "WebIdentityTokenFileCredentialsProvider");
             put("region", "us-west-2");
         }};
@@ -146,7 +146,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "ProfileCredentialsProvider");
             put("region", "us-west-2");
         }};
@@ -187,7 +187,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsProfileCredentialsProviderAndProfileIsNotEmpty_should_CreateWriterWithProfileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "ProfileCredentialsProvider");
             put("profile", "localstack");
             put("region", "us-west-2");
@@ -229,7 +229,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsContainerCredentialsProvider_should_CreateWriterWithContainerCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "ContainerCredentialsProvider");
             put("region", "us-west-2");
         }};
@@ -270,7 +270,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsInstanceProfileCredentialsProvider_should_CreateWriterWithInstanceProfileCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "InstanceProfileCredentialsProvider");
             put("region", "us-west-2");
         }};
@@ -311,7 +311,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "StaticCredentialsProvider");
             put("accessKeyId", "test");
             put("secretAccessKey", "test");
@@ -361,7 +361,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsStaticCredentialsProviderAndSessionTokenIsNotEmpty_should_CreateWriterWithStaticCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "StaticCredentialsProvider");
             put("accessKeyId", "test");
             put("secretAccessKey", "test");
@@ -412,7 +412,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_CredentialsProviderIsAnonymousCredentialsProvider_should_CreateWriterWithAnonymousCredentialsProvider() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("credentialsProvider", "AnonymousCredentialsProvider");
             put("region", "us-west-2");
         }};
@@ -453,7 +453,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_EndpointIsNotEmpty_should_CreateWriterWithEndpoint() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("endpoint", "http://localhost:8000");
             put("region", "us-west-2");
         }};
@@ -487,7 +487,7 @@ class DynamoDbSinkDataWriterFactoryUnitTest {
     void when_EndpointIsEmpty_should_CreateWriterWithoutEndpoint() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("region", "us-west-2");
         }};
 

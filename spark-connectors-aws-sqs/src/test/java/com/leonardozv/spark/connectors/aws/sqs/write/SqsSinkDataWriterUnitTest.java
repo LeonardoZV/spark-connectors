@@ -32,7 +32,7 @@ class SqsSinkDataWriterUnitTest {
     void when_RowHasValueAndDelaySecondsAndMessageAttributesAndMessageGroupIdAndMessageDeduplicationIdAndBatchSizeReached_should_SendMessageBatch() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("endpoint", "http://localhost:4566");
             put("region", "us-east-1");
             put("queueOwnerAWSAccountId", "123456789012");
@@ -80,7 +80,7 @@ class SqsSinkDataWriterUnitTest {
     void when_RowHasValueOnlyAndAndBatchSizeReachedAndSqsRespondsWithError_should_SendMessageBatchAndThrowException() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("endpoint", "http://localhost:4566");
             put("region", "us-east-1");
             put("queueOwnerAWSAccountId", "123456789012");
@@ -120,7 +120,7 @@ class SqsSinkDataWriterUnitTest {
     void when_RowHasValueAndMessageAttributesAndMessageGroupIdAndBatchSizeNotReachedButCommitCalled_should_SendMessageBatch() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("endpoint", "http://localhost:4566");
             put("region", "us-east-1");
             put("queueOwnerAWSAccountId", "123456789012");
@@ -164,7 +164,7 @@ class SqsSinkDataWriterUnitTest {
     void when_AbortCalled_should_DoNothing() {
 
         // Arrange
-        Map<String, String> options = new LinkedHashMap<>() {{
+        Map<String, String> options = new LinkedHashMap<String, String>() {{
             put("endpoint", "http://localhost:4566");
             put("region", "us-east-1");
             put("queueOwnerAWSAccountId", "123456789012");
