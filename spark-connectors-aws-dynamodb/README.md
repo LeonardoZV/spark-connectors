@@ -81,16 +81,17 @@ The dataframe:
 
 ### Running
 
-This library is available at maven central repository as **com.leonardozv:spark-connectors-aws-sqs:1.0.0** and can be installed in your spark cluster through the packages parameter of spark-submit.
+This library is available at maven central repository as **com.leonardozv:spark-connectors-aws-dynamodb:1.0.0** and can be installed in your spark cluster through the packages parameter of spark-submit.
 
 Dependencies needed to run this library are:
 
 - software.amazon.awssdk:dynamodb
+- io.github.resilience4j:resilience4j-retry
 
 The following command can be used to run the example of how to use this library:
 
 ``` bash
-spark-submit --packages com.leonardozv:spark-connectors-aws-dynamodb:1.0.0,software.amazon.awssdk:dynamodb:2.27.17 test.py sample.txt
+spark-submit --packages com.leonardozv:spark-connectors-aws-dynamodb:1.0.0,software.amazon.awssdk:dynamodb:2.27.17,io.github.resilience4j:resilience4j-retry:1.7.1 test.py sample.txt
 ```
 
 And this is the test.py file content.
@@ -124,9 +125,15 @@ if __name__ == "__main__":
 
 ## Messaging delivery semantics and error handling
 
-The sink is at least once. If something wrong happens when the data is being written by a worker node, Spark default behavior is to retry the task in another node until it reaches *spark.task.maxFailures*. Statements that have already been executed could be executed again.
+This sink provides at-least-once delivery semantics.
 
-The errorsToIgnore option can be used to ignore errors and treat the execution as a success. If there are no more errors in the batch that match the ignoreError option, the entire batch will be a success and the statements will not be retried. If there are more errors in the batch that not match the ignoreError option, the entire batch will be an error and all statements will be retried (even the ones marked with the ignoreErrors option). That's because the spark behavior is to retry the entire batch when there are errors.
+This library uses resilience4j-retry to either retry or ignore exceptions and errors when calling the AWS DynamoDB API. It also applies the ExponentialRandomBackoff strategy (via IntervalFunction.ofExponentialRandomBackoff), which is fully configurable.
+
+According to the AWS DynamoDB BatchExecuteStatement API documentation, exceptions can occur at the request level and errors at the item level (because it’s a batch API). Therefore, if you want to retry or ignore exceptions at the request level, use the retryExceptions or ignoreExceptions parameters. If you want to retry or ignore errors at the item level, use the retryErrors or ignoreErrors parameters.
+
+On retry, the library excludes any statements that were previously executed successfully or that are configured to be ignored.
+
+If an exception or error occurs and it is not configured to be retried or ignored, Spark’s default behavior is to retry the **entire** task on another node until it reaches spark.task.maxFailures. Note that in this case, statements that have already been executed successfully may be executed again.
 
 ## How to
 
