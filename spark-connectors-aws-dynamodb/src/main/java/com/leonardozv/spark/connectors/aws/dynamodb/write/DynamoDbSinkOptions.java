@@ -84,11 +84,17 @@ public class DynamoDbSinkOptions implements Serializable {
     }
 
     public Set<String> ignoreExceptions() {
-        return Arrays.stream(this.options.computeIfAbsent("ignoreExceptions", k -> "").split(",")).filter(s -> !s.isEmpty()).collect(Collectors.toSet());
+        return Arrays.stream(this.options.computeIfAbsent("ignoreExceptions", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
     }
 
     public Set<String> ignoreErrors() {
-        return Arrays.stream(this.options.computeIfAbsent("ignoreErrors", k -> "").split(",")).filter(s -> !s.isEmpty()).collect(Collectors.toSet());
+        return Arrays.stream(this.options.computeIfAbsent("ignoreErrors", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
     }
 
 }
