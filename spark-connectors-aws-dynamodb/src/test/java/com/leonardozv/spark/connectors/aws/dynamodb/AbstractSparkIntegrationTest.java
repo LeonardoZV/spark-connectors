@@ -51,11 +51,12 @@ abstract class AbstractSparkIntegrationTest {
             "retries-2.27.17.jar",
             "retries-spi-2.27.17.jar",
             "sdk-core-2.27.17.jar",
-            "slf4j-api-1.7.36.jar",
+            "slf4j-api-1.7.30.jar",
             "third-party-jackson-core-2.27.17.jar",
             "utils-2.27.17.jar",
             "resilience4j-retry-1.7.1.jar",
-            "resilience4j-core-1.7.1.jar"
+            "resilience4j-core-1.7.1.jar",
+            "vavr-0.10.2.jar"
     ));
 
     protected static final Network network = Network.newNetwork();

@@ -50,11 +50,17 @@ public class DynamoDbSinkOptions implements Serializable {
     }
 
     public Set<String> retryExceptions() {
-        return Arrays.stream(this.options.computeIfAbsent("retryExceptions", k -> "").split(",")).filter(s -> !s.isEmpty()).collect(Collectors.toSet());
+        return Arrays.stream(this.options.computeIfAbsent("retryExceptions", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
     }
 
     public Set<String> retryErrors() {
-        return Arrays.stream(this.options.computeIfAbsent("retryErrors", k -> "").split(",")).filter(s -> !s.isEmpty()).collect(Collectors.toSet());
+        return Arrays.stream(this.options.computeIfAbsent("retryErrors", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
     }
 
     public int retryInitialInterval() {
