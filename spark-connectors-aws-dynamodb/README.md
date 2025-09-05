@@ -64,7 +64,7 @@ df.write
     .option("region", "us-east-1") \
     .option("batchSize", "25") \
     .option("retryExceptions", "software.amazon.awssdk.services.dynamodb.model.RequestLimitExceededException, software.amazon.awssdk.services.dynamodb.model.InternalServerErrorException") \
-    .option("retryErrors", "RequestLimitExceeded, ProvisionedThroughputExceeded, ThrottlingError, InternalServerError, ResourceNotFound") \
+    .option("retryErrors", "RequestLimitExceeded, ProvisionedThroughputExceeded, ThrottlingError, InternalServerError") \
     .option("retryInitialInterval", "100") \
     .option("retryMultiplier", "2") \
     .option("retryRandomizationFactor", "0.5") \
