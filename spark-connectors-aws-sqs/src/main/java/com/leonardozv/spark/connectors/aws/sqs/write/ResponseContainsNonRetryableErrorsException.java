@@ -1,17 +1,16 @@
 package com.leonardozv.spark.connectors.aws.sqs.write;
 
-
 import software.amazon.awssdk.services.sqs.model.BatchResultErrorEntry;
 
 import java.util.List;
 
-public class SqsSinkBatchResultException extends RuntimeException {
+public class ResponseContainsNonRetryableErrorsException extends RuntimeException {
 
-    public SqsSinkBatchResultException(String message) {
+    public ResponseContainsNonRetryableErrorsException(String message) {
         super(message);
     }
 
-    public SqsSinkBatchResultException(String message, Throwable cause) {
+    public ResponseContainsNonRetryableErrorsException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -24,9 +23,9 @@ public class SqsSinkBatchResultException extends RuntimeException {
             return this;
         }
 
-        public SqsSinkBatchResultException build() {
+        public ResponseContainsNonRetryableErrorsException build() {
             String[] failedMessages = errors.stream().map(error -> error.code() + ": " + error.message()).distinct().toArray(String[]::new);
-            return new SqsSinkBatchResultException("Some messages failed to be sent to the SQS queue with the following errors: [" + String.join("; ", failedMessages) + "]");
+            return new ResponseContainsNonRetryableErrorsException("Some messages failed to be sent to the SQS queue with the following errors: [" + String.join("; ", failedMessages) + "]");
         }
 
     }

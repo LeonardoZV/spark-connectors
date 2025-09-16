@@ -3,8 +3,11 @@ package com.leonardozv.spark.connectors.aws.sqs.write;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SqsSinkOptions implements Serializable {
 
@@ -52,6 +55,54 @@ public class SqsSinkOptions implements Serializable {
 
     public int batchSize() {
         return Integer.parseInt(this.options.computeIfAbsent("batchSize", k -> "10"));
+    }
+
+    public Set<String> retryExceptions() {
+        return Arrays.stream(this.options.computeIfAbsent("retryExceptions", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+    }
+
+    public Set<String> retryErrors() {
+        return Arrays.stream(this.options.computeIfAbsent("retryErrors", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+    }
+
+    public int retryInitialInterval() {
+        return Integer.parseInt(this.options.computeIfAbsent("retryInitialInterval", k -> "100"));
+    }
+
+    public double retryMultiplier() {
+        return Double.parseDouble(this.options.computeIfAbsent("retryMultiplier", k -> "2"));
+    }
+
+    public double retryRandomizationFactor() {
+        return Double.parseDouble(this.options.computeIfAbsent("retryRandomizationFactor", k -> "0.5"));
+    }
+
+    public int retryMaxInterval() {
+        return Integer.parseInt(this.options.computeIfAbsent("retryMaxInterval", k -> "20000"));
+    }
+
+    public int retryMaxAttempts() {
+        return Integer.parseInt(this.options.computeIfAbsent("retryMaxAttempts", k -> "3"));
+    }
+
+    public Set<String> ignoreExceptions() {
+        return Arrays.stream(this.options.computeIfAbsent("ignoreExceptions", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+    }
+
+    public Set<String> ignoreErrors() {
+        return Arrays.stream(this.options.computeIfAbsent("ignoreErrors", k -> "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
     }
 
     public boolean useSqsExtendedClient() {

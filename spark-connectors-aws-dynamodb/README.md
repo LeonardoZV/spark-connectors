@@ -133,7 +133,7 @@ According to the AWS DynamoDB BatchExecuteStatement API documentation, exception
 
 On retry, the library excludes any statements that were previously executed successfully or that are configured to be ignored.
 
-If an exception or error occurs and it is not configured to be retried or ignored, Spark’s default behavior is to retry the **entire** task on another node until it reaches spark.task.maxFailures. Note that in this case, statements that have already been executed successfully may be executed again.
+If an exception or error occurs, and it is not configured to be retried or ignored, Spark’s default behavior is to retry the **entire** task on another node until it reaches spark.task.maxFailures. Note that in this case, statements that have already been executed successfully may be executed again.
 
 ## How to
 

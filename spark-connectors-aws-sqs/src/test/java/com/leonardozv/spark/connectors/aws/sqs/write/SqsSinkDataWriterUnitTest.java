@@ -105,7 +105,7 @@ class SqsSinkDataWriterUnitTest {
         SqsSinkDataWriter writer = new SqsSinkDataWriter(0, 0, mockSqsClient, queueUrl, new SqsSinkOptions(options), schema);
 
         // Act & Assert
-        assertThrows(SqsSinkBatchResultException.class, () -> writer.write(row));
+        assertThrows(ResponseContainsNonRetryableErrorsException.class, () -> writer.write(row));
         assertDoesNotThrow(writer::close);
         ArgumentCaptor<SendMessageBatchRequest> argumentCaptor = ArgumentCaptor.forClass(SendMessageBatchRequest.class);
         verify(mockSqsClient, times(1)).sendMessageBatch(argumentCaptor.capture());

@@ -74,7 +74,10 @@ abstract class AbstractSparkIntegrationTest {
             "s3-2.27.17.jar",
             "aws-json-protocol-2.27.17.jar",
             "aws-query-protocol-2.27.17.jar",
-            "aws-xml-protocol-2.27.17.jar"
+            "aws-xml-protocol-2.27.17.jar",
+            "resilience4j-retry-1.7.1.jar",
+            "resilience4j-core-1.7.1.jar",
+            "vavr-0.10.2.jar"
     ));
 
     protected static final Network network = Network.newNetwork();
@@ -90,7 +93,7 @@ abstract class AbstractSparkIntegrationTest {
 
     public ExecResult executeSparkSubmit(String script, String... args) throws IOException, InterruptedException {
 
-        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:sqs:2.27.17,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1,software.amazon.awssdk:s3:2.27.17", "--master", "local", script}, args);
+        String[] command = ArrayUtils.addAll(new String[] {"spark-submit", "--jars", "/home/libs/" + LIB_SPARK_CONNECTORS, "--packages", "software.amazon.awssdk:sqs:2.27.17,io.github.resilience4j:resilience4j-retry:1.7.1,com.amazonaws:amazon-sqs-java-extended-client-lib:2.1.1,software.amazon.awssdk:s3:2.27.17", "--master", "local", script}, args);
 
         ExecResult result = spark.execInContainer(command);
 
