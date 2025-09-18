@@ -22,6 +22,7 @@ public class DynamoDbSinkWrite implements Write {
     public DynamoDbSinkOptions options() {
         return this.options;
     }
+
     public StructType schema() {
         return this.schema;
     }

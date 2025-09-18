@@ -94,7 +94,7 @@ class DynamoDbSinkDataWriterUnitTest {
     }
 
     @Test
-    void when_RowHasStatementAndBatchSizeReachedAndHasRetryErrorsAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndNotThrowException() {
+    void when_RowHasStatementAndBatchSizeReachedAndHasRetryErrorsAndDynamoDbRespondsWithError_should_ExecuteBatchExecuteStatementAndThrowExceptionWhenMaxAttemptsReached() {
 
         Set<String> retryErrors = new HashSet<>();
         retryErrors.add(BatchStatementErrorCodeEnum.THROTTLING_ERROR.toString());
@@ -135,7 +135,7 @@ class DynamoDbSinkDataWriterUnitTest {
         List<BatchExecuteStatementRequest> capturedArgument = argumentCaptor.getAllValues();
         assertThat(capturedArgument.get(0).statements()).hasSize(2);
         assertThat(capturedArgument.get(0).statements().get(0).statement()).isEqualTo("test-statement-1");
-        assertThat(capturedArgument.get(1).statements().get(0).statement()).isEqualTo("test-statement-2");
+        assertThat(capturedArgument.get(0).statements().get(1).statement()).isEqualTo("test-statement-2");
         assertThat(capturedArgument.get(1).statements()).hasSize(1);
         assertThat(capturedArgument.get(1).statements().get(0).statement()).isEqualTo("test-statement-2");
         assertThat(capturedArgument.get(2).statements()).hasSize(1);

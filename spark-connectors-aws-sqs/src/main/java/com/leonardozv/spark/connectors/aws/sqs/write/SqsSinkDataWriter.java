@@ -59,8 +59,13 @@ public class SqsSinkDataWriter implements DataWriter<InternalRow> {
     public void write(InternalRow row) {
 
         SendMessageBatchRequestEntry.Builder sendMessageBatchRequestEntryBuilder = SendMessageBatchRequestEntry.builder()
-                .messageBody(row.getString(this.schema.fieldIndex("value")))
-                .id(UUID.randomUUID().toString());
+                .messageBody(row.getString(this.schema.fieldIndex("value")));
+
+        if (!this.schema.getFieldIndex("message_id").isEmpty()) {
+            sendMessageBatchRequestEntryBuilder.id(row.getString(this.schema.fieldIndex("message_id")));
+        } else {
+            sendMessageBatchRequestEntryBuilder.id(UUID.randomUUID().toString());
+        }
 
         if (!this.schema.getFieldIndex("delay_seconds").isEmpty()) {
             sendMessageBatchRequestEntryBuilder.delaySeconds(row.getInt(this.schema.fieldIndex("delay_seconds")));

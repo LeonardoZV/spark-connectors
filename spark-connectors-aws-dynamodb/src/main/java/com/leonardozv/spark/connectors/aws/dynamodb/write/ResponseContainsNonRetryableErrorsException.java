@@ -10,10 +10,6 @@ public class ResponseContainsNonRetryableErrorsException extends RuntimeExceptio
         super(message);
     }
 
-    public ResponseContainsNonRetryableErrorsException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public static class Builder {
 
         private List<BatchStatementError> errors;

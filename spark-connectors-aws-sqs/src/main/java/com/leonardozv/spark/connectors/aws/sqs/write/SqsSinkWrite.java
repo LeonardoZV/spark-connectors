@@ -19,7 +19,12 @@ public class SqsSinkWrite implements Write {
         return new SqsSinkBatchWrite(this.options, this.schema);
     }
 
-    public SqsSinkOptions options() { return this.options; }
-    public StructType schema() { return this.schema; }
+    public SqsSinkOptions options() {
+        return this.options;
+    }
+
+    public StructType schema() {
+        return this.schema;
+    }
 
 }

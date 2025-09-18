@@ -10,10 +10,6 @@ public class ResponseContainsRetryableErrorsException extends RuntimeException {
         super(message);
     }
 
-    public ResponseContainsRetryableErrorsException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public static class Builder {
 
         private List<BatchResultErrorEntry> errors;
